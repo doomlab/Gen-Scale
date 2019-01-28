@@ -1,117 +1,180 @@
-
-
-## requires the 'moments' package
-##      install.packages("moments")
-## args: Dataframe of scale values, with each row being a participant and each column being a scale question
-## args: vector of response time/page time for each participant
-## args: range of scale (e.g. 1-7 Likert scale would be 7)
+## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
+## args: rt: vector of response time/page time for each participant
+## args: min: minimum value of scale
+## args: max: maximum value of scale
 ## args: partno: vector of corresponding participant numbers
 ## args: clicks: click count column, outputted by qualtrics
-## returns: table of identified cases, where True equals an identified automated response
-## creates a vector "identified" of True and False, where True identifies specific cases to note 
-##     specific participants
-## creates a subsetted dataframe "subdata" excluding identified cases
+## args: manvec: vector of manipulation check question responses
+## args: mancor: correct answer of manipulation check
+## args: char: number of characters on the page
 
-
-SAD = function(dat,rt,range,partno,click){
+SAD = function(dat, #data frame of only scale values
+               rt = NULL, #column name for page timing
+               min = 1, #lower end of scale points
+               max = 7, #upper end of scale points
+               partno, #participant number so you can merge and identify outliers
+               click = NULL, #column of click counts
+               manvec = NULL, #column of manipulation check
+               mancor = NULL, #answer to the manipulation check
+               char = NULL){ #number of characters on the page
   
-  #skewness/kurtosis check
-  library(moments)
-  skewstuff = apply(dat, 1, skewness)
-  skewstuff[is.na(skewstuff)] <- 0
-  kurstuff = apply(dat,1,kurtosis)
-  kurstuff[is.na(kurstuff)] <- 0
-  cutoffs = mean(skewstuff, na.rm = T) + 2 * sd(skewstuff, na.rm = T)
-  cutoffk = mean(kurstuff, na.rm = T) + 2 * sd(kurstuff, na.rm = T)
-  total = as.numeric(abs(skewstuff) < cutoffs)
-  total2 = as.numeric(abs(kurstuff) < cutoffk)
+  ##make sure the data provided is a data frame
+  dat = as.data.frame(dat)
   
-  #number of scale options used
+  ####number of scale options used####
   OptUse = function(x){
     length(table(as.vector(as.matrix(unname(x)))))
   }
   numOpt = apply(dat,1,OptUse)
-  if(range <= 5){
-    cutoffOpt = range  - 1
-    
-  } else {
-    cutoffOpt = range - 2
+  numOpt = as.numeric(numOpt)
+  nsim = length(numOpt)
+  badScaleCheck = rep(NA, length(numOpt))
+  for(i in 1:nsim){
+    ##more than half of the options
+    optionhalf = length(min:max)/2+1
+    if(numOpt[i] >= optionhalf){
+      badScaleCheck[i] = 1
+    } else { badScaleCheck[i] = 0 }
   }
-  total3 = as.numeric(abs(numOpt) >= cutoffOpt)
+  badScaleCheck = as.numeric(badScaleCheck)
   
-  #response/page time
-  cutoffTime = unname(quantile(rt)[2])
-  total4 = as.numeric(rt < cutoffTime)
   
-  #click counts
-  clix = click
-  clix = replace(clix,clix==0,1)
-  clix = replace(clix,clix!=1,0)
-  total5 = clix
+  ####response/page time####
+  if (!is.null(rt)){
+    rt = as.numeric(unlist(rt))
+    
+    ourchar = char
+    meanchar = 987
+    sdchar = 118
+    upperchar = meanchar + 2*sdchar
+    cutoffChar = ourchar / upperchar * 60
+    badChar = rep(NA, length(rt))
+    nsim = length(badChar)
+    for(i in 1:nsim){
+      if(!is.na(rt[i])){
+        if(rt[i] < cutoffChar){
+          badChar[i] = 1
+        } else{
+          badChar[i] = 0
+        }
+      } else { badChar[i] = NA}
+    }
+    badChar = as.numeric(badChar)
+  } else { badChar = rep(NA, nrow(dat))}
   
-  #if participant meets all 4 criteria
-  totalend = total+total2+total3+total4+total5
-  identified <- totalend == 5
-  dat = cbind(dat,partno)
-  subdata <- subset(dat, totalend != 5)
-  alldata <- cbind(dat, 
-                   "skewprobs" = as.logical(total),
-                   "kurtprobs" = as.logical(total2),
-                   "rangeprobs" = as.logical(total3),
-                   "timeprobs" = as.logical(total4))
-  return(list( "table" = table(totalend == 5),
-               "identified" = identified,
-               "alldata" = alldata,
-               "subdata" = subdata) )
-}
-
-## example
-data <- read.csv("C:/Users/John/Desktop/SADexampleData.csv")
-
-data$participant = 1:nrow(data)
-output = SAD(dat = data[,2:16], rt = data$Duration, range = 7, partno = data$participant, click = data$Q2_Click.Count)
-
-output$table ##total number of suspect data points
-
-output$identified ##logical to show which data points are bad
-
-View(output$subdata) ##dataframe without bad data points 
-
-View(output$alldata) ##dataframe with indicators of bad data points
-
-
-##stuff
-temprow = as.numeric(unname(data[1,2:16 ])) ##change this thing here to be selecting one row at a time
-
-minscale = 1
-maxscale = 5
-utable = matrix(0, nrow = 1, ncol = length(minscale:maxscale))
-for(i in minscale:maxscale) {
-  utable[i] = length(temprow[ temprow == i])
-}
-uniformest = chisq.test(utable,
-                        rescale.p = T,
-                        simulate.p.value = T)
-
-
-##test normal distribution
-##first convert to z score
-ztest = scale(temprow)
-##then figure out how much of the data is binned for SDs
-ztable = matrix(0, nrow = 1, ncol = 6)
-colnames(ztable) = c("a", "b", "c", "d", "e", "f")
-ztable[1] = length(ztest[ ztest <= -2 ])  
-ztable[2] = length(ztest[ ztest > -2 & ztest <= -1  ])
-ztable[3] = length(ztest[ ztest > -1 & ztest <= 0 ])
-ztable[4] = length(ztest[ ztest > 0 & ztest <= 1 ])
-ztable[5] = length(ztest[ ztest > 1 & ztest <= 2 ])
-ztable[6] = length(ztest[ ztest > 2 ])
-znormal = c(0.0228, 0.1359, 0.3413, 0.3413, 0.1359, 0.0228)
-normalest = chisq.test(ztable,
-                       p = znormal*sum(ztable),
-                       rescale.p = T,
-                       simulate.p.value = T)
-
-##output return chi square values
-uniformest$statistic
-normalest$statistic
+  ####click count check####
+  if(!is.null(click)){
+    click = as.numeric(unlist(click))
+    totalexp = apply(dat,1, function(x){sum(!is.na(x))})
+    nsim = length(click)
+    badClick = rep(NA, length(click))
+    for(i in 1:nsim){
+      if(!is.na(click[i])){
+        if(click[i] >= totalexp[i]){
+          badClick[i] = 0
+        } else{
+          badClick[i] = 1
+        }
+      } else{ badClick[i] = NA}
+    }
+    badClick = as.numeric(badClick)
+  } else { badClick = rep(NA, nrow(dat))}
+  
+  ####manipulation check question manip####
+  if(!is.null(manvec)){
+    manvec = as.numeric(unlist(manvec))
+    nsim = length(manvec)
+    badMC = rep(NA, nrow(dat))
+    for(i in 1:nsim){
+      if(!is.na(manvec[i])){ 
+        if(manvec[i] == mancor) { badMC[i] = 0 } else { badMC[i] = 1}} else { badMC[i] = 1}
+    }
+    badMC = as.numeric(badMC)
+  } else { badMC = rep(NA, nrow(dat))}
+  
+  ####Distribution Testing####
+  uniform = rep(NA,nrow(dat))
+  normal = rep(NA, nrow(dat))
+  dist = rep(NA, nrow(dat))
+  nsim = nrow(dat)
+  for(i in 1:nsim){
+    temprow = as.numeric(unname(dat[i,])) 
+    utable = matrix(0, nrow = 1, ncol = length(min:max))
+    for(x in min:max) {
+      utable[x] = length(temprow[ temprow == x])
+    }
+    uniformest = chisq.test(utable,
+                            rescale.p = T,
+                            simulate.p.value = T)
+    ##test normal distribution
+    ##first convert to z score
+    ztest = scale(temprow)
+    ##then figure out how much of the data is binned for SDs
+    ztable = matrix(0, nrow = 1, ncol = 6)
+    ztable[1] = length(ztest[ ztest <= -2 ])  
+    ztable[2] = length(ztest[ ztest > -2 & ztest <= -1  ])
+    ztable[3] = length(ztest[ ztest > -1 & ztest <= 0 ])
+    ztable[4] = length(ztest[ ztest > 0 & ztest <= 1 ])
+    ztable[5] = length(ztest[ ztest > 1 & ztest <= 2 ])
+    ztable[6] = length(ztest[ ztest > 2 ])
+    znormal = c(0.0228, 0.1359, 0.3413, 0.3413, 0.1359, 0.0228)
+    normalest = chisq.test(ztable,
+                           p = znormal*sum(ztable),
+                           rescale.p = T,
+                           simulate.p.value = T)
+    ##output return chi square values
+    uniform[i] = uniformest$statistic
+    normal[i] = normalest$statistic
+    ##if uniform < normal
+    if(uniformest$statistic < normalest$statistic)
+    {
+      ##if more than 1 option
+      if (numOpt[i]>1)
+      {
+        dist[i] = 0 ##uniform is better
+      } else { ##handles when people only pick one thing
+        dist[i] = 2
+      }
+    }
+    ##if uniform >= normal
+    if(uniformest$statistic >= normalest$statistic)
+    {
+      ##if more than 1 option
+      if (numOpt[i]>1)
+      {
+        dist[i] = 1 ##normal is better
+      } else { ##handles when people only pick one thing
+        dist[i] = 2
+      }
+      
+    }
+    #0 means uniform fits better
+    #1 means normal fits better
+    #2 means only chose one scale option
+  }## end of for loop
+  
+  ####distribution coding####
+  badDist = rep(NA, nsim)
+  for(i in 1:nsim){
+    if(dist[i] == 0){
+      badDist[i] = 1
+    } 
+    if (dist[i] == 1){
+      badDist[i] = 0
+    } 
+    if (dist[i] == 2) {
+      badDist[i] = 0
+    }
+  }
+  badDist = as.numeric(badDist)
+  
+  ####total up####
+  badDF = cbind.data.frame(badChar, badClick, badDist, badScaleCheck, badMC)
+  badDF$badTotal = apply(badDF, 1, sum, na.rm = T)
+  badDF$participant = partno
+  
+  return(badDF)
+  
+} #end function
+#########################################################################################
+#########################################################################################
