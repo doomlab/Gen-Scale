@@ -56,7 +56,7 @@ nomissing = allcolumns
 source("SADfunction_emb.R")
 
 #Block 1
-page1 = SAD(dat = nomissing[24:44, ], #data frame of only scale values
+page1 = SAD(dat = nomissing[, 24:44], #data frame of only scale values
     rt = nomissing$Q10_Page.Submit, #column name for page timing
     min = 1, #lower end of scale points
     max = 5, #upper end of scale points
