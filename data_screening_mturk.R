@@ -57,14 +57,14 @@ source("SADfunction_emb.R")
 
 #Block 1
 page1 = SAD(dat = nomissing[, 37:57], 
-    rt = nomissing$Q10_Page.Submit,
-    min = 1, 
-    max = 5, 
-    partno = nomissing$ResponseId, 
-    click = nomissing$Q10_Click.Count, 
-    manvec = nomissing$Q2_21, 
-    mancor = 1, 
-    char = 1626)
+            rt = nomissing$Q10_Page.Submit,
+            min = 1, 
+            max = 5, 
+            partno = nomissing$ResponseId, 
+            click = nomissing$Q10_Click.Count, 
+            manvec = nomissing$Q2_21, 
+            mancor = 1, 
+            char = 1626)
 
 #Block 2
 page2 = SAD(dat = nomissing[, 58:77], 
@@ -119,11 +119,9 @@ fake = lm(random~., data=noout[ , 37:97])
 standardized = rstudent(fake)
 {qqnorm(standardized)
   abline(0,1)}
-#seems okay
 
 # Normality #
 hist(standardized, breaks=15)
-#a little skewed but mostly centered on 0 and between -2 and 2 so okay
 
 # Homog/s #
 fitvalues = scale(fake$fitted.values)
@@ -132,4 +130,4 @@ fitvalues = scale(fake$fitted.values)
   abline(v = 0)}
 #some homogeneity issues but we'll accept it
 
-write.csv(noout, file = "sona_data_screened.csv")
+write.csv(noout, file = "mturk_data_screened.csv")
