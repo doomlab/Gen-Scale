@@ -84,15 +84,15 @@ page3 = SAD(dat = nomissing[, 78:97],
             max = 5, 
             partno = nomissing$ResponseId, 
             click = nomissing$Q12_Click.Count, 
-            manvec = NA, 
-            mancor = NA, 
+            manvec = nomissing$Q5_16, 
+            mancor = 3, 
             char = 1496)
 
 #Total
 nomissing$totalbad = page1$badTotal + page2$badTotal + page3$badTotal
 table(nomissing$totalbad)
 nolowqual = subset(nomissing, totalbad < 6)
-#81 participants excluded as low quality data
+#90 participants excluded as low quality data
 
 # Outliers ----------------------------------------------------------------
 
@@ -108,7 +108,7 @@ summary(mahal < cutoff)
 mahal[mahal > cutoff]
 
 noout = subset(nolowqual, mahal < cutoff)
-#34 participants excluded as outliers
+#36 participants excluded as outliers
 
 # Assumptions -------------------------------------------------------------
 
