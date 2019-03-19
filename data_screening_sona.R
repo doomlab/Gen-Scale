@@ -90,9 +90,12 @@ page3 = SAD(dat = nomissing[, 78:97],
 
 #Total
 nomissing$totalbad = page1$badTotal + page2$badTotal + page3$badTotal
-table(nomissing$totalbad)
-nolowqual = subset(nomissing, totalbad < 6)
-#90 participants excluded as low quality data
+nomissing$totalbadUP = page1$badChar + page1$badClick + page1$badMC + 
+  page2$badChar + page2$badClick + page2$badMC + 
+  page3$badChar + page3$badClick + page3$badMC
+table(nomissing$totalbadUP)
+nolowqual = subset(nomissing, totalbadUP < 4)
+##B&S say 2/5 which is 40%, so 40% of the 9 total is 3.6 or 4 or more
 
 # Outliers ----------------------------------------------------------------
 
@@ -108,7 +111,7 @@ summary(mahal < cutoff)
 mahal[mahal > cutoff]
 
 noout = subset(nolowqual, mahal < cutoff)
-#36 participants excluded as outliers
+#42 participants excluded as outliers
 
 # Assumptions -------------------------------------------------------------
 
@@ -132,4 +135,4 @@ fitvalues = scale(fake$fitted.values)
   abline(v = 0)}
 #some homogeneity issues but we'll accept it
 
-write.csv(noout, file = "sona_data_screened.csv")
+write.csv(noout, file = "sona_data_screened.csv", row.names = F)
