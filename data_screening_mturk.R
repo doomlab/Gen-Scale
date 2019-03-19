@@ -1,6 +1,8 @@
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+set.seed(92310)
+
 master = read.csv("mturk_data.csv")
 colnames(master)[1] = "StartDate"
 
@@ -86,9 +88,12 @@ page3 = SAD(dat = nomissing[, 82:101],
 #Total
 nomissing$totalbad = page1$badTotal + page2$badTotal + page3$badTotal
 table(nomissing$totalbad)
-nolowqual = subset(nomissing, totalbad < 6)
-#74 participants excluded as low quality data
-#34%, might be too much
+nomissing$totalbadUP = page1$badChar + page1$badClick + page1$badMC + 
+  page2$badChar + page2$badClick + page2$badMC + 
+  page3$badChar + page3$badClick + page3$badMC
+table(nomissing$totalbadUP)
+nolowqual = subset(nomissing, totalbadUP < 4)
+##B&S say 2/5 which is 40%, so 40% of the 9 total is 3.6 or 4 or more
 
 # Outliers ----------------------------------------------------------------
 
@@ -126,4 +131,15 @@ fitvalues = scale(fake$fitted.values)
   abline(v = 0)}
 #actually looks pretty good except for one point out a little far
 
-write.csv(noout, file = "mturk_data_screened.csv")
+write.csv(noout, file = "mturk_data_screened.csv", row.names = F)
+library(beepr)
+beep(sound = 5)
+
+# > nrow(master)
+# [1] 240
+# > nrow(nomissing)
+# [1] 217
+# > nrow(nolowqual)
+# [1] 197
+# > nrow(noout)
+# [1] 187
