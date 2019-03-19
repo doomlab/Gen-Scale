@@ -1,3 +1,5 @@
+library(data.table)
+
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 sona = read.csv("sona_data_screened.csv")
@@ -12,7 +14,12 @@ marker = nrow(sona)/2
 marker2 = nrow(mturk)/2
 
 #data
-efadata = rbind(sona[1:marker , ], mturk[1:round(marker2), ])
-cfadata = rbind(sona[marker+1:nrow(sona) , ], mturk[round(marker2)+1:nrow(mturk), ])
+efadata = rbindlist(list(sona[1:marker , ], 
+                         mturk[1:round(marker2), ]), 
+                    fill = TRUE)
+  
+cfadata = rbindlist(list(sona[marker+1:nrow(sona) , ], 
+                         mturk[round(marker2)+1:nrow(mturk), ]),
+                    fill = TRUE)
 
 #do the efa here 

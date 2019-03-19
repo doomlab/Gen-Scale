@@ -1,6 +1,8 @@
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+set.seed(92310)
+
 master = read.csv("sona_data.csv")
 colnames(master)[1] = "StartDate"
 
@@ -136,3 +138,14 @@ fitvalues = scale(fake$fitted.values)
 #some homogeneity issues but we'll accept it
 
 write.csv(noout, file = "sona_data_screened.csv", row.names = F)
+library(beepr)
+beep(sound = 5)
+
+# > nrow(master)
+# [1] 564
+# > nrow(nomissing)
+# [1] 557
+# > nrow(nolowqual)
+# [1] 507
+# > nrow(noout)
+# [1] 464
