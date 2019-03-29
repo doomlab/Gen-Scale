@@ -28,7 +28,7 @@ cfadata = rbindlist(list(sona[marker+1:nrow(sona) , ],
 efaquestions = efadata[, c(37:56, 58:76, 78:92, 94:97)]
 
 
-#### EFA ####
+#### PRE-EFA ####
 
 ### Bartlett's
 correlations = cor(efaquestions)
@@ -48,10 +48,139 @@ sum(nofactors$fa.values > .7) ##new kaiser criterion = 6
 #parallel analysis = 6
 #scree = 3 or 4
 
-### Simple structure
-fa(master, nfactors=3, rotate = "oblimin", fm = "ml")
+### FIVE-FACTOR EFA ###
 
-fa(master[ , -c(8,14,15,17,18,23,30)], nfactors=3, rotate = "oblimin", fm = "ml")
+## Simple Structure ##
+
+fa(efaquestions, nfactors=5, rotate = "oblimin", fm = "ml")
+#Item 24 had no loadings
+#Items 2, 14, 30, 42, 47, 48, and 52 had multiple loadings
+
+fa(efaquestions[ , -c(2,14,24,30,42,47,48,52)], nfactors=5, rotate = "oblimin", fm = "ml")
+#Item 53 had no loadings
+#Item 31 had multiple loadings
+
+fa(efaquestions[ , -c(2,14,24,30,42,47,48,52,53,31)], 
+   nfactors=5, rotate = "oblimin", fm = "ml")
+#Items 1, 6 had multiple loadings
+
+fa(efaquestions[ , -c(2,14,24,30,42,47,48,52,53,31,1,6)], 
+   nfactors=5, rotate = "oblimin", fm = "ml")
+#Items 23, 29 had multiple loadings
+
+fa(efaquestions[ , -c(2,14,24,30,42,47,48,52,53,31,1,6,23,29)], 
+   nfactors=5, rotate = "oblimin", fm = "ml")
+#Item 5 had multiple loadings
+
+fa(efaquestions[ , -c(2,14,24,30,42,47,48,52,53,31,1,6,23,29,5)], 
+   nfactors=5, rotate = "oblimin", fm = "ml")
+#We have achieved simple structure!
+#Eliminating items 1,2,5,6,14,23,24,29,30,31,42,47,48,52,53
+
+five_factor1 = efaquestions[,c(11,12,17,18,33,34,37,39:41,49,57)]
+five_factor2 = efaquestions[,c(7:9,19:22,26,32,35,43,54:56)]
+five_factor3 = efaquestions[,c(3,4,10,15,16,46)]
+five_factor4 = efaquestions[,c(13,25,27,28,36,38,45,51)]
+five_factor5 = efaquestions[,c(44,50,58)]
+
+## Adequate Solution ##
+
+#CFI = .8965
+five_finalmodel = fa(efaquestions[ , -c(2,14,24,30,42,47,48,52,53,31,1,6,23,29,5)], 
+                nfactors=5, rotate = "oblimin", fm = "ml")
+1 - ((five_finalmodel$STATISTIC-five_finalmodel$dof)/
+       (five_finalmodel$null.chisq-five_finalmodel$null.dof))
+
+library(knitr)
+tableprint = matrix(NA, nrow = 4, ncol = 3)
+
+tableprint[1, ] = c("RMSEA", "0.06, 90% CI[0.053, 0.061]", "Acceptable to Good")
+tableprint[2, ] = c("RMSR", 0.04, "Good")
+tableprint[3, ] = c("CFI", 0.897, "Poor")
+tableprint[4, ] = c("TLI", 0.864, "Poor")
+
+kable(tableprint, 
+      digits = 3,
+      col.names = c("Fit Index", "Value", "Description"))
+
+#Reliabilities
+psych::alpha(five_factor1, check.keys = T) # .94 - great
+psych::alpha(five_factor2, check.keys = T) # .89 - good
+psych::alpha(five_factor3, check.keys = T) # .87 - good
+psych::alpha(five_factor4, check.keys = T) # .74 - acceptable
+psych::alpha(five_factor5, check.keys = T) # .66 - eek
 
 
+### FOUR-FACTOR EFA ###
 
+## Simple Structure ##
+
+fa(efaquestions, nfactors=4, rotate = "oblimin", fm = "ml")
+#Items 1,2,6,10,14,30,31,46,48,52 had multiple loadings
+
+fa(efaquestions[ , -c(1,2,6,10,14,30,31,46,48,52)], 
+   nfactors=4, rotate = "oblimin", fm = "ml")
+#Items 24,25,42,47 had multiple loadings
+#Item 56 had no loadings
+
+fa(efaquestions[ , -c(1,2,6,10,14,24,25,30,31,42,46,47,48,52,56)], 
+   nfactors=4, rotate = "oblimin", fm = "ml")
+#Items 5,21,22,23,57 had multiple loadings
+#Items 32,43,50 had no loadings
+
+fa(efaquestions[ , -c(1,2,5,6,10,14,21,22,23,24,25,30,31,32,42,43,46,47,48,50,52,56,57)], 
+   nfactors=4, rotate = "oblimin", fm = "ml")
+#Item 44 had no loadings
+
+fa(efaquestions[ , -c(1,2,5,6,10,14,21,22,23,24,25,30,31,32,42,43,44,46,47,48,50,52,56,57)], 
+   nfactors=4, rotate = "oblimin", fm = "ml")
+#Item 58 had no loadings
+
+fa(efaquestions[ , -c(1,2,5,6,10,14,21,22,23,24,25,30,31,32,42,43,44,46,47,48,50,52,56,57,58)], 
+   nfactors=4, rotate = "oblimin", fm = "ml")
+#We have achieved simple structure!
+#Eliminating items 1,2,5,6,10,14,21,22,23,24,25,30,31,32,42,43,44,46,47,48,50,52,56,57,58
+
+four_factor1 = efaquestions[,c(11,12,17,18,33,34,37,39:41,49)]
+four_factor2 = efaquestions[,c(7:9,19,20,26,35,54,55)]
+four_factor3 = efaquestions[,c(3,4,15,16,29)]
+four_factor4 = efaquestions[,c(13,27,28,36,38,45,51,53)]
+
+## Adequate Solution ##
+
+#CFI = 0.914
+four_finalmodel = fa(efaquestions[ , -c(1,2,5,6,10,14,21,22,23,24,25,30,31,32,42,
+                                        43,44,46,47,48,50,52,56,57,58)], 
+                     nfactors=4, rotate = "oblimin", fm = "ml")
+1 - ((four_finalmodel$STATISTIC-four_finalmodel$dof)/
+       (four_finalmodel$null.chisq-four_finalmodel$null.dof))
+
+tableprint = matrix(NA, nrow = 4, ncol = 3)
+
+tableprint[1, ] = c("RMSEA", "0.064, 90% CI[0.056, 0.067]", "Acceptable")
+tableprint[2, ] = c("RMSR", 0.04, "Good")
+tableprint[3, ] = c("CFI", 0.914, "Acceptable")
+tableprint[4, ] = c("TLI", 0.885, "Poor")
+
+kable(tableprint, 
+      digits = 3,
+      col.names = c("Fit Index", "Value", "Description"))
+
+#Reliabilities
+psych::alpha(four_factor1, check.keys = T) # .94 - great
+psych::alpha(four_factor2, check.keys = T) # .87 - good
+psych::alpha(four_factor3, check.keys = T) # .88 - good
+psych::alpha(four_factor4, check.keys = T) # .73 - acceptable
+
+
+### THREE-FACTOR EFA ###
+
+## Simple Structure ##
+
+fa(efaquestions, nfactors=3, rotate = "oblimin", fm = "ml")
+#Items 2,6,24,25,46,52 had multiple loadings
+#Items 44,50,53,56,58 had no loadings
+
+fa(efaquestions[ , -c(2,6,24,25,44,46,50,52,53,56,58)], 
+   nfactors=3, rotate = "oblimin", fm = "ml")
+###NEED TO RUN THIS ONE###
