@@ -183,4 +183,81 @@ fa(efaquestions, nfactors=3, rotate = "oblimin", fm = "ml")
 
 fa(efaquestions[ , -c(2,6,24,25,44,46,50,52,53,56,58)], 
    nfactors=3, rotate = "oblimin", fm = "ml")
-###NEED TO RUN THIS ONE###
+#Items 14,30,47 had multiple loadings
+
+fa(efaquestions[ , -c(2,6,14,24,25,30,44,46,47,50,52,53,56,58)], 
+   nfactors=3, rotate = "oblimin", fm = "ml")
+#Items 36,57 had multiple loadings
+
+fa(efaquestions[ , -c(2,6,14,24,25,30,36,44,46,47,50,52,53,56,57,58)], 
+   nfactors=3, rotate = "oblimin", fm = "ml")
+#Item 45 had no loadings
+
+fa(efaquestions[ , -c(2,6,14,24,25,30,36,44,45,46,47,50,52,53,56,57,58)], 
+   nfactors=3, rotate = "oblimin", fm = "ml")
+#We have achieved simple structure!
+
+three_factor1 = efaquestions[,c(1,3:5,7:10,15,16,19:23,26,29,32,35,43,48,54,55)]
+three_factor2 = efaquestions[,c(11,12,17,18,33,34,37,39:42,49)]
+three_factor3 = efaquestions[,c(13,27,28,31,38,51)]
+
+## Adequate Solution ##
+
+#CFI = .862
+three_finalmodel = fa(efaquestions[ , -c(2,6,14,24,25,30,36,44,45,46,47,50,52,53,56,57,58)], 
+                     nfactors=3, rotate = "oblimin", fm = "ml")
+1 - ((three_finalmodel$STATISTIC-three_finalmodel$dof)/
+       (three_finalmodel$null.chisq-three_finalmodel$null.dof))
+
+tableprint = matrix(NA, nrow = 4, ncol = 3)
+
+tableprint[1, ] = c("RMSEA", "0.069, 90% CI[0.062, 0.07]", "Acceptable")
+tableprint[2, ] = c("RMSR", 0.05, "Good")
+tableprint[3, ] = c("CFI", 0.862, "Poor")
+tableprint[4, ] = c("TLI", 0.837, "Poor")
+
+kable(tableprint, 
+      digits = 3,
+      col.names = c("Fit Index", "Value", "Description"))
+
+#Reliabilities
+psych::alpha(three_factor1, check.keys = T) # .94 - great
+psych::alpha(three_factor2, check.keys = T) # .94 - great
+psych::alpha(three_factor3, check.keys = T) # .70 - meh
+
+
+### TWO-FACTOR EFA ###
+
+fa(efaquestions, nfactors=2, rotate = "oblimin", fm = "ml")
+#Item 57 had multiple loadings
+#Items 13,27,31,38,44,50,51,58 had no loadings
+
+fa(efaquestions[, -c(13,27,31,38,44,50,51,57,58)], 
+   nfactors=2, rotate = "oblimin", fm = "ml")
+#We have simple structure!
+
+two_factor1 = efaquestions[,c(1:10,14:16,19:26,28:30,32,35,36,43,45:48,52:56)]
+two_factor2 = efaquestions[,c(11,12,17,18,33,34,37,39:42,49)]
+
+## Adequate Solution ##
+
+#CFI = .816
+two_finalmodel = fa(efaquestions[, -c(13,27,31,38,44,50,51,57,58)], 
+                      nfactors=2, rotate = "oblimin", fm = "ml")
+1 - ((two_finalmodel$STATISTIC-two_finalmodel$dof)/
+       (two_finalmodel$null.chisq-two_finalmodel$null.dof))
+
+tableprint = matrix(NA, nrow = 4, ncol = 3)
+
+tableprint[1, ] = c("RMSEA", "0.073, 90% CI[0.066, NA]", "Acceptable")
+tableprint[2, ] = c("RMSR", 0.06, "Good")
+tableprint[3, ] = c("CFI", 0.799, "Poor")
+tableprint[4, ] = c("TLI", 0.816, "Poor")
+
+kable(tableprint, 
+      digits = 3,
+      col.names = c("Fit Index", "Value", "Description"))
+
+#Reliabilities
+psych::alpha(two_factor1, check.keys = T) # .95 - great
+psych::alpha(two_factor2, check.keys = T) # .94 - great
