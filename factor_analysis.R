@@ -146,6 +146,7 @@ four_factor2 = efaquestions[,c(7:9,19,20,26,35,54,55)]
 four_factor3 = efaquestions[,c(3,4,15,16,29)]
 four_factor4 = efaquestions[,c(13,27,28,36,38,45,51,53)]
 
+
 ## Adequate Solution ##
 
 #CFI = 0.914
@@ -261,3 +262,56 @@ kable(tableprint,
 #Reliabilities
 psych::alpha(two_factor1, check.keys = T) # .95 - great
 psych::alpha(two_factor2, check.keys = T) # .94 - great
+
+
+
+#### EFA w/o Factor 4 ####
+
+## Simple Structure ##
+
+fa(efaquestions[ , -c(13,27,28,36,38,45,51,53)], nfactors=3, rotate = "oblimin", fm = "ml")
+#Item 57 had multiple loadings
+#Items 31,44,50,56 had no loadings
+
+fa(efaquestions[ , -c(13,27,28,36,38,45,51,53,31,44,50,56,57)], nfactors=3, rotate = "oblimin", fm = "ml")
+#Item 1 had multiple loadings
+#Item 58 had no loadings
+
+fa(efaquestions[ , -c(13,27,28,36,38,45,51,53,31,44,50,56,57,1,58)], nfactors=3, rotate = "oblimin", fm = "ml")
+#Simple structure in 3 rounds!
+
+
+final_factor3 = efaquestions[,c(2:4,6,10,14:16,24,25,29,30,43,46:48,52)] #includes factor 3 from before and more
+final_factor1 = efaquestions[,c(11,12,17,18,33,34,37,39:42,49)] #roughly factor 1 from before
+final_factor2 = efaquestions[,c(5,7:9,19:23,26,32,35,54,55)] #roughly factor 2 from before
+
+
+## Adequate Solution ##
+
+#CFI = 0.891
+finalmodel = fa(efaquestions[ , -c(13,27,28,36,38,45,51,53,31,44,50,56,57,1,58)], 
+                nfactors=3, rotate = "oblimin", fm = "ml")
+1 - ((finalmodel$STATISTIC-finalmodel$dof)/
+       (finalmodel$null.chisq-finalmodel$null.dof))
+
+tableprint = matrix(NA, nrow = 4, ncol = 3)
+
+tableprint[1, ] = c("RMSEA", "0.063, 90% CI[0.056, 0.064]", "Acceptable")
+tableprint[2, ] = c("RMSR", 0.04, "Good")
+tableprint[3, ] = c("CFI", 0.891, "Poor")
+tableprint[4, ] = c("TLI", 0.873, "Poor")
+
+kable(tableprint, 
+      digits = 3,
+      col.names = c("Fit Index", "Value", "Description"))
+
+#Reliabilities
+psych::alpha(final_factor1, check.keys = T) # .94 - great
+psych::alpha(final_factor2, check.keys = T) # .90 - great
+psych::alpha(final_factor3, check.keys = T) # .94 - great
+
+### Summary: Fewer items had to be eliminated when we started without factor 4.
+### We lost some goodness of fit but residual measures were still good.
+### Reliabilities were VERY good. (They also contained more questions so...)
+### We'll need to see if the factors still make logical sense with the added items.
+
