@@ -146,6 +146,9 @@ four_factor2 = efaquestions[,c(7:9,19,20,26,35,54,55)]
 four_factor3 = efaquestions[,c(3,4,15,16,29)]
 four_factor4 = efaquestions[,c(13,27,28,36,38,45,51,53)]
 
+FF1 = c(11,12,17,18,33,34,37,39:41,49)
+FF2 = c(7:9,19,20,26,35,54,55)
+FF3 = c(3,4,15,16,29)
 
 ## Adequate Solution ##
 
@@ -174,7 +177,7 @@ psych::alpha(four_factor3, check.keys = T) # .88 - good
 psych::alpha(four_factor4, check.keys = T) # .73 - acceptable
 
 
-### THREE-FACTOR EFA ###
+#### THREE-FACTOR EFA ####
 
 ## Simple Structure ##
 
@@ -227,7 +230,7 @@ psych::alpha(three_factor2, check.keys = T) # .94 - great
 psych::alpha(three_factor3, check.keys = T) # .70 - meh
 
 
-### TWO-FACTOR EFA ###
+#### TWO-FACTOR EFA ####
 
 fa(efaquestions, nfactors=2, rotate = "oblimin", fm = "ml")
 #Item 57 had multiple loadings
@@ -268,28 +271,16 @@ psych::alpha(two_factor2, check.keys = T) # .94 - great
 #### EFA w/o Factor 4 ####
 
 ## Simple Structure ##
+columns_stuff = c(FF1, FF2, FF3)
 
-fa(efaquestions[ , -c(13,27,28,36,38,45,51,53)], nfactors=3, rotate = "oblimin", fm = "ml")
-#Item 57 had multiple loadings
-#Items 31,44,50,56 had no loadings
-
-fa(efaquestions[ , -c(13,27,28,36,38,45,51,53,31,44,50,56,57)], nfactors=3, rotate = "oblimin", fm = "ml")
-#Item 1 had multiple loadings
-#Item 58 had no loadings
-
-fa(efaquestions[ , -c(13,27,28,36,38,45,51,53,31,44,50,56,57,1,58)], nfactors=3, rotate = "oblimin", fm = "ml")
-#Simple structure in 3 rounds!
-
-
-final_factor3 = efaquestions[,c(2:4,6,10,14:16,24,25,29,30,43,46:48,52)] #includes factor 3 from before and more
-final_factor1 = efaquestions[,c(11,12,17,18,33,34,37,39:42,49)] #roughly factor 1 from before
-final_factor2 = efaquestions[,c(5,7:9,19:23,26,32,35,54,55)] #roughly factor 2 from before
+fa(efaquestions[ , ..columns_stuff], 
+   nfactors=3, rotate = "oblimin", fm = "ml")
 
 
 ## Adequate Solution ##
 
 #CFI = 0.891
-finalmodel = fa(efaquestions[ , -c(13,27,28,36,38,45,51,53,31,44,50,56,57,1,58)], 
+finalmodel = fa(efaquestions[ , ..columns_stuff], 
                 nfactors=3, rotate = "oblimin", fm = "ml")
 1 - ((finalmodel$STATISTIC-finalmodel$dof)/
        (finalmodel$null.chisq-finalmodel$null.dof))
@@ -306,9 +297,9 @@ kable(tableprint,
       col.names = c("Fit Index", "Value", "Description"))
 
 #Reliabilities
-psych::alpha(final_factor1, check.keys = T) # .94 - great
-psych::alpha(final_factor2, check.keys = T) # .90 - great
-psych::alpha(final_factor3, check.keys = T) # .94 - great
+psych::alpha(efaquestions[ , ..FF1], check.keys = T) # .94 - great
+psych::alpha(efaquestions[ , ..FF2], check.keys = T) # .87 - great
+psych::alpha(efaquestions[ , ..FF3], check.keys = T) # .88 - great
 
 ### Summary: Fewer items had to be eliminated when we started without factor 4.
 ### We lost some goodness of fit but residual measures were still good.
