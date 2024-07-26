@@ -1,0 +1,17 @@
+-Reduce residual error (better model fit) -- prediction is closer to reality
+-Check TLI,CFI,RMSEA, Modifcation Indices
+-UCLA CFA website for cutoff scores
+-Factor covariances (how they relate to each other)
+-Mod. Ind. - the higher, the bigger the impact on model fit
+---if you add path to that additional item, it would improve model fit (not to take it away)
+---Theory is important: see if it actually makes sense to add that extra construct
+-Check Model plot and Show parameters
+-Arrow direction: circle is latent contstructs (unobserved), idea is that the latent PREDICTS how you respond on individual items (observed)
+---Cross loadings are okay because two latent constructs can influence how people respond to certain items
+
+Construct =~ Item1 + Item2 + ...
+
+=~ means crossloading
+~~ correlation between items (can draw an arrow between them to get a better fit)
+
+Parsimonious is always better (all other things being equal)
