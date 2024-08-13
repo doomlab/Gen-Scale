@@ -20,8 +20,8 @@ efadata = rbindlist(list(sona[1:marker , ],
                          mturk[1:round(marker2), ]), 
                     fill = TRUE)
   
-cfadata = rbindlist(list(sona[marker+1:nrow(sona) , ], 
-                         mturk[round(marker2)+1:nrow(mturk), ]),
+cfadata = rbindlist(list(sona[(marker+1):nrow(sona) , ], 
+                         mturk[(round(marker2)+1):nrow(mturk), ]),
                     fill = TRUE)
 
 #questions are columns 37:56, 58:76, 78:92, 94:97
