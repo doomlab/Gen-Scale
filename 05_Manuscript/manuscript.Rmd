@@ -332,7 +332,7 @@ apply(sona %>%
 apply(sona %>% 
           select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
       2, sd, na.rm = TRUE)
-# check reverse items? Q2_21? 
+# 
 
 # Missing ----
 
@@ -369,7 +369,7 @@ summary(allcolumns)
 write.csv(allcolumns, "../03_Data/sona_data_replaced.csv", row.names = F)
 ```
 
-```{r screen-sona-SAD}
+```{r screen-sona-SAD, eval = F}
 # SAD 
 nomissing <- import("../03_Data/sona_data_replaced.csv")
 
@@ -414,14 +414,25 @@ write.csv(page3, "../03_Data/sona_page3_sad.csv", row.names = F)
 
 # Total
 nomissing$totalbad <- page1$badTotal + page2$badTotal + page3$badTotal
+table(nomissing$totalbad) 
+sum(nomissing$totalbad < 15*.4) 
+nrow(nomissing)
 
-nomissing$totalbadUP = 
+nomissing$totalbadUP <- 
   page1$badChar + page1$badClick + page1$badMC + 
   page2$badChar + page2$badClick + page2$badMC + 
   page3$badChar + page3$badClick + page3$badMC
 table(nomissing$totalbadUP)
-nolowqual = subset(nomissing, totalbadUP < 4)
-##B&S say 2/5 which is 40%, so 40% of the 9 total is 3.6 or 4 or more
+sum(nomissing$totalbadUP < 9*.4) 
+# B&S say 2/5 which is 40%, so 40% of the 9 total is 3.6 or 4 or more
+
+nolowqual <- subset(nomissing, totalbadUP < 4)
+write.csv(nolowqual, "../03_Data/sona_data_goodqual.csv", row.names = F)
+```
+
+
+```{r}
+
 
 # Outliers ----------------------------------------------------------------
 
@@ -465,42 +476,10 @@ write.csv(noout, file = "sona_data_screened.csv", row.names = F)
 library(beepr)
 beep(sound = 5)
 
-# > nrow(master)
-# [1] 564
-# > nrow(nomissing)
-# [1] 557
-# > nrow(nolowqual)
-# [1] 507
-# > nrow(noout)
-# [1] 464
 
 
 
 
-
-sona_screen_1 <- SAD(
-  dat = sona %>% 
-    select(Q2_1:Q2_21, `Q10_Page Submit`, `Q10_Click Count`),
-  rt = "Q10_Page Submit",
-  min = 1,
-  max = 5, 
-  partno = "ResponseId",
-  clicks = "Q10_Click Count",
-  
-  
-  
-)
-
-
-## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
-## args: rt: vector of response time/page time for each participant
-## args: min: minimum value of scale
-## args: max: maximum value of scale
-## args: partno: vector of corresponding participant numbers
-## args: clicks: click count column, outputted by qualtrics
-## args: manvec: vector of manipulation check question responses
-## args: mancor: correct answer of manipulation check
-## args: char: number of characters on the page
 ```
 
 
