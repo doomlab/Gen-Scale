@@ -115,9 +115,7 @@ Mathews and Mister (1988) also developed a scale involving symbolic immortality,
 
 The goal of the present research is to develop a scale that more directly measures one’s sense of existential immortality using a larger sample and current best practices for scale development.
 
-# Methods
-
-We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+# Method
 
 ## Participants
 
@@ -127,9 +125,19 @@ We report how we determined our sample size, all data exclusions (if any), all m
 
 ## Data analysis
 
-We used `r cite_r("r-references.bib")` for all our analyses.
-
 # Results
+
+```{r libraries}
+library(rio)
+library(dplyr)
+set.seed(8943)
+```
+
+```{r load-data}
+sona <- import("../03_Data/sona_data.csv")
+mturk <- import("../03_Data/mturk_data.csv")
+```
+
 
 # Discussion
 
