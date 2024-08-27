@@ -127,11 +127,380 @@ The goal of the present research is to develop a scale that more directly measur
 library(rio)
 library(dplyr)
 set.seed(8943)
+library(mice)
+
+## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
+## args: rt: vector of response time/page time for each participant
+## args: min: minimum value of scale
+## args: max: maximum value of scale
+## args: partno: vector of corresponding participant numbers
+## args: clicks: click count column, outputted by qualtrics
+## args: manvec: vector of manipulation check question responses
+## args: mancor: correct answer of manipulation check
+## args: char: number of characters on the page
+
+SAD <- function(dat, #data frame of only scale values
+               rt = NULL, #column name for page timing
+               min = 1, #lower end of scale points
+               max = 7, #upper end of scale points
+               partno, #participant number so you can merge and identify outliers
+               click = NULL, #column of click counts
+               manvec = NULL, #column of manipulation check
+               mancor = NULL, #answer to the manipulation check
+               char = NULL){ #number of characters on the page
+  
+  ##make sure the data provided is a data frame
+  dat = as.data.frame(dat)
+  
+  ####number of scale options used####
+  OptUse = function(x){
+    length(table(as.vector(as.matrix(unname(x)))))
+  }
+  numOpt = apply(dat,1,OptUse)
+  numOpt = as.numeric(numOpt)
+  nsim = length(numOpt)
+  badScaleCheck = rep(NA, length(numOpt))
+  for(i in 1:nsim){
+    ##more than half of the options
+    optionhalf = length(min:max)/2+1
+    if(numOpt[i] >= optionhalf){
+      badScaleCheck[i] = 1
+    } else { badScaleCheck[i] = 0 }
+  }
+  badScaleCheck = as.numeric(badScaleCheck)
+  
+  
+  ####response/page time####
+  if (!is.null(rt)){
+    rt = as.numeric(unlist(rt))
+    
+    ourchar = char
+    meanchar = 987
+    sdchar = 118
+    upperchar = meanchar + 2*sdchar
+    cutoffChar = ourchar / upperchar * 60
+    badChar = rep(NA, length(rt))
+    nsim = length(badChar)
+    for(i in 1:nsim){
+      if(!is.na(rt[i])){
+        if(rt[i] < cutoffChar){
+          badChar[i] = 1
+        } else{
+          badChar[i] = 0
+        }
+      } else { badChar[i] = NA}
+    }
+    badChar = as.numeric(badChar)
+  } else { badChar = rep(NA, nrow(dat))}
+  
+  ####click count check####
+  if(!is.null(click)){
+    click = as.numeric(unlist(click))
+    totalexp = apply(dat,1, function(x){sum(!is.na(x))})
+    nsim = length(click)
+    badClick = rep(NA, length(click))
+    for(i in 1:nsim){
+      if(!is.na(click[i])){
+        if(click[i] >= totalexp[i]){
+          badClick[i] = 0
+        } else{
+          badClick[i] = 1
+        }
+      } else{ badClick[i] = NA}
+    }
+    badClick = as.numeric(badClick)
+  } else { badClick = rep(NA, nrow(dat))}
+  
+  ####manipulation check question manip####
+  if(!is.null(manvec)){
+    manvec = as.numeric(unlist(manvec))
+    nsim = length(manvec)
+    badMC = rep(NA, nrow(dat))
+    for(i in 1:nsim){
+      if(!is.na(manvec[i])){ 
+        if(manvec[i] == mancor) { badMC[i] = 0 } else { badMC[i] = 1}} else { badMC[i] = 1}
+    }
+    badMC = as.numeric(badMC)
+  } else { badMC = rep(NA, nrow(dat))}
+  
+  ####Distribution Testing####
+  uniform = rep(NA,nrow(dat))
+  normal = rep(NA, nrow(dat))
+  dist = rep(NA, nrow(dat))
+  nsim = nrow(dat)
+  for(i in 1:nsim){
+    temprow = as.numeric(unname(dat[i,])) 
+    utable = matrix(0, nrow = 1, ncol = length(min:max))
+    for(x in min:max) {
+      utable[x] = length(temprow[ temprow == x])
+    }
+    uniformest = chisq.test(utable,
+                            rescale.p = T,
+                            simulate.p.value = T)
+    ##test normal distribution
+    ##first convert to z score
+    ztest = scale(temprow)
+    ##then figure out how much of the data is binned for SDs
+    ztable = matrix(0, nrow = 1, ncol = 6)
+    ztable[1] = length(ztest[ ztest <= -2 ])  
+    ztable[2] = length(ztest[ ztest > -2 & ztest <= -1  ])
+    ztable[3] = length(ztest[ ztest > -1 & ztest <= 0 ])
+    ztable[4] = length(ztest[ ztest > 0 & ztest <= 1 ])
+    ztable[5] = length(ztest[ ztest > 1 & ztest <= 2 ])
+    ztable[6] = length(ztest[ ztest > 2 ])
+    znormal = c(0.0228, 0.1359, 0.3413, 0.3413, 0.1359, 0.0228)
+    normalest = chisq.test(ztable,
+                           p = znormal*sum(ztable),
+                           rescale.p = T,
+                           simulate.p.value = T)
+    ##output return chi square values
+    uniform[i] = uniformest$statistic
+    normal[i] = normalest$statistic
+    ##if uniform < normal
+    if(uniformest$statistic < normalest$statistic)
+    {
+      ##if more than 1 option
+      if (numOpt[i]>1)
+      {
+        dist[i] = 0 ##uniform is better
+      } else { ##handles when people only pick one thing
+        dist[i] = 2
+      }
+    }
+    ##if uniform >= normal
+    if(uniformest$statistic >= normalest$statistic)
+    {
+      ##if more than 1 option
+      if (numOpt[i]>1)
+      {
+        dist[i] = 1 ##normal is better
+      } else { ##handles when people only pick one thing
+        dist[i] = 2
+      }
+      
+    }
+    #0 means uniform fits better
+    #1 means normal fits better
+    #2 means only chose one scale option
+  }## end of for loop
+  
+  ####distribution coding####
+  badDist = rep(NA, nsim)
+  for(i in 1:nsim){
+    if(dist[i] == 0){
+      badDist[i] = 1
+    } 
+    if (dist[i] == 1){
+      badDist[i] = 0
+    } 
+    if (dist[i] == 2) {
+      badDist[i] = 0
+    }
+  }
+  badDist = as.numeric(badDist)
+  
+  ####total up####
+  badDF = cbind.data.frame(badChar, badClick, badDist, badScaleCheck, badMC)
+  badDF$badTotal = apply(badDF, 1, sum, na.rm = T)
+  badDF$participant = partno
+  
+  return(badDF)
+  
+} #end function
+
+percentmiss <- function(x){ sum(is.na(x))/length(x) *100 }
 ```
 
-```{r load-data}
-sona <- import("../03_Data/sona_data.csv")
-mturk <- import("../03_Data/mturk_data.csv")
+```{r load-data, eval = T}
+sona <- import("../03_Data/sona_data_deidentify.csv") %>% 
+  mutate(where = "sona")
+mturk <- import("../03_Data/mturk_data_deidentify.csv") %>% 
+  mutate(where = "mturk")
+```
+
+## Data Screening
+
+```{r screen-sona-accuracy-out, eval = F}
+# Accuracy ----
+summary(sona %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20))
+# everything is within the expected range
+
+apply(sona %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+      2, mean, na.rm = TRUE)
+apply(sona %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+      2, sd, na.rm = TRUE)
+# check reverse items? Q2_21? 
+
+# Missing ----
+
+# rows
+missing <- apply(sona %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+          1, 
+          percentmiss) 
+table(missing)
+replacepeople <- subset(sona, missing <= 5)
+dontpeople <- subset(sona, missing > 5)
+
+# columns
+missingcol <- apply(replacepeople %>% 
+                      select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+                    2, 
+                    percentmiss)
+table(missingcol) # all replaceable
+
+replacecolumn <- replacepeople %>% 
+  select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20)
+dontcolumn <- replacepeople %>% 
+  select(-c(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20))
+
+# replacing those with <= 5% missing by multiple imputation
+tempnomiss <- mice(replacecolumn)
+nomiss <- complete(tempnomiss, 1)
+summary(nomiss)
+
+# putting data back together
+# excluding participants with > 5% missing (7 total)
+allcolumns <- cbind(dontcolumn, nomiss)
+summary(allcolumns)
+write.csv(allcolumns, "../03_Data/sona_data_replaced.csv", row.names = F)
+```
+
+```{r screen-sona-SAD}
+# SAD 
+nomissing <- import("../03_Data/sona_data_replaced.csv")
+
+# Block 1
+page1 <- SAD(dat = nomissing %>% 
+               select(Q2_1:Q2_21),
+    rt = nomissing$`Q10_Page Submit`,
+    min = 1, 
+    max = 5, 
+    partno = nomissing$ResponseId, 
+    click = nomissing$`Q10_Click Count`, 
+    manvec = nomissing$Q2_21, 
+    mancor = 1, 
+    char = 1626)
+write.csv(page1, "../03_Data/sona_page1_sad.csv", row.names = F)
+
+# Block 2
+page2 <- SAD(dat = nomissing %>% 
+               select(Q4_1:Q4_20), 
+            rt = nomissing$`Q11_Page Submit`,
+            min = 1, 
+            max = 5, 
+            partno = nomissing$ResponseId, 
+            click = nomissing$`Q11_Click Count`, 
+            manvec = nomissing$Q4_20, 
+            mancor = 4, 
+            char = 1491)
+write.csv(page2, "../03_Data/sona_page2_sad.csv", row.names = F)
+
+# Block 3
+page3 <- SAD(dat = nomissing %>% 
+               select(Q5_1:Q5_20), 
+            rt = nomissing$`Q12_Page Submit`,
+            min = 1, 
+            max = 5, 
+            partno = nomissing$ResponseId, 
+            click = nomissing$`Q12_Click Count`, 
+            manvec = nomissing$Q5_16, 
+            mancor = 3, 
+            char = 1496)
+write.csv(page3, "../03_Data/sona_page3_sad.csv", row.names = F)
+
+# Total
+nomissing$totalbad <- page1$badTotal + page2$badTotal + page3$badTotal
+
+nomissing$totalbadUP = 
+  page1$badChar + page1$badClick + page1$badMC + 
+  page2$badChar + page2$badClick + page2$badMC + 
+  page3$badChar + page3$badClick + page3$badMC
+table(nomissing$totalbadUP)
+nolowqual = subset(nomissing, totalbadUP < 4)
+##B&S say 2/5 which is 40%, so 40% of the 9 total is 3.6 or 4 or more
+
+# Outliers ----------------------------------------------------------------
+
+mahal = mahalanobis(nolowqual[ , 37:97], 
+                    colMeans(nolowqual[ , 37:97], na.rm = TRUE),
+                    cov(nolowqual[ , 37:97], use="pairwise.complete.obs"))
+
+cutoff = qchisq(1 - .001,ncol(nolowqual[ , 37:97]))
+ncol(nolowqual[ , 37:97]) #df 61
+cutoff #cutoff 100.8879
+
+summary(mahal < cutoff)
+mahal[mahal > cutoff]
+
+noout = subset(nolowqual, mahal < cutoff)
+#42 participants excluded as outliers
+
+# Assumptions -------------------------------------------------------------
+
+# Linearity #
+random = rchisq(nrow(noout[ , 37:97]), 7) 
+fake = lm(random~., data=noout[ , 37:97])
+
+standardized = rstudent(fake)
+{qqnorm(standardized)
+  abline(0,1)}
+#seems okay
+
+# Normality #
+hist(standardized, breaks=15)
+#a little skewed but mostly centered on 0 and between -2 and 2 so okay
+
+# Homog/s #
+fitvalues = scale(fake$fitted.values)
+{plot(fitvalues, standardized) 
+  abline(0,0)
+  abline(v = 0)}
+#some homogeneity issues but we'll accept it
+
+write.csv(noout, file = "sona_data_screened.csv", row.names = F)
+library(beepr)
+beep(sound = 5)
+
+# > nrow(master)
+# [1] 564
+# > nrow(nomissing)
+# [1] 557
+# > nrow(nolowqual)
+# [1] 507
+# > nrow(noout)
+# [1] 464
+
+
+
+
+
+sona_screen_1 <- SAD(
+  dat = sona %>% 
+    select(Q2_1:Q2_21, `Q10_Page Submit`, `Q10_Click Count`),
+  rt = "Q10_Page Submit",
+  min = 1,
+  max = 5, 
+  partno = "ResponseId",
+  clicks = "Q10_Click Count",
+  
+  
+  
+)
+
+
+## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
+## args: rt: vector of response time/page time for each participant
+## args: min: minimum value of scale
+## args: max: maximum value of scale
+## args: partno: vector of corresponding participant numbers
+## args: clicks: click count column, outputted by qualtrics
+## args: manvec: vector of manipulation check question responses
+## args: mancor: correct answer of manipulation check
+## args: char: number of characters on the page
 ```
 
 
