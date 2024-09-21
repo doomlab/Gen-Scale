@@ -1,7 +1,6 @@
 ---
 title             : "The title"
 shorttitle        : "Title"
-
 author: 
   - name          : "First Author"
     affiliation   : "1"
@@ -17,18 +16,14 @@ author:
     role:
       - "Writing - Review & Editing"
       - "Supervision"
-
 affiliation:
   - id            : "1"
     institution   : "Wilhelm-Wundt-University"
   - id            : "2"
     institution   : "Konstanz Business School"
-
 authornote: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
   Enter author note here.
-
 abstract: |
   One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
   Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
@@ -38,24 +33,23 @@ abstract: |
   One or two sentences to put the results into a more **general context**.
   Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
   
-  <!-- https://tinyurl.com/ybremelq -->
   
+  <!-- https://tinyurl.com/ybremelq -->
 keywords          : "keywords"
 wordcount         : "X"
-
-
 floatsintext      : no
 linenumbers       : yes
 draft             : no
 mask              : no
-
 figurelist        : no
 tablelist         : no
 footnotelist      : no
-
 classoption       : "man"
 output            : papaja::apa6_pdf
 bibliography: references.bib
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include = FALSE}
@@ -69,33 +63,198 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-Death is something each of us must learn to cope with, whether in healthy ways or less so. These issues may be at front of mind for many in light of the COVID-19 pandemic. Various existential philosophers and psychologists have proposed ways in which we deal with the awareness of death and the anxiety this awareness often causes. Psychoanalyst Erik Erikson (1950) proposed that during mid-life one becomes acutely aware of their oncoming death and is motivated to care for things which will outlast themselves. He called this act of caring generativity. In *The Denial of Death*, philosopher Ernest Becker (1973) posits that humans undertake immortality projects to curb their sense of vulnerability to death. Similarly, psychiatrist Robert Jay Lifton (1979), a mentee of Erikson, described the awareness of death as being ever present and motivating us to create symbols, thereby allowing us to imagine ourselves as symbolically immortalized. Existential psychiatrist Irvin Yalom (2008) notes that many of his clients experiencing anxiety about their death take comfort in “rippling,” the idea that one’s lasting effects on the world will ripple out and influence the world after they have died.
+Death is something each of us must learn to cope with, whether in
+healthy ways or less so. These issues may be at front of mind for many
+in light of the COVID-19 pandemic. Various existential philosophers and
+psychologists have proposed ways in which we deal with the awareness of
+death and the anxiety this awareness often causes. Psychoanalyst Erik
+Erikson (1950) proposed that during mid-life one becomes acutely aware
+of their oncoming death and is motivated to care for things which will
+outlast themselves. He called this act of caring generativity. In *The
+Denial of Death*, philosopher Ernest Becker (1973) posits that humans
+undertake immortality projects to curb their sense of vulnerability to
+death. Similarly, psychiatrist Robert Jay Lifton (1979), a mentee of
+Erikson, described the awareness of death as being ever present and
+motivating us to create symbols, thereby allowing us to imagine
+ourselves as symbolically immortalized. Existential psychiatrist Irvin
+Yalom (2008) notes that many of his clients experiencing anxiety about
+their death take comfort in “rippling,” the idea that one’s lasting
+effects on the world will ripple out and influence the world after they
+have died.
 
-Although these thinkers use different terminology, there are several common themes among their ideas. (1) Our physical death is an inevitability, and we often find our awareness of its inevitability to be aversive. This aversion may be referred to variously as angst, death-anxiety, despair, being-towards-death, terror, and so on. However, (2) we take comfort in the idea that other, non-physical parts of us continue to exist indefinitely after our biological death, through mechanisms such as the heroic archetype and symbolic self. (3) Finally, we can take action to promote these non-physical aspects of the self, such as through search for meaning, sense of immortality, care, generativity, and rippling.
+Although these thinkers use different terminology, there are several
+common themes among their ideas. (1) Our physical death is an
+inevitability, and we often find our awareness of its inevitability to
+be aversive. This aversion may be referred to variously as angst,
+death-anxiety, despair, being-towards-death, terror, and so on. However,
+(2) we take comfort in the idea that other, non-physical parts of us
+continue to exist indefinitely after our biological death, through
+mechanisms such as the heroic archetype and symbolic self. (3) Finally,
+we can take action to promote these non-physical aspects of the self,
+such as through search for meaning, sense of immortality, care,
+generativity, and rippling.
 
-One of these bodies of thought, called symbolic immortality, was originally theorized by Lifton (1979), who thought that awareness of death drives a fundamental human desire for a sense of continuity lasting beyond the lifespan. Essentially, humans are meaning-seeking creatures, and throughout our lives, this search for meaning involves an evolving psychological imagery of life and death. Death, or the transient nature of life, threatens our search for meaning. Lifton thought that if we could achieve what we believe to be some form of immortality, we could overcome this loss of meaning, and the awareness of death could instead drive an inner vitality (imagery associated with connection, integrity, and movement). If this drive toward vitality is lost, we are vulnerable to a psychic numbness or death-in-life (imagery associated with separation, disintegration, and stasis). In Lifton's own words, "Death does indeed bring about biological and psychic annihilation. But life includes symbolic perceptions of connections that precede and outlast that annihilation" (1979, p. 18).
+One of these bodies of thought, called symbolic immortality, was
+originally theorized by Lifton (1979), who thought that awareness of
+death drives a fundamental human desire for a sense of continuity
+lasting beyond the lifespan. Essentially, humans are meaning-seeking
+creatures, and throughout our lives, this search for meaning involves an
+evolving psychological imagery of life and death. Death, or the
+transient nature of life, threatens our search for meaning. Lifton
+thought that if we could achieve what we believe to be some form of
+immortality, we could overcome this loss of meaning, and the awareness
+of death could instead drive an inner vitality (imagery associated with
+connection, integrity, and movement). If this drive toward vitality is
+lost, we are vulnerable to a psychic numbness or death-in-life (imagery
+associated with separation, disintegration, and stasis). In Lifton's own
+words, "Death does indeed bring about biological and psychic
+annihilation. But life includes symbolic perceptions of connections that
+precede and outlast that annihilation" (1979, p. 18).
 
-Lifton (1979) proposed five modes of experience or ways of achieving symbolic immortality: The biological (or biosocial) mode in which one lives on through their genetic and sociocultural progeny, the creative mode in which one’s accomplishments and contribution outlast oneself, the natural mode in which one feels they are a part of the broader universe, the spiritual mode in which one seeks to transcend the physical realm to a higher spiritual realm beyond death, and the mode of experiential transcendence in which one experiences a phenomenological state of flow. The experiential mode must occur in the context of at least one of the other four to really be considered transcendent, but it is thought to have a great capacity to bring about personal change.
+Lifton (1979) proposed five modes of experience or ways of achieving
+symbolic immortality: The biological (or biosocial) mode in which one
+lives on through their genetic and sociocultural progeny, the creative
+mode in which one’s accomplishments and contribution outlast oneself,
+the natural mode in which one feels they are a part of the broader
+universe, the spiritual mode in which one seeks to transcend the
+physical realm to a higher spiritual realm beyond death, and the mode of
+experiential transcendence in which one experiences a phenomenological
+state of flow. The experiential mode must occur in the context of at
+least one of the other four to really be considered transcendent, but it
+is thought to have a great capacity to bring about personal change.
 
-Claims of how we suppress death-anxiety have been investigated experimentally, primarily through the paradigm of Terror Management Theory (TMT). Based on the theories of Ernest Becker, TMT posits that human awareness of death is always present to some degree. This awareness of our inevitable death, coupled with a strong aversion to thoughts of death, causes terror and is pushed out of our consciousness by our creation of meaning systems [@greenberg1986]. TMT proposes that self-esteem, interpersonal relationships, and cultural worldview work together to buffer against our anxiety about death. It is assumed that these buffers suppress thoughts of death by providing a sense of symbolic immortality, though little systematic research has been conducted on this construct. The results of this buffering process are not always positive. For example, experimentally priming mortality salience can lead to more positive attitudes toward in-group members but harsher negative attitudes toward out-group members [@greenberg1990].
+Claims of how we suppress death-anxiety have been investigated
+experimentally, primarily through the paradigm of Terror Management
+Theory (TMT). Based on the theories of Ernest Becker, TMT posits that
+human awareness of death is always present to some degree. This
+awareness of our inevitable death, coupled with a strong aversion to
+thoughts of death, causes terror and is pushed out of our consciousness
+by our creation of meaning systems [@greenberg1986]. TMT proposes that
+self-esteem, interpersonal relationships, and cultural worldview work
+together to buffer against our anxiety about death. It is assumed that
+these buffers suppress thoughts of death by providing a sense of
+symbolic immortality, though little systematic research has been
+conducted on this construct. The results of this buffering process are
+not always positive. For example, experimentally priming mortality
+salience can lead to more positive attitudes toward in-group members but
+harsher negative attitudes toward out-group members [@greenberg1990].
 
-TMT refers to a person's awareness of death as mortality salience (MS). The MS hypothesis of TMT posits than an increase in one's awareness of death causes an increase in compensatory behaviors to lower their death anxiety, either by distracting from the awareness of death or by the promotion of meaningful cultural worldviews. In the MS paradigm, experimentally priming a participant’s awareness of death (for example, by having participants write about death and then complete a distraction task) is thought to cause an increase in compensatory buffers. A meta-analysis of 277 experiments found mortality salience to have a robust, moderate overall effect size: *r*(276) = 0.35, *p* = .00 [@burke2010]. Altogether, these experiments provide convincing evidence for TMT and the MS hypothesis in particular.
+TMT refers to a person's awareness of death as mortality salience (MS).
+The MS hypothesis of TMT posits than an increase in one's awareness of
+death causes an increase in compensatory behaviors to lower their death
+anxiety, either by distracting from the awareness of death or by the
+promotion of meaningful cultural worldviews. In the MS paradigm,
+experimentally priming a participant’s awareness of death (for example,
+by having participants write about death and then complete a distraction
+task) is thought to cause an increase in compensatory buffers. A
+meta-analysis of 277 experiments found mortality salience to have a
+robust, moderate overall effect size: *r*(276) = 0.35, *p* = .00
+[@burke2010]. Altogether, these experiments provide convincing evidence
+for TMT and the MS hypothesis in particular.
 
-Though some avoidance of (or buffering against) death anxiety is thought to be universal and has the potential to increase interpersonal conflict, awareness of death through symbolic immortality may also have potential as a positive force. In particular, it is thought to be an underlying motive for what Erikson referred to as generativity. Generativity is the seventh of eight proposed stages in Erikson's (1950) theory of psychosocial development, which he associated with midlife and described as "the concern in establishing and guiding the next generation" (Erikson, 1963, p. 267). Little systematic research was conducted on this subject until the 1980's. Kotre (1984) expanded on the theory and proposed that the drive for generativity was related to a motive to expand the sense of self beyond the lifetime, especially in light of the fear of death.
+Though some avoidance of (or buffering against) death anxiety is thought
+to be universal and has the potential to increase interpersonal
+conflict, awareness of death through symbolic immortality may also have
+potential as a positive force. In particular, it is thought to be an
+underlying motive for what Erikson referred to as generativity.
+Generativity is the seventh of eight proposed stages in Erikson's (1950)
+theory of psychosocial development, which he associated with midlife and
+described as "the concern in establishing and guiding the next
+generation" (Erikson, 1963, p. 267). Little systematic research was
+conducted on this subject until the 1980's. Kotre (1984) expanded on the
+theory and proposed that the drive for generativity was related to a
+motive to expand the sense of self beyond the lifetime, especially in
+light of the fear of death.
 
-McAdams and de St. Aubin (1992) sought to formalize the study of generativity as a multidimensional construct. Their seven components of generativity include cultural demand, inner desire (for symbolic immortality and community), concern (for the next generation), belief (in the human species), commitment, action, and narration (of generativity within one's life story). In addition to a quantitative measure of generative concern (the Loyola Generativity Scale), they developed a system for content analysis of autobiographical episodes pertaining to generativity, and symbolic immortality is one of the five themes they found. Here they define symbolic immortality as "any reference to leaving a legacy, having an enduring influence, or leaving behind products that will outlive one's physical existence," a theme clearly related to both Lifton's and Erikson's theories (McAdams & de St. Aubin, 1992, p. 1011).
+McAdams and de St. Aubin [-@mcadams1992] sought to formalize the study
+of generativity as a multidimensional construct. Their seven components
+of generativity include cultural demand, inner desire (for symbolic
+immortality and community), concern (for the next generation), belief
+(in the human species), commitment, action, and narration (of
+generativity within one's life story). In addition to a quantitative
+measure of generative concern (the Loyola Generativity Scale), they
+developed a system for content analysis of autobiographical episodes
+pertaining to generativity, and symbolic immortality is one of the five
+themes they found. Here they define symbolic immortality as "any
+reference to leaving a legacy, having an enduring influence, or leaving
+behind products that will outlive one's physical existence," a theme
+clearly related to both Lifton's and Erikson's theories [@mcadams1992,
+p. 1011].
 
-These research areas depend on the construct of symbolic immortality for their theoretical frameworks, but few researchers have attempted to systematically and quantitatively assess this construct. Two attempts have been made to develop such a measurement: Drolet's (1990) Sense of Symbolic Immortality Scale and Mathews and Kling (1988) measure of symbolic immortality, based on an original questionnaire by Mathews and Mister (1987).
+These research areas depend on the construct of symbolic immortality for
+their theoretical frameworks, but few researchers have attempted to
+systematically and quantitatively assess this construct. Two attempts
+have been made to develop such a measurement: Drolet's (1990) Sense of
+Symbolic Immortality Scale and Mathews and Kling (1988) measure of
+symbolic immortality, based on an original questionnaire by Mathews and
+Mister (1987).
 
-Drolet (1990) developed the Sense of Symbolic Immortality Scale based on Robert J. Lifton’s theory of symbolic immortality and its five modes of experience. Drolet studied 136 adults, ages 18-30 and 30-40, and hypothesized that those in their 30's (established adults) would have a greater sense of symbolic immortality than the young adults (18-30). The measure is inherently subjective, not only by the nature of self-report, but in that the scale seeks to measure what a person *believes* and how they *feel* about these subjects. The scale as a whole had a high internal consistency (*\$\\alpha\$* = .91) and test-retest reliability was *r* = .97. Internal consistency of subscales for the five theoretical modes of immortality was mixed. Of the five, spiritual immortality was the most distinct from the scale as a whole and the other subscales. Factor analysis showed three factors, mapping onto biosocial, creative, and spiritual. The transcendent and natural items may be closely related to biosocial.
+Drolet (1990) developed the Sense of Symbolic Immortality Scale based on
+Robert J. Lifton’s theory of symbolic immortality and its five modes of
+experience. Drolet studied 136 adults, ages 18-30 and 30-40, and
+hypothesized that those in their 30's (established adults) would have a
+greater sense of symbolic immortality than the young adults (18-30). The
+measure is inherently subjective, not only by the nature of self-report,
+but in that the scale seeks to measure what a person *believes* and how
+they *feel* about these subjects. The scale as a whole had a high
+internal consistency ($\alpha$ = .91) and test-retest reliability
+was *r* = .97. Internal consistency of subscales for the five
+theoretical modes of immortality was mixed. Of the five, spiritual
+immortality was the most distinct from the scale as a whole and the
+other subscales. Factor analysis showed three factors, mapping onto
+biosocial, creative, and spiritual. The transcendent and natural items
+may be closely related to biosocial.
 
-Moving beyond the scale development itself (still Drolet 1990), SSI correlated negatively with death anxiety (Templer's Death Anxiety Scale) and had a strong (*r* = .84) positive relationship with purpose in life (Maholick's Purpose in Life Test). In interpreting the very strong correlation, the author suggests that SSI is a broader construct than Purpose in Life and the scale itself may be less prone to social desirability effects than the PIL, although this had not been directly tested. Age group was also related, with established adults having a higher SSI, particularly in the biosocial and creative domains.
+Moving beyond the scale development itself (still Drolet 1990), SSI
+correlated negatively with death anxiety (Templer's Death Anxiety Scale)
+and had a strong (*r* = .84) positive relationship with purpose in life
+(Maholick's Purpose in Life Test). In interpreting the very strong
+correlation, the author suggests that SSI is a broader construct than
+Purpose in Life and the scale itself may be less prone to social
+desirability effects than the PIL, although this had not been directly
+tested. Age group was also related, with established adults having a
+higher SSI, particularly in the biosocial and creative domains.
 
-We see multiple issues with using the Symbolic Immortality Scale. First, the study was underpowered, conducting exploratory factor analysis of 67 items using a sample of 136. Second, the scale was developed in French, and we do not take for granted the psychometric properties of a translated version. Third and most fundamentally, the scale has poor face validity and appears to measure the constructs theorized to symbolically immortalize rather than a sense of symbolic immortality directly. For example, the scale includes items such as “My sex life contributes greatly to my well-being”, “Intimate relationships scare me”, and “I am sure of who I am." Although related to the constructs (such as interpersonal relationships and self-esteem) which theoretically help cope with death, it is unclear how these items represent the construct of symbolic immortality itself.
+We see multiple issues with using the Symbolic Immortality Scale. First,
+the study was underpowered, conducting exploratory factor analysis of 67
+items using a sample of 136. Second, the scale was developed in French,
+and we do not take for granted the psychometric properties of a
+translated version. Third and most fundamentally, the scale has poor
+face validity and appears to measure the constructs theorized to
+symbolically immortalize rather than a sense of symbolic immortality
+directly. For example, the scale includes items such as “My sex life
+contributes greatly to my well-being”, “Intimate relationships scare
+me”, and “I am sure of who I am." Although related to the constructs
+(such as interpersonal relationships and self-esteem) which
+theoretically help cope with death, it is unclear how these items
+represent the construct of symbolic immortality itself.
 
-Mathews and Mister (1987) also developed a scale pertaining to symbolic immortality, sensation seeking, and psychic numbness in a study including 400 adults. Experiential transcendence was operationalized as something like Zuckerman's (1979) sensation seeking, which may not fully capture the original intent (the experience of losing oneself). Items were mapped onto five factors, and the five factors largely aligned with Lifton's constructs. Although internal consistency was at least acceptable for each factor, goodness of fit statistics are not reported. Some studies have used a revised version of the scale by Mathews and Kling (1988), who adapted it for a study on prosocial behavior in the context of nonprofit volunteer motivation. They reported similar results for their revised scale. The items on these scales seem to have more face validity than the scale by Drolet, but some factors seem more behavioral and unnecessarily specific: pertaining to one's religiosity or biological children, whereas Lifton's theory allows for a broader interpretation of these dimensions. The Nature and Creative factors seem most useful and theoretically aligned with Lifton.
+Mathews and Mister (1987) also developed a scale pertaining to symbolic
+immortality, sensation seeking, and psychic numbness in a study
+including 400 adults. Experiential transcendence was operationalized as
+something like Zuckerman's (1979) sensation seeking, which may not fully
+capture the original intent (the experience of losing oneself). Items
+were mapped onto five factors, and the five factors largely aligned with
+Lifton's constructs. Although internal consistency was at least
+acceptable for each factor, goodness of fit statistics are not reported.
+Some studies have used a revised version of the scale by Mathews and
+Kling (1988), who adapted it for a study on prosocial behavior in the
+context of nonprofit volunteer motivation. They reported similar results
+for their revised scale. The items on these scales seem to have more
+face validity than the scale by Drolet, but some factors seem more
+behavioral and unnecessarily specific: pertaining to one's religiosity
+or biological children, whereas Lifton's theory allows for a broader
+interpretation of these dimensions. The Nature and Creative factors seem
+most useful and theoretically aligned with Lifton.
 
-Much more advanced factor analysis methods have been developed since the 1980s, but to our knowledge, these scales have not been tested with more robust tools. The goal of the present research is to develop an up-to-date symbolic immortality scale that more directly measures one’s sense of symbolic immortality and which contains items more generally applicable to broad groups of participants (e.g., regardless of a person's religious beliefs and parental status). We have attempted to use current best practices for scale development and analysis.
+Much more advanced factor analysis methods have been developed since the
+1980s, but to our knowledge, these scales have not been tested with more
+robust tools. The goal of the present research is to develop an
+up-to-date symbolic immortality scale that more directly measures one’s
+sense of symbolic immortality and which contains items more generally
+applicable to broad groups of participants (e.g., regardless of a
+person's religious beliefs and parental status). We have attempted to
+use current best practices for scale development and analysis.
 
 # Method
 
@@ -416,56 +575,51 @@ nolowqual <- subset(nomissing, totalbadUP < 4)
 write.csv(nolowqual, "../03_Data/sona_data_goodqual.csv", row.names = F)
 ```
 
-```{r}
+```{r sona-outliers, eval = F}
+nolowqual <- import("../03_Data/sona_data_goodqual.csv")
 
+mahal <- mahalanobis(nolowqual %>% select(Q2_1:Q5_20),
+                     colMeans(nolowqual %>% select(Q2_1:Q5_20), na.rm = TRUE),
+                     cov(nolowqual %>% select(Q2_1:Q5_20), use="pairwise.complete.obs"))
 
-# Outliers ----------------------------------------------------------------
-
-mahal = mahalanobis(nolowqual[ , 37:97], 
-                    colMeans(nolowqual[ , 37:97], na.rm = TRUE),
-                    cov(nolowqual[ , 37:97], use="pairwise.complete.obs"))
-
-cutoff = qchisq(1 - .001,ncol(nolowqual[ , 37:97]))
-ncol(nolowqual[ , 37:97]) #df 61
+cutoff <- qchisq(1 - .001,
+                 ncol(nolowqual %>% select(Q2_1:Q5_20)))
+ncol(nolowqual %>% select(Q2_1:Q5_20)) #df 61
 cutoff #cutoff 100.8879
 
 summary(mahal < cutoff)
-mahal[mahal > cutoff]
 
 noout = subset(nolowqual, mahal < cutoff)
 #42 participants excluded as outliers
+```
+
+-   try running with outliers as well --\> if differences: then talk
+    about what is going on with the outlier people
 
 # Assumptions -------------------------------------------------------------
 
-# Linearity #
-random = rchisq(nrow(noout[ , 37:97]), 7) 
-fake = lm(random~., data=noout[ , 37:97])
+# Linearity
 
-standardized = rstudent(fake)
-{qqnorm(standardized)
-  abline(0,1)}
-#seems okay
+random = rchisq(nrow(noout[ , 37:97]), 7) fake = lm(random\~.,
+data=noout[ , 37:97])
 
-# Normality #
-hist(standardized, breaks=15)
-#a little skewed but mostly centered on 0 and between -2 and 2 so okay
+standardized = rstudent(fake) {qqnorm(standardized) abline(0,1)} #seems
+okay
 
-# Homog/s #
-fitvalues = scale(fake$fitted.values)
-{plot(fitvalues, standardized) 
-  abline(0,0)
-  abline(v = 0)}
-#some homogeneity issues but we'll accept it
+# Normality
+
+hist(standardized, breaks=15) #a little skewed but mostly centered on 0
+and between -2 and 2 so okay
+
+# Homog/s
+
+fitvalues = scale(fake\$fitted.values) {plot(fitvalues, standardized)
+abline(0,0) abline(v = 0)} #some homogeneity issues but we'll accept it
 
 write.csv(noout, file = "sona_data_screened.csv", row.names = F)
-library(beepr)
-beep(sound = 5)
+library(beepr) beep(sound = 5)
 
-
-
-
-
-```
+\`\`\`
 
 # Discussion
 
