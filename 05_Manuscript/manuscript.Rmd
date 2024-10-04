@@ -63,6 +63,32 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
+```{r trackdown, eval = F}
+library(trackdown)
+# upload_file(
+#   file = "manuscript.Rmd",
+#   gfile = "gen_scale_manuscript_trackdown",
+#   gpath = "gen_scale/",
+#   hide_code = TRUE
+# )
+
+# pull to me 
+download_file(
+  file = "manuscript.Rmd",
+  gfile = "gen_scale_manuscript_trackdown",
+  gpath = "gen_scale/",
+  hide_code = TRUE
+)
+
+# push to google
+update_file(
+  file = "manuscript.Rmd",
+  gfile = "gen_scale_manuscript_trackdown",
+  gpath = "gen_scale/",
+  hide_code = TRUE
+)
+```
+
 Death is something each of us must learn to cope with, whether in
 healthy ways or less so. These issues may be at front of mind for many
 in light of the COVID-19 pandemic. Various existential philosophers and
@@ -867,6 +893,8 @@ nrow(cfaDF_noout)
 
 ### Number of Factors
 
+also do five 
+
 ```{r}
 number_items <- fa.parallel(efaDF, #data frame
                             fm="ml", #math
@@ -885,6 +913,7 @@ EFA_fit <- fa(efaDF, #data
 
 EFA_fit
 
+# remember you gotta fix this because of the order of operations 
 efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
   mutate(keep = ifelse(
     ML1 >= .30, "yes", ifelse(
@@ -971,7 +1000,57 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
   )
 ```
 
+```{r}
+EFA_fit <- fa(efaDF, #data
+              nfactors = 5, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
 
+EFA_fit
+
+efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() 
+
+EFA_fit_2 <- fa(efaDF %>% 
+                  select(efa_loadings %>% 
+                           filter(keep == 1) %>% 
+                           pull(question)), #data
+              nfactors = 5, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+EFA_fit_2
+
+efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() 
+
+EFA_fit_3 <- fa(efaDF %>% 
+                  select(efa_loadings_2 %>% 
+                           filter(keep == 1) %>% 
+                           pull(question)), #data
+              nfactors = 5, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+EFA_fit_3
+
+efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() 
+
+```
+
+- take the final version of each "best model" 
+- get down to 5 items each or whatever is left (best loading and theoretical)
+- look at the fit indices to tell which may be best 
 
 
 # Discussion
