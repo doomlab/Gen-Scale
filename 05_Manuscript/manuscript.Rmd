@@ -197,13 +197,13 @@ greater sense of symbolic immortality than the young adults (18-30). The
 measure is inherently subjective, not only by the nature of self-report,
 but in that the scale seeks to measure what a person *believes* and how
 they *feel* about these subjects. The scale as a whole had a high
-internal consistency ($\alpha$ = .91) and test-retest reliability
-was *r* = .97. Internal consistency of subscales for the five
-theoretical modes of immortality was mixed. Of the five, spiritual
-immortality was the most distinct from the scale as a whole and the
-other subscales. Factor analysis showed three factors, mapping onto
-biosocial, creative, and spiritual. The transcendent and natural items
-may be closely related to biosocial.
+internal consistency ($\alpha$ = .91) and test-retest reliability was
+*r* = .97. Internal consistency of subscales for the five theoretical
+modes of immortality was mixed. Of the five, spiritual immortality was
+the most distinct from the scale as a whole and the other subscales.
+Factor analysis showed three factors, mapping onto biosocial, creative,
+and spiritual. The transcendent and natural items may be closely related
+to biosocial.
 
 Moving beyond the scale development itself (still Drolet 1990), SSI
 correlated negatively with death anxiety (Templer's Death Anxiety Scale)
@@ -273,6 +273,7 @@ library(rio)
 library(dplyr)
 set.seed(8943)
 library(mice)
+library(psych)
 
 ## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
 ## args: rt: vector of response time/page time for each participant
@@ -459,8 +460,23 @@ percentmiss <- function(x){ sum(is.na(x))/length(x) *100 }
 ```{r load-data, eval = T}
 sona <- import("../03_Data/sona_data_deidentify.csv") %>% 
   mutate(where = "sona")
+sona_replaced <- import("../03_Data/sona_data_replaced.csv")
+sona_page1 <- import("../03_Data/sona_page1_sad.csv")
+sona_page2 <- import("../03_Data/sona_page2_sad.csv")
+sona_page3 <- import("../03_Data/sona_page3_sad.csv")
+sona_good <- import("../03_Data/sona_data_goodqual.csv")
+sona_noout <- import("../03_Data/sona_data_noout.csv")
+
 mturk <- import("../03_Data/mturk_data_deidentify.csv") %>% 
   mutate(where = "mturk")
+mturk_replaced <- import("../03_Data/mturk_data_replaced.csv")
+mturk_page1 <- import("../03_Data/mturk_page1_sad.csv")
+mturk_page2 <- import("../03_Data/mturk_page2_sad.csv")
+mturk_page3 <- import("../03_Data/mturk_page3_sad.csv")
+mturk_good <- import("../03_Data/mturk_data_goodqual.csv")
+mturk_noout <- import("../03_Data/mturk_data_noout.csv")
+
+
 ```
 
 ## Data Screening
@@ -469,15 +485,13 @@ mturk <- import("../03_Data/mturk_data_deidentify.csv") %>%
 # Accuracy ----
 summary(sona %>% 
           select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20))
-# everything is within the expected range
-
 apply(sona %>% 
           select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
       2, mean, na.rm = TRUE)
 apply(sona %>% 
           select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
       2, sd, na.rm = TRUE)
-# 
+# everything is within the expected range
 
 # Missing ----
 
@@ -589,37 +603,376 @@ cutoff #cutoff 100.8879
 
 summary(mahal < cutoff)
 
-noout = subset(nolowqual, mahal < cutoff)
-#42 participants excluded as outliers
+noout <- subset(nolowqual, mahal < cutoff)
+write.csv(noout, "../03_Data/sona_data_noout.csv", row.names = F)
 ```
 
--   try running with outliers as well --\> if differences: then talk
-    about what is going on with the outlier people
+```{r sona-assumptions, eval = F} 
+random <- rchisq(nrow(sona_good), 7) 
+fake <- lm(random ~ ., data = sona_good %>% 
+             select(Q2_1:Q5_20)  %>% 
+             select(-Q2_21, -Q4_20, -Q5_16))
+standardized <- rstudent(fake)
+fitvalues <- scale(fake$fitted.values)
 
-# Assumptions -------------------------------------------------------------
+# Linearity ----
+{
+  qqnorm(standardized)
+  abline(0,1)
+}
 
-# Linearity
+# Normality -----
+hist(standardized, breaks=15)
 
-random = rchisq(nrow(noout[ , 37:97]), 7) fake = lm(random\~.,
-data=noout[ , 37:97])
+# Homoscedasticity -----
+{
+  plot(fitvalues, standardized)
+  abline(0,0) 
+  abline(v = 0)
+} 
 
-standardized = rstudent(fake) {qqnorm(standardized) abline(0,1)} #seems
-okay
+random <- rchisq(nrow(sona_noout), 7) 
+fake <- lm(random ~ ., data = sona_noout %>% 
+             select(Q2_1:Q5_20)  %>% 
+             select(-Q2_21, -Q4_20, -Q5_16))
+standardized <- rstudent(fake)
+fitvalues <- scale(fake$fitted.values)
 
-# Normality
+# Linearity -----
+{
+  qqnorm(standardized)
+  abline(0,1)
+}
 
-hist(standardized, breaks=15) #a little skewed but mostly centered on 0
-and between -2 and 2 so okay
+# Normality -----
+hist(standardized, breaks=15)
 
-# Homog/s
+# Homoscedasticity -----
+{
+  plot(fitvalues, standardized)
+  abline(0,0) 
+  abline(v = 0)
+} 
+```
 
-fitvalues = scale(fake\$fitted.values) {plot(fitvalues, standardized)
-abline(0,0) abline(v = 0)} #some homogeneity issues but we'll accept it
+```{r screen-mturk-accuracy-out, eval = F}
+# Accuracy ----
+summary(mturk %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20))
+apply(mturk %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+      2, mean, na.rm = TRUE)
+apply(mturk %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+      2, sd, na.rm = TRUE)
+# everything is within the expected range
 
-write.csv(noout, file = "sona_data_screened.csv", row.names = F)
-library(beepr) beep(sound = 5)
+# Missing ----
 
-\`\`\`
+# rows
+missing <- apply(mturk %>% 
+          select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+          1, 
+          percentmiss) 
+table(missing)
+replacepeople <- subset(mturk, missing <= 5)
+dontpeople <- subset(mturk, missing > 5)
+
+# columns
+missingcol <- apply(replacepeople %>% 
+                      select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20), 
+                    2, 
+                    percentmiss)
+table(missingcol) # all replaceable
+
+replacecolumn <- replacepeople %>% 
+  select(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20)
+dontcolumn <- replacepeople %>% 
+  select(-c(Q2_1:Q2_21, Q4_1:Q4_20, Q5_1:Q5_20))
+
+# replacing those with <= 5% missing by multiple imputation
+tempnomiss <- mice(replacecolumn)
+nomiss <- complete(tempnomiss, 1)
+summary(nomiss)
+
+# putting data back together
+# excluding participants with > 5% missing (7 total)
+allcolumns <- cbind(dontcolumn, nomiss)
+summary(allcolumns)
+write.csv(allcolumns, "../03_Data/mturk_data_replaced.csv", row.names = F)
+```
+
+```{r screen-mturk-SAD, eval = F}
+# SAD 
+nomissing <- import("../03_Data/mturk_data_replaced.csv")
+
+# Block 1
+page1 <- SAD(dat = nomissing %>% 
+               select(Q2_1:Q2_21),
+    rt = nomissing$`Q10_Page Submit`,
+    min = 1, 
+    max = 5, 
+    partno = nomissing$ResponseId, 
+    click = nomissing$`Q10_Click Count`, 
+    manvec = nomissing$Q2_21, 
+    mancor = 1, 
+    char = 1626)
+write.csv(page1, "../03_Data/mturk_page1_sad.csv", row.names = F)
+
+# Block 2
+page2 <- SAD(dat = nomissing %>% 
+               select(Q4_1:Q4_20), 
+            rt = nomissing$`Q11_Page Submit`,
+            min = 1, 
+            max = 5, 
+            partno = nomissing$ResponseId, 
+            click = nomissing$`Q11_Click Count`, 
+            manvec = nomissing$Q4_20, 
+            mancor = 4, 
+            char = 1491)
+write.csv(page2, "../03_Data/mturk_page2_sad.csv", row.names = F)
+
+# Block 3
+page3 <- SAD(dat = nomissing %>% 
+               select(Q5_1:Q5_20), 
+            rt = nomissing$`Q12_Page Submit`,
+            min = 1, 
+            max = 5, 
+            partno = nomissing$ResponseId, 
+            click = nomissing$`Q12_Click Count`, 
+            manvec = nomissing$Q5_16, 
+            mancor = 3, 
+            char = 1496)
+write.csv(page3, "../03_Data/mturk_page3_sad.csv", row.names = F)
+
+# Total
+nomissing$totalbad <- page1$badTotal + page2$badTotal + page3$badTotal
+table(nomissing$totalbad) 
+sum(nomissing$totalbad < 15*.4) 
+nrow(nomissing)
+
+nomissing$totalbadUP <- 
+  page1$badChar + page1$badClick + page1$badMC + 
+  page2$badChar + page2$badClick + page2$badMC + 
+  page3$badChar + page3$badClick + page3$badMC
+table(nomissing$totalbadUP)
+sum(nomissing$totalbadUP < 9*.4) 
+# B&S say 2/5 which is 40%, so 40% of the 9 total is 3.6 or 4 or more
+
+nolowqual <- subset(nomissing, totalbadUP < 4)
+write.csv(nolowqual, "../03_Data/mturk_data_goodqual.csv", row.names = F)
+```
+
+```{r mturk-outliers, eval = F}
+nolowqual <- import("../03_Data/mturk_data_goodqual.csv")
+
+mahal <- mahalanobis(nolowqual %>% select(Q2_1:Q5_20),
+                     colMeans(nolowqual %>% select(Q2_1:Q5_20), na.rm = TRUE),
+                     cov(nolowqual %>% select(Q2_1:Q5_20), use="pairwise.complete.obs"))
+
+cutoff <- qchisq(1 - .001,
+                 ncol(nolowqual %>% select(Q2_1:Q5_20)))
+ncol(nolowqual %>% select(Q2_1:Q5_20)) #df 61
+cutoff #cutoff 100.8879
+
+summary(mahal < cutoff)
+
+noout <- subset(nolowqual, mahal < cutoff)
+write.csv(noout, "../03_Data/mturk_data_noout.csv", row.names = F)
+```
+
+```{r mturk-assumptions, eval = F} 
+random <- rchisq(nrow(mturk_good), 7) 
+fake <- lm(random ~ ., data = mturk_good %>% 
+             select(Q2_1:Q5_20)  %>% 
+             select(-Q2_21, -Q4_20, -Q5_16))
+standardized <- rstudent(fake)
+fitvalues <- scale(fake$fitted.values)
+
+# Linearity ----
+{
+  qqnorm(standardized)
+  abline(0,1)
+}
+
+# Normality -----
+hist(standardized, breaks=15)
+
+# Homoscedasticity -----
+{
+  plot(fitvalues, standardized)
+  abline(0,0) 
+  abline(v = 0)
+} 
+
+random <- rchisq(nrow(mturk_noout), 7) 
+fake <- lm(random ~ ., data = mturk_noout %>% 
+             select(Q2_1:Q5_20)  %>% 
+             select(-Q2_21, -Q4_20, -Q5_16))
+standardized <- rstudent(fake)
+fitvalues <- scale(fake$fitted.values)
+
+# Linearity -----
+{
+  qqnorm(standardized)
+  abline(0,1)
+}
+
+# Normality -----
+hist(standardized, breaks=15)
+
+# Homoscedasticity -----
+{
+  plot(fitvalues, standardized)
+  abline(0,0) 
+  abline(v = 0)
+} 
+```
+
+```{r data-combine-split}
+combo <- bind_rows(sona_good, mturk_good)
+combo_noout <- bind_rows(sona_noout, mturk_noout)
+
+random_split <- c(
+  sample(sona_good$ResponseId, nrow(sona_good)/2),
+  sample(mturk_good$ResponseId, round(nrow(mturk_good)/2))
+)
+
+efaDF <- combo %>% 
+  filter(ResponseId %in% random_split) %>% 
+  select(Q2_1:Q5_20)  %>% 
+  select(-Q2_21, -Q4_20, -Q5_16)
+cfaDF <- combo %>% 
+  filter(!(ResponseId %in% random_split)) %>% 
+  select(Q2_1:Q5_20)  %>% 
+  select(-Q2_21, -Q4_20, -Q5_16)
+
+nrow(efaDF)
+nrow(cfaDF)
+
+efaDF_noout <- combo_noout %>% 
+  filter(ResponseId %in% random_split) %>% 
+  select(Q2_1:Q5_20)  %>% 
+  select(-Q2_21, -Q4_20, -Q5_16)
+cfaDF_noout <- combo_noout %>% 
+  filter(!(ResponseId %in% random_split)) %>% 
+  select(Q2_1:Q5_20)  %>% 
+  select(-Q2_21, -Q4_20, -Q5_16)
+
+nrow(efaDF_noout)
+nrow(cfaDF_noout)
+```
+
+## EFA
+
+### Number of Factors
+
+```{r}
+number_items <- fa.parallel(efaDF, #data frame
+                            fm="ml", #math
+                            fa="fa") #only efa
+sum(number_items$fa.values > 1)
+sum(number_items$fa.values > .7)
+```
+
+### Simple Structure
+
+```{r}
+EFA_fit <- fa(efaDF, #data
+              nfactors = 2, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+EFA_fit
+
+efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
+  mutate(keep = ifelse(
+    ML1 >= .30, "yes", ifelse(
+      ML2 >= .30, "yes", ifelse(
+        ML1 >= .30 & ML2 >= .30, "no", "no"
+      )
+    )
+  )) %>% 
+  mutate(question = rownames(.))
+
+EFA_fit_2 <- fa(efaDF %>% 
+                  select(efa_loadings %>% 
+                           filter(keep == "yes") %>% 
+                           pull(question)), #data
+              nfactors = 2, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+EFA_fit_2
+
+efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>% 
+  mutate(keep = ifelse(
+    ML1 >= .30, "yes", ifelse(
+      ML2 >= .30, "yes", ifelse(
+        ML1 >= .30 & ML2 >= .30, "no", "no"
+      )
+    )
+  )) %>% 
+  mutate(question = rownames(.))
+```
+
+```{r}
+EFA_fit <- fa(efaDF, #data
+              nfactors = 3, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+EFA_fit
+
+efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
+  mutate(keep = ifelse(
+    ML1 >= .30, "yes", ifelse(
+      ML2 >= .30, "yes", ifelse(
+        ML3 >= .30, "yes", "no"
+        )
+      )
+    )
+  ) %>% 
+  mutate(question = rownames(.)) %>% 
+  mutate(
+    keep = ifelse(
+          (ML1 >= .30 & ML2 >= .30) | 
+            (ML1 >= .30 & ML3 >= .30) |
+            (ML3 >= .30 & ML2 >= .30), "no", keep
+          )
+  )
+
+EFA_fit_2 <- fa(efaDF %>% 
+                  select(efa_loadings %>% 
+                           filter(keep == "yes") %>% 
+                           pull(question)), #data
+              nfactors = 3, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+EFA_fit_2
+
+efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>% 
+  mutate(keep = ifelse(
+    ML1 >= .30, "yes", ifelse(
+      ML2 >= .30, "yes", ifelse(
+        ML3 >= .30, "yes", "no"
+        )
+      )
+    )
+  ) %>% 
+  mutate(question = rownames(.)) %>% 
+  mutate(
+    keep = ifelse(
+          (ML1 >= .30 & ML2 >= .30) | 
+            (ML1 >= .30 & ML3 >= .30) |
+            (ML3 >= .30 & ML2 >= .30), "no", keep
+          )
+  )
+```
+
+
+
 
 # Discussion
 
