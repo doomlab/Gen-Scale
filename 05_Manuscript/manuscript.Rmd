@@ -889,6 +889,9 @@ cfaDF_noout <- combo_noout %>%
 
 nrow(efaDF_noout)
 nrow(cfaDF_noout)
+
+write.csv(efaDF, "../03_Data/efaDF.csv", row.names = F)
+write.csv(cfaDF, "../03_Data/cfaDF.csv", row.names = F)
 ```
 
 ## EFA
@@ -896,6 +899,8 @@ nrow(cfaDF_noout)
 ### Number of Factors
 
 ```{r}
+#efaDF <- read.csv("../03_Data/efaDF.csv")
+
 number_items <- fa.parallel(efaDF, #data frame
                             fm="ml", #math
                             fa="fa") #only efa
@@ -906,6 +911,8 @@ sum(number_items$fa.values > .7)
 ### Simple Structure
 
 ```{r}
+item_text <- read.csv("../03_Data/item_text.csv")
+
 EFA_fit <- fa(efaDF, #data
               nfactors = 2, #number of factors
               rotate = "oblimin", #rotation
@@ -942,14 +949,25 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
       )
     )
   )) %>% 
+<<<<<<< HEAD
   mutate(question = rownames(.)) %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
   arrange(desc(ML1)) %>% 
   export(., "results/2_factor.xlsx", row.names = F)
+=======
+  mutate(question = rownames(.))
+
+## Make a dataframe with loadings and item text
+model1_loadings <- efa_loadings_2
+model1_loadings$ItemNum <- row.names(model1_loadings)
+model1_withtext <- merge(item_text, model1_loadings, by = 'ItemNum')
+
+>>>>>>> 17b96dd531fbba2d22fb53dde8aa7ddf439bf072
 ```
 
 ```{r}
+
 EFA_fit <- fa(efaDF, #data
               nfactors = 3, #number of factors
               rotate = "oblimin", #rotation
@@ -1001,11 +1019,19 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
             (ML1 >= .30 & ML3 >= .30) |
             (ML3 >= .30 & ML2 >= .30), "no", keep
           )
+<<<<<<< HEAD
   ) %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
   arrange(desc(ML1)) %>% 
   export(., "results/3_factor.xlsx", row.names = F)
+=======
+  )
+
+model2_loadings <- efa_loadings_2
+model2_loadings$ItemNum <- row.names(model2_loadings)
+model2_withtext <- merge(item_text, model2_loadings, by = 'ItemNum')
+>>>>>>> 17b96dd531fbba2d22fb53dde8aa7ddf439bf072
 ```
 
 ```{r}
@@ -1058,12 +1084,90 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
   arrange(desc(ML1)) %>% 
   export(., "results/5_factor.xlsx", row.names = F)
 
+model3_loadings <- efa_loadings_3
+model3_loadings$ItemNum <- model3_loadings$question
+model3_withtext <- merge(item_text, model3_loadings, by = 'ItemNum')
+
 ```
 
 -   take the final version of each "best model"
 -   get down to 5 items each or whatever is left (best loading and
     theoretical)
 -   look at the fit indices to tell which may be best
+
+**Model 1: Two-Factor**
+
+These are all the items with loading \> 0.7
+
+-   Factor One: Sense of Contribution
+
+    -   Q2_16: I have taken part in activities or events which will
+        impact the future.
+
+    -   Q2_2: I have contributed to the world in a unique way.
+
+    -   Q2_3: I have contributed to causes that will impact the future.
+
+    -   Q5_9: I have contributed to things which will be meaningful.
+
+    -   Q5_13: I will leave a lasting legacy.
+
+    -   Q2_5: I am proud of my accomplishments.
+
+    -   Q2_6: I am confident in the legacy I will leave when I die.
+
+    -   Q4_1: Others would say I have impacted their lives.
+
+<!-- -->
+
+-   Factor Two: Spiritual Immortality
+
+    -   Q4_19: I believe in an afterlife.
+
+    -   Q2_17: My spirit or soul will live on after I physically die.
+
+    -   Q2_12: I believe I will live on in the afterlife.
+
+    -   Q5_2: Death is not the end.
+
+    -   Q5_10: I believe in an immaterial soul or spirit.
+
+    -   Q5_1: I am comforted by the thought of an afterlife.
+
+    -   Q2_18: Death will not be the end of me.
+
+**Model 2: Three-Factor**
+
+-   Factor One:
+
+    -   Q2_16: I have taken part in activities or events which will
+        impact the future.
+
+    -   Q2_3: I have contributed to causes that will impact the future.
+
+    -   Q2_5: I am proud of my accomplishments.
+
+    -   Q5_9: I have contributed to things which will be meaningful.
+
+    -   Q4_1: Others would say I have impacted their lives.
+
+    -   Q2_4: I feel I have taken part in something bigger than myself.
+
+    -   Q2_2: I have contributed to the world in a unique way.
+
+<!-- -->
+
+-   Factor Two:
+
+    -   Q
+
+<!-- -->
+
+-   Factor Three:
+
+    -   Q
+
+**Model 3: Five-Factor**
 
 # Discussion
 
