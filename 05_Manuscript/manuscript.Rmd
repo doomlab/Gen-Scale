@@ -504,7 +504,7 @@ mturk_page3 <- import("../03_Data/mturk_page3_sad.csv")
 mturk_good <- import("../03_Data/mturk_data_goodqual.csv")
 mturk_noout <- import("../03_Data/mturk_data_noout.csv")
 
-
+questions <- import("../03_Data/questions.xlsx")
 ```
 
 ## Data Screening
@@ -895,8 +895,6 @@ nrow(cfaDF_noout)
 
 ### Number of Factors
 
-also do five
-
 ```{r}
 number_items <- fa.parallel(efaDF, #data frame
                             fm="ml", #math
@@ -944,7 +942,11 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
       )
     )
   )) %>% 
-  mutate(question = rownames(.))
+  mutate(question = rownames(.)) %>% 
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>% 
+  arrange(desc(ML1)) %>% 
+  export(., "results/2_factor.xlsx", row.names = F)
 ```
 
 ```{r}
@@ -999,7 +1001,11 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
             (ML1 >= .30 & ML3 >= .30) |
             (ML3 >= .30 & ML2 >= .30), "no", keep
           )
-  )
+  ) %>% 
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>% 
+  arrange(desc(ML1)) %>% 
+  export(., "results/3_factor.xlsx", row.names = F)
 ```
 
 ```{r}
@@ -1046,7 +1052,11 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
   mutate(question = rownames(.)) %>% 
   rowwise() %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
-  ungroup() 
+  ungroup() %>% 
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>% 
+  arrange(desc(ML1)) %>% 
+  export(., "results/5_factor.xlsx", row.names = F)
 
 ```
 
