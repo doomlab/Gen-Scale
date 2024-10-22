@@ -949,21 +949,11 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
       )
     )
   )) %>% 
-<<<<<<< HEAD
   mutate(question = rownames(.)) %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
   arrange(desc(ML1)) %>% 
   export(., "results/2_factor.xlsx", row.names = F)
-=======
-  mutate(question = rownames(.))
-
-## Make a dataframe with loadings and item text
-model1_loadings <- efa_loadings_2
-model1_loadings$ItemNum <- row.names(model1_loadings)
-model1_withtext <- merge(item_text, model1_loadings, by = 'ItemNum')
-
->>>>>>> 17b96dd531fbba2d22fb53dde8aa7ddf439bf072
 ```
 
 ```{r}
@@ -1019,19 +1009,11 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
             (ML1 >= .30 & ML3 >= .30) |
             (ML3 >= .30 & ML2 >= .30), "no", keep
           )
-<<<<<<< HEAD
   ) %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
   arrange(desc(ML1)) %>% 
   export(., "results/3_factor.xlsx", row.names = F)
-=======
-  )
-
-model2_loadings <- efa_loadings_2
-model2_loadings$ItemNum <- row.names(model2_loadings)
-model2_withtext <- merge(item_text, model2_loadings, by = 'ItemNum')
->>>>>>> 17b96dd531fbba2d22fb53dde8aa7ddf439bf072
 ```
 
 ```{r}
@@ -1083,17 +1065,17 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
             by = c("question" = "Question_Number")) %>% 
   arrange(desc(ML1)) %>% 
   export(., "results/5_factor.xlsx", row.names = F)
-
-model3_loadings <- efa_loadings_3
-model3_loadings$ItemNum <- model3_loadings$question
-model3_withtext <- merge(item_text, model3_loadings, by = 'ItemNum')
-
 ```
 
--   take the final version of each "best model"
--   get down to 5 items each or whatever is left (best loading and
-    theoretical)
--   look at the fit indices to tell which may be best
+- import the edited files and test those models for fit 
+- theory is 5, so if the fit is similar, then go with five 
+
+--- 
+test cfa 
+test MGCFA --> use new package to include information 
+--- 
+
+
 
 **Model 1: Two-Factor**
 
