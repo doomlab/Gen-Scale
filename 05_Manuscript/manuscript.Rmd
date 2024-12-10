@@ -65,6 +65,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 ```{r trackdown, eval = F}
 library(trackdown)
+source("~/GitHub/files/google_creds.R")
 # upload_file(
 #   file = "manuscript.Rmd",
 #   gfile = "gen_scale_manuscript_trackdown",
@@ -284,24 +285,14 @@ applicable to broad groups of participants (e.g., regardless of a
 person's religious beliefs and parental status). We have attempted to
 use current best practices for scale development and analysis.
 
-# Method
-
-## Participants
-
-## Material
-
-## Procedure
-
-## Data analysis
-
-# Results
-
 ```{r libraries}
 library(rio)
 library(dplyr)
 set.seed(8943)
 library(mice)
 library(psych)
+library(visualizemi)
+library(lavaan)
 
 ## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
 ## args: rt: vector of response time/page time for each participant
@@ -507,7 +498,174 @@ mturk_noout <- import("../03_Data/mturk_data_noout.csv")
 questions <- import("../03_Data/questions.xlsx")
 ```
 
+# Method
+
+## Participants
+
+```{r get-age}
+sona <- sona %>% 
+  mutate(Q13 = gsub("[a-z]", "", Q13)) %>% 
+  mutate(Q13 = ifelse(
+    Q13 == 1991, 2018-1991, Q13)
+  ) %>% 
+  mutate(Q13 = as.numeric(Q13))
+
+mturk <- mturk %>% 
+  mutate(Q14 = as.numeric(Q14))
+```
+
+Participants were recruited from two data sources. `r nrow(sona)`
+undergraduate students taking introduction to psychology were recruited
+for course credit at a large midwestern university. Undergraduate
+participants were *M* = `r apa_num(mean(sona$Q13, na.rm = T))` (*SD* =
+`r apa_num(sd(sona$Q13, na.rm = T))`) years old at the time of the
+study. `r nrow(mturk)` participants were recruited from Amazon's
+Mechanical Turk, and these participants were *M* =
+`r apa_num(mean(mturk$Q14, na.rm = T))` (*SD* =
+`r apa_num(sd(mturk$Q14, na.rm = T))`) years old. No other demographic
+information was collected in the study.
+
+## Material and Procedure
+
+`r nrow(questions)-3` items were developed using previous scale
+development on generativity [@drolet1990], along with theoretical factor
+alignment to XXCITEXX. These items aligned with areas of biological,
+physical, social, spiritual, and personal immortality. The survey was
+implemented in Qualtrics. First, participants entered their age in years
+for basic demographic information. The immortality items were separated
+into three blocks of 20-21 questions. These three blocks of questions
+were randomized across participants, and the items within each block
+were also randomized. In each block, one attention check item was shown
+(e.g., "Answer this question as somewhat agree."). At the end of the
+study, participants were directed back to either SONA for undergraduate
+course credit or Mechanical Turk for monetary
+compensation[\^Unfortunately, the exact amount we paid participants is
+lost to time. Given our ethics application, we believe it was 1-2 USD,
+and the survey was completed in *M* =
+`r apa_num(mean(mturk_good[, "Duration (in seconds)"])/60)` (*SD* =
+`r apa_num(sd(mturk_good[, "Duration (in seconds)"])/60)` minutes.].
+
+## Data analysis
+
+This study was not pre-registered. We conducted data analysis in two
+phases. The data were first screened for inattentive and outlier
+responses. The data were then randomly split into an exploratory and
+confirmatory dataset. We developed the XX scale by using exploratory
+factor analysis (EFA) with maximum likelihood estimation and an oblique
+(i.e., oblimin) rotation [@preacher2003]. Analyses were performed with
+the *psych* package [@revelle2020]. We used scree plots, parallel
+analysis, and theory to determine the number of factors and compared
+models based on fit indices to select the best model. We use the
+following fit indices: Root Mean Squared Error of Approximation [RMSEA;
+@steiger2016], Root Mean Squared Residual [RMSR; @jöreskog1996],
+Comparative Fit Index [CFI; @bentler1990], and the Tucker-Lewis Index
+[TLI; @tucker1973]. Values close to one are expected for goodness of fit
+statistics [CFI, TLI; @bentler1990; @hu1999], while lower values close
+to zero are considered better models for residual statistics [RMSEA,
+RMSR; @steiger2016].
+
+We then analyzed the best model from the exploratory stage using
+confirmatory factor analysis (CFA) and multigroup CFA [@kline2016;
+@brown2015] on the second confirmatory dataset. The models were analyzed
+with *lavaan* [@rosseel2012] and *visualizemi* [@buchanan2024] *R*
+packages. Multigroup CFA can be used to determine if the scale structure
+can be generalized to subsamples within the data, and thus, allowing for
+the same interpretation of total or subscale scores calculated from the
+scale. First, we modeled the overall structure from the EFA results to
+determine fit in a new sample. The RMSEA, CFI, and TLI were used to
+determine model fit along with the Standardized Root Mean Squared
+Residual [SRMR; @bentler1995]. The same interpretations were included
+from the exploratory stage: high fit indices close to one for goodness
+of fit statistics, and low fit indices close to zero for residual fit
+statistics. If the overall model fit well, we then modeled the
+subsamples of student populations and Mechanical Turk populations
+separately. While fit is expected to potentially degrade due to smaller
+sample sizes, we expect these models to converge to demonstrate that it
+is appropriate to combine models for multigroup testing.
+
+For the multigroup CFA, we used @brown2015's suggested terminology and
+steps for analysis. The *configural* model includes both subsamples
+combined together into one model controlling for group structure. This
+model supports the "configuration" or structure of the scale is at least
+similar within each group, but does not force each group to show similar
+patterns of parameter estimates. Each subsequent step constrains a set
+of parameters to be equal across groups to demonstrate invariance (i.e.,
+equivalence). The configural model is then compared to the *metric*
+model, which sets the factor loadings for each measured item to be equal
+across groups. This model supports that each item is related to the
+underlying latent variable the same way for each group. If this
+assumption holds, the metric model is then compared to a *scalar* model,
+which sets the item intercepts (i.e., item means) to be equal across
+groups. Scalar model invariance suggests that each subsample shows the
+same item means and factor loadings across groups. Finally, we compared
+the scalar model to the *strict* model, which constrains item residuals
+(i.e., errors, variance) to be the same across groups. Invariance in
+model residuals suggests that the items have the same answer
+range/spread across groups.
+
+To assess if models are invariant, we used $\Delta$ CFI \<= .01
+criterion to indicate that models were equivalent [@cheung2002]. If
+models were not considered invariant, we investigated for the source of
+the invariance by using partial invariance testing [@byrne1989;
+@cheung1999]. Each parameter estimate is individually relaxed to
+determine if that particular estimate leads to misfit in the model. For
+example, if the model fails scalar invariance, each item mean would be
+allowed to freely vary between groups (one at a time) to find the items
+that show group differences. If only a few items show group differences,
+then the model is considered "partially" invariant, and the impact on
+total scores can be assessed. Partially invariant models indicate areas
+for further investigation into group differences and ways that the final
+scores of the model must be carefully interpreted. Previously, @nye2011
+and @nye2019 proposed an effect size $d_{MACS}$ to help quantify the
+size of the difference between groups in partially invariant models.
+However, $d_{MACS}$ can generally only be used to understand the item
+means and loadings together (due to the mathematical calculation),
+regardless of the tyep of non-invariance. Therefore, we applied a new
+technique proposed by @buchanan2024 to assess several potential effect
+size components of the model: 1) overall model replication likelihood,
+2) individual parameter replication likelihood, and 3) effect size for
+individual parameters showing non-invariance.
+
+We will use the $h_{nmi}$ effect size as the likelihood of replication
+statistic for both the overall model and individual parameters. First,
+the data is bootstrapped with replacement *n* times to create similar
+samples to the original data. The grouping variable is then randomized
+to create a comparison model. The proportion of times that invariance
+(or non-invariance) is met is calculated for the bootstrapped and
+randomized group labels. $h_{nmi}$ is Cohen's $h$ , which is the
+standardized difference between two proportions for non-invariance (no
+measurement invariance, but the statistic can also be calculated as
+$h_{mi}$ for the difference in proportions for when the model showed
+measurement invariance). We suggest $h_{nmi}$ because the interpretation
+is a bit simpler: effect sizes close to zero indicate that the
+bootstrapped data and randomized groups data show the same number of
+non-measurement invariance findings, indicating that they are likely the
+same result. The logic here is that if groups are truly equal in their
+measurement on a scale, then the grouping variable should not affect the
+results, thus, randomizing the grouping variable label does not affect
+the results. As $h_{nmi}$ increases, we expect to find non-measurement
+invariance between groups, as the bootstrapped data is consistently
+different than randomized group labels. $h$ can be interpreted much like
+$d$, but $d$ does not technically have upper or lower limits (i.e., they
+are $\infty$), while $h$'s range is limited to $\pi$. Therefore, we will
+report $h_{nmi_p}$ which is scaled to range from -1 to +1 for easier
+interpretation. In addition to this effect size, we can calculate $d$
+for the differences in parameters for bootstrapped versus random group
+labels, thus, providing an estimate for the size of group differences on
+partially invariant parameter estimates.
+
+# Results
+
 ## Data Screening
+
+### Undergraduate Data
+
+Data were screened for accuracy, missing data, outliers, and multivariate parametric assumptions. 
+
+`r nrow(sona)`
+`r nrow(sona_replaced)`
+`r nrow(sona_good)`
+`r nrow(sona_noout)`
 
 ```{r screen-sona-accuracy-out, eval = F}
 # Accuracy ----
@@ -682,6 +840,13 @@ hist(standardized, breaks=15)
   abline(v = 0)
 } 
 ```
+
+### Mechanical Turk Data
+
+`r nrow(mturk)`
+`r nrow(mturk_replaced)`
+`r nrow(mturk_good)`
+`r nrow(mturk_noout)`
 
 ```{r screen-mturk-accuracy-out, eval = F}
 # Accuracy ----
@@ -858,8 +1023,14 @@ hist(standardized, breaks=15)
 ```
 
 ```{r data-combine-split}
-combo <- bind_rows(sona_good, mturk_good)
-combo_noout <- bind_rows(sona_noout, mturk_noout)
+combo <- bind_rows(sona_good %>% 
+                     mutate(where = "Undergraduate"), 
+                   mturk_good %>% 
+                     mutate(where = "Mechanical Turk"))
+combo_noout <- bind_rows(sona_noout %>% 
+                     mutate(where = "Undergraduate"), 
+                     mturk_noout %>% 
+                     mutate(where = "Mechanical Turk"))
 
 random_split <- c(
   sample(sona_good$ResponseId, nrow(sona_good)/2),
@@ -872,7 +1043,7 @@ efaDF <- combo %>%
   select(-Q2_21, -Q4_20, -Q5_16)
 cfaDF <- combo %>% 
   filter(!(ResponseId %in% random_split)) %>% 
-  select(Q2_1:Q5_20)  %>% 
+  select(Q2_1:Q5_20, where)  %>% 
   select(-Q2_21, -Q4_20, -Q5_16)
 
 nrow(efaDF)
@@ -884,7 +1055,7 @@ efaDF_noout <- combo_noout %>%
   select(-Q2_21, -Q4_20, -Q5_16)
 cfaDF_noout <- combo_noout %>% 
   filter(!(ResponseId %in% random_split)) %>% 
-  select(Q2_1:Q5_20)  %>% 
+  select(Q2_1:Q5_20, where)  %>% 
   select(-Q2_21, -Q4_20, -Q5_16)
 
 nrow(efaDF_noout)
@@ -898,7 +1069,7 @@ write.csv(cfaDF, "../03_Data/cfaDF.csv", row.names = F)
 
 ### Number of Factors
 
-```{r}
+```{r number-factors}
 #efaDF <- read.csv("../03_Data/efaDF.csv")
 
 number_items <- fa.parallel(efaDF, #data frame
@@ -910,7 +1081,7 @@ sum(number_items$fa.values > .7)
 
 ### Simple Structure
 
-```{r}
+```{r two-factor}
 item_text <- read.csv("../03_Data/item_text.csv")
 
 EFA_fit <- fa(efaDF, #data
@@ -956,7 +1127,7 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
   export(., "results/2_factor.xlsx", row.names = F)
 ```
 
-```{r}
+```{r three-factor}
 
 EFA_fit <- fa(efaDF, #data
               nfactors = 3, #number of factors
@@ -1016,7 +1187,7 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
   export(., "results/3_factor.xlsx", row.names = F)
 ```
 
-```{r}
+```{r five-factor}
 EFA_fit <- fa(efaDF, #data
               nfactors = 5, #number of factors
               rotate = "oblimin", #rotation
@@ -1067,89 +1238,265 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
   export(., "results/5_factor.xlsx", row.names = F)
 ```
 
-- import the edited files and test those models for fit 
-- theory is 5, so if the fit is similar, then go with five 
+```{r comparison-models}
+efa_results <- import("results/final_questions.xlsx")
+EFA_2factor <- fa(efaDF %>% 
+                    select(efa_results %>% 
+                           filter(!is.na(factor2)) %>% 
+                           pull(question)),
+                  nfactors = 2,
+                  rotate = "oblimin", #rotation
+                  fm = "ml") #math
 
---- 
-test cfa 
-test MGCFA --> use new package to include information 
---- 
+EFA_3factor <- fa(efaDF %>% 
+                    select(efa_results %>% 
+                           filter(!is.na(factor3)) %>% 
+                           pull(question)),
+                  nfactors = 3,
+                  rotate = "oblimin", #rotation
+                  fm = "ml") #math
 
+EFA_5factor <- fa(efaDF %>% 
+                    select(efa_results %>% 
+                           filter(!is.na(factor5)) %>% 
+                           pull(question)),
+                  nfactors = 5,
+                  rotate = "oblimin", #rotation
+                  fm = "ml") #math
 
+EFA_2factor
+EFA_3factor
+EFA_5factor
 
-**Model 1: Two-Factor**
+new_5_columns <- as.data.frame(unclass(EFA_5factor$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() %>% 
+  arrange(desc(keep)) %>% 
+  filter(keep == 1) %>% 
+  pull(question)
 
-These are all the items with loading \> 0.7
+EFA_5factor <- fa(efaDF %>% 
+                    select(all_of(new_5_columns)),
+                  nfactors = 5,
+                  rotate = "oblimin", #rotation
+                  fm = "ml") #math
 
--   Factor One: Sense of Contribution
+EFA_5factor
 
-    -   Q2_16: I have taken part in activities or events which will
-        impact the future.
+new_5_columns <- as.data.frame(unclass(EFA_5factor$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() %>% 
+  arrange(desc(keep)) %>% 
+  filter(keep == 1) %>% 
+  pull(question)
 
-    -   Q2_2: I have contributed to the world in a unique way.
+EFA_5factor <- fa(efaDF %>% 
+                    select(all_of(new_5_columns)),
+                  nfactors = 5,
+                  rotate = "oblimin", #rotation
+                  fm = "ml") #math
 
-    -   Q2_3: I have contributed to causes that will impact the future.
+EFA_5factor
 
-    -   Q5_9: I have contributed to things which will be meaningful.
+# as.data.frame(unclass(EFA_5factor$loadings)) %>% 
+#   mutate(question = rownames(.)) %>% 
+#   rowwise() %>%
+#   mutate(keep = sum(c_across(-question) >= .30)) %>% 
+#   ungroup() %>% 
+#   left_join(questions,
+#             by = c("question" = "Question_Number")) %>% 
+#   arrange(desc(ML1)) %>% 
+#   export(., "results/5_factor_reduced.xlsx", row.names = F)
+```
 
-    -   Q5_13: I will leave a lasting legacy.
+```{r}
+# test if q2_1 changing to a different place changes results 
+five_reduced <- import('results/5_factor_reduced.xlsx')
+five.model <- ""
 
-    -   Q2_5: I am proud of my accomplishments.
+for (factor in unique(five_reduced$Factor)){
+  questions <- five_reduced %>% 
+    filter(Factor == factor) %>% 
+    pull(question)
+  
+  five.model <- 
+    paste0(five.model, "\n",
+        factor, " =~ ", 
+        paste(questions, collapse = " + "))
+}
 
-    -   Q2_6: I am confident in the legacy I will leave when I die.
+#cat(five.model)
 
-    -   Q4_1: Others would say I have impacted their lives.
+model.results <- mgcfa(
+  model = five.model,
+  data = cfaDF,
+  group = "where", 
+  group.equal = c("loadings", "intercepts", "residuals"),
+  meanstructure = TRUE
+)
 
-<!-- -->
+summary(model.results$model_overall, 
+        standardized = T,
+        fit.measures = T, 
+        rsquare = T)
 
--   Factor Two: Spiritual Immortality
+summary(model.results$group_models$model.Undergraduate, 
+        standardized = T,
+        fit.measures = T, 
+        rsquare = T)
 
-    -   Q4_19: I believe in an afterlife.
+modificationindices(model.results$group_models$model.Undergraduate,
+                    sort. = T)
 
-    -   Q2_17: My spirit or soul will live on after I physically die.
+summary(model.results$group_models$`model.Mechanical Turk`, 
+        standardized = T,
+        fit.measures = T, 
+        rsquare = T)
 
-    -   Q2_12: I believe I will live on in the afterlife.
+modificationindices(model.results$group_models$`model.Mechanical Turk`, 
+                    sort. = T)
 
-    -   Q5_2: Death is not the end.
+summary(model.results$model_configural, 
+        standardized = T,
+        fit.measures = T, 
+        rsquare = T)
 
-    -   Q5_10: I believe in an immaterial soul or spirit.
+model.results$model_fit
 
-    -   Q5_1: I am comforted by the thought of an afterlife.
+model.partial <- partial_mi(
+  saved_model = model.results$invariance_models$model.intercepts,
+  data = cfaDF,
+  model = five.model,
+  group = "where",
+  group.equal = c("loadings", "intercepts"),
+  partial_step = "intercepts")
 
-    -   Q2_18: Death will not be the end of me.
+model.partial$fit_table
+```
 
-**Model 2: Three-Factor**
+```{r}
+# distribution of each latent variable as a plot 
 
--   Factor One:
+saved_mi_plots <- plot_mi(data_coef = model.results.partial$model_coef,
+                          # which model do you want to plot from model column
+                          model_step = "intercepts", 
+                          # name of observed item
+                          item_name = "Q4_8", 
+                          # LV limits to graph
+                          x_limits = c(-2,2), 
+                          # Y min and max in data
+                          y_limits = c(min(cfaDF$Q4_8),
+                                       max(cfaDF$Q4_8)), 
+                          # what ci do you want
+                          conf.level = .95, 
+                          # what model results do you want
+                          model_results = model.results.partial$invariance_models$model.intercepts, 
+                          # which latent is the observed variable on
+                          # important for cross-loaded variables
+                          lv_name = "biological", 
+                          # if you have more than two groups, which two do you want
+                          plot_groups = NULL)
 
-    -   Q2_16: I have taken part in activities or events which will
-        impact the future.
+saved_mi_plots$complete
 
-    -   Q2_3: I have contributed to causes that will impact the future.
+saved_mi_plots <- plot_mi(data_coef = model.results.partial$model_coef,
+                          # which model do you want to plot from model column
+                          model_step = "intercepts", 
+                          # name of observed item
+                          item_name = "Q2_4", 
+                          # LV limits to graph
+                          x_limits = c(-1,1), 
+                          # Y min and max in data
+                          y_limits = c(min(cfaDF$Q2_4),
+                                       max(cfaDF$Q2_4)), 
+                          # what ci do you want
+                          conf.level = .95, 
+                          # what model results do you want
+                          model_results = model.results.partial$invariance_models$model.intercepts, 
+                          # which latent is the observed variable on
+                          # important for cross-loaded variables
+                          lv_name = "social", 
+                          # if you have more than two groups, which two do you want
+                          plot_groups = NULL)
 
-    -   Q2_5: I am proud of my accomplishments.
+model.results.partial <- mgcfa(
+  model = five.model,
+  data = cfaDF,
+  group = "where", 
+  group.equal = c("loadings", "intercepts", "residuals"),
+  meanstructure = TRUE,
+  group.partial = "Q4_8 ~1"
+)
 
-    -   Q5_9: I have contributed to things which will be meaningful.
+# figure out how to update this 
+# so that it will take the group.partial correctly 
+model.partial.partial <- partial_mi(
+  saved_model = model.results.partial$invariance_models$model.residuals,
+  data = cfaDF,
+  model = five.model,
+  group = "where",
+  group.equal = c("loadings", "intercepts", "residuals"),
+  partial_step = "residuals")
 
-    -   Q4_1: Others would say I have impacted their lives.
+model.partial.partial$fit_table
+```
 
-    -   Q2_4: I feel I have taken part in something bigger than myself.
+```{r boot-model, eval = F}
+saved_boot_model <- bootstrap_model(
+  # saved configural model to start at
+  saved_configural = model.results$model_configural,
+  # dataset for the analysis
+  data = cfaDF,
+  # model lavaan syntax
+  model = five.model,
+  # group variable in the dataset
+  group = "where", 
+  # number of bootstraps
+  # this is set to a low number to compile quickly for cran
+  nboot = 1000,
+  # name of the fit measure you want to use, make sure it's lavaan
+  invariance_index = "cfi",
+  # rule for the difference in fit indices
+  invariance_rule = .01,
+  # what order of steps do you want to test? 
+  group.equal = c("loadings", "intercepts", "residuals")
+)
 
-    -   Q2_2: I have contributed to the world in a unique way.
+saveRDS(saved_boot_model, "../03_Data/saved_boot_model.rds")
+```
 
-<!-- -->
-
--   Factor Two:
-
-    -   Q
-
-<!-- -->
-
--   Factor Three:
-
-    -   Q
-
-**Model 3: Five-Factor**
+```{r boot-partial, eval = F}
+saved_boot_partial <- bootstrap_partial(
+  # the model you want to test 
+  # use the model before your invariant one 
+  # similar set up to partial_mi
+  saved_model = model.results$invariance_models$model.loadings,
+  # the dataframe
+  data = cfaDF,
+  # the original model syntax
+  model = five.model,
+  # the grouping variable column
+  group = "where",
+  # run more, but this package vignette needs to knit fast
+  nboot = 1000,
+  # what index are you using for invariance?
+  # match this to lavaan's name under fitmeasures()
+  invariance_index = "cfi",
+  # what rule are you using?
+  invariance_rule = .01,
+  # what are we comparing against? 
+  invariance_compare = unname(fitmeasures(model.results$invariance_models$model.loadings, "cfi")),
+  # which step you want to estimate effect size for
+  partial_step = c("intercepts"), 
+  # which parameters you want to hold constrained
+  group.equal = c("loadings", "intercepts")
+  )
+saveRDS(saved_boot_partial, "../03_Data/saved_boot_partial.rds")
+```
 
 # Discussion
 
