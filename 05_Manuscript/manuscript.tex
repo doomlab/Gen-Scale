@@ -38,15 +38,17 @@
 \usepackage{xcolor}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
@@ -118,6 +120,9 @@
 % get rid of language-specific shorthands (see #6817):
 \let\LanguageShortHands\languageshorthands
 \def\languageshorthands#1{}
+\ifLuaTeX
+  \usepackage[english]{selnolig} % disable illegal ligatures
+\fi
 % Manuscript styling
 \usepackage{upgreek}
 \captionsetup{font=singlespacing,justification=justified}
@@ -178,10 +183,11 @@
 \makeatletter
 \xapptocmd\appendix
   {\xapptocmd\section
-    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi\\: #1}}
+    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi: #1}}
     {}{\InnerPatchFailed}%
   }
 {}{\PatchFailed}
+\makeatother
 \keywords{keywords\newline\indent Word count: X}
 \DeclareDelayedFloatFlavor{ThreePartTable}{table}
 \DeclareDelayedFloatFlavor{lltable}{table}
@@ -193,9 +199,6 @@
 
 \linenumbers
 \usepackage{csquotes}
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
@@ -440,15 +443,157 @@ use current best practices for scale development and analysis.
 
 \subsection{Participants}\label{participants}
 
-\subsection{Material}\label{material}
+Participants were recruited from two data sources. 564
+undergraduate students taking introduction to psychology were recruited
+for course credit at a large midwestern university. Undergraduate
+participants were \emph{M} = 19.62 (\emph{SD} =
+2.75) years old at the time of the
+study. 240 participants were recruited from Amazon's
+Mechanical Turk, and these participants were \emph{M} =
+35.55 (\emph{SD} =
+11.05) years old. No other demographic
+information was collected in the study.
 
-\subsection{Procedure}\label{procedure}
+\subsection{Material and Procedure}\label{material-and-procedure}
+
+58 items were developed using previous scale
+development on generativity (Drolet, 1990), along with theoretical factor
+alignment to XXCITEXX. These items aligned with areas of biological,
+physical, social, spiritual, and personal immortality. The survey was
+implemented in Qualtrics. First, participants entered their age in years
+for basic demographic information. The immortality items were separated
+into three blocks of 20-21 questions. These three blocks of questions
+were randomized across participants, and the items within each block
+were also randomized. In each block, one attention check item was shown
+(e.g., ``Answer this question as somewhat agree.''). At the end of the
+study, participants were directed back to either SONA for undergraduate
+course credit or Mechanical Turk for monetary
+compensation{[}\^{}Unfortunately, the exact amount we paid participants is
+lost to time. Given our ethics application, we believe it was 1-2 USD,
+and the survey was completed in \emph{M} =
+6.34 (\emph{SD} =
+4.85 minutes.{]}.
 
 \subsection{Data analysis}\label{data-analysis}
+
+This study was not pre-registered. We conducted data analysis in two
+phases. The data were first screened for inattentive and outlier
+responses. The data were then randomly split into an exploratory and
+confirmatory dataset. We developed the XX scale by using exploratory
+factor analysis (EFA) with maximum likelihood estimation and an oblique
+(i.e., oblimin) rotation (Preacher \& MacCallum, 2003). Analyses were performed with
+the \emph{psych} package (Revelle, 2020). We used scree plots, parallel
+analysis, and theory to determine the number of factors and compared
+models based on fit indices to select the best model. We use the
+following fit indices: Root Mean Squared Error of Approximation {[}RMSEA;
+Steiger (2016){]}, Root Mean Squared Residual {[}RMSR; Jöreskog and Sörbom (1996){]},
+Comparative Fit Index {[}CFI; Bentler (1990){]}, and the Tucker-Lewis Index
+{[}TLI; Tucker and Lewis (1973){]}. Values close to one are expected for goodness of fit
+statistics {[}CFI, TLI; Bentler (1990); Hu and Bentler (1999){]}, while lower values close
+to zero are considered better models for residual statistics {[}RMSEA,
+RMSR; Steiger (2016){]}.
+
+We then analyzed the best model from the exploratory stage using
+confirmatory factor analysis (CFA) and multigroup CFA (Brown, 2015; Kline, 2016) on the second confirmatory dataset. The models were analyzed
+with \emph{lavaan} (Rosseel, 2012) and \emph{visualizemi} (Buchanan, 2024) \emph{R}
+packages. Multigroup CFA can be used to determine if the scale structure
+can be generalized to subsamples within the data, and thus, allowing for
+the same interpretation of total or subscale scores calculated from the
+scale. First, we modeled the overall structure from the EFA results to
+determine fit in a new sample. The RMSEA, CFI, and TLI were used to
+determine model fit along with the Standardized Root Mean Squared
+Residual {[}SRMR; Bentler (1995){]}. The same interpretations were included
+from the exploratory stage: high fit indices close to one for goodness
+of fit statistics, and low fit indices close to zero for residual fit
+statistics. If the overall model fit well, we then modeled the
+subsamples of student populations and Mechanical Turk populations
+separately. While fit is expected to potentially degrade due to smaller
+sample sizes, we expect these models to converge to demonstrate that it
+is appropriate to combine models for multigroup testing.
+
+For the multigroup CFA, we used Brown (2015)'s suggested terminology and
+steps for analysis. The \emph{configural} model includes both subsamples
+combined together into one model controlling for group structure. This
+model supports the ``configuration'' or structure of the scale is at least
+similar within each group, but does not force each group to show similar
+patterns of parameter estimates. Each subsequent step constrains a set
+of parameters to be equal across groups to demonstrate invariance (i.e.,
+equivalence). The configural model is then compared to the \emph{metric}
+model, which sets the factor loadings for each measured item to be equal
+across groups. This model supports that each item is related to the
+underlying latent variable the same way for each group. If this
+assumption holds, the metric model is then compared to a \emph{scalar} model,
+which sets the item intercepts (i.e., item means) to be equal across
+groups. Scalar model invariance suggests that each subsample shows the
+same item means and factor loadings across groups. Finally, we compared
+the scalar model to the \emph{strict} model, which constrains item residuals
+(i.e., errors, variance) to be the same across groups. Invariance in
+model residuals suggests that the items have the same answer
+range/spread across groups.
+
+To assess if models are invariant, we used \(\Delta\) CFI \textless= .01
+criterion to indicate that models were equivalent (Cheung \& Rensvold, 2002). If
+models were not considered invariant, we investigated for the source of
+the invariance by using partial invariance testing (Byrne, Shavelson, \& Muthén, 1989; Cheung \& Rensvold, 1999). Each parameter estimate is individually relaxed to
+determine if that particular estimate leads to misfit in the model. For
+example, if the model fails scalar invariance, each item mean would be
+allowed to freely vary between groups (one at a time) to find the items
+that show group differences. If only a few items show group differences,
+then the model is considered ``partially'' invariant, and the impact on
+total scores can be assessed. Partially invariant models indicate areas
+for further investigation into group differences and ways that the final
+scores of the model must be carefully interpreted. Previously, Nye and Drasgow (2011)
+and Nye, Bradburn, Olenick, Bialko, and Drasgow (2019) proposed an effect size \(d_{MACS}\) to help quantify the
+size of the difference between groups in partially invariant models.
+However, \(d_{MACS}\) can generally only be used to understand the item
+means and loadings together (due to the mathematical calculation),
+regardless of the tyep of non-invariance. Therefore, we applied a new
+technique proposed by Buchanan (2024) to assess several potential effect
+size components of the model: 1) overall model replication likelihood,
+2) individual parameter replication likelihood, and 3) effect size for
+individual parameters showing non-invariance.
+
+We will use the \(h_{nmi}\) effect size as the likelihood of replication
+statistic for both the overall model and individual parameters. First,
+the data is bootstrapped with replacement \emph{n} times to create similar
+samples to the original data. The grouping variable is then randomized
+to create a comparison model. The proportion of times that invariance
+(or non-invariance) is met is calculated for the bootstrapped and
+randomized group labels. \(h_{nmi}\) is Cohen's \(h\) , which is the
+standardized difference between two proportions for non-invariance (no
+measurement invariance, but the statistic can also be calculated as
+\(h_{mi}\) for the difference in proportions for when the model showed
+measurement invariance). We suggest \(h_{nmi}\) because the interpretation
+is a bit simpler: effect sizes close to zero indicate that the
+bootstrapped data and randomized groups data show the same number of
+non-measurement invariance findings, indicating that they are likely the
+same result. The logic here is that if groups are truly equal in their
+measurement on a scale, then the grouping variable should not affect the
+results, thus, randomizing the grouping variable label does not affect
+the results. As \(h_{nmi}\) increases, we expect to find non-measurement
+invariance between groups, as the bootstrapped data is consistently
+different than randomized group labels. \(h\) can be interpreted much like
+\(d\), but \(d\) does not technically have upper or lower limits (i.e., they
+are \(\infty\)), while \(h\)'s range is limited to \(\pi\). Therefore, we will
+report \(h_{nmi_p}\) which is scaled to range from -1 to +1 for easier
+interpretation. In addition to this effect size, we can calculate \(d\)
+for the differences in parameters for bootstrapped versus random group
+labels, thus, providing an estimate for the size of group differences on
+partially invariant parameter estimates.
 
 \section{Results}\label{results}
 
 \subsection{Data Screening}\label{data-screening}
+
+\subsubsection{Undergraduate Data}\label{undergraduate-data}
+
+Data were screened for accuracy, missing data, outliers, and multivariate parametric assumptions. The undergraduate data included \emph{n} = 564 participants. We first screened each participant for missing data and excluded \emph{n} = 7 participants for missing more than 5\% of their data {[}TABACHNICK{]}. 105 participants included less than 5\% missing data (i.e., 3 items or less), and these data points amounted to less than 2\% of data missing per question. These items were replaced with a random imputation from the \emph{mice} library {[}CITE MICE{]}.
+
+The data were then screen for attentiveness and accuracy using the framework from CITE BUCHANAN to find low quality responses. The survey items were split into three pages, and each page was screened separately using click counts, an attention check item (i.e., please answer strongly agree for this item), and number of characters on a page for reading speed. The total number of indicators for low quality data was summed for each participant across pages (e.g., 3 indicators by 3 pages = 9 total possible items), and \emph{n} = 49 participants showed at least 4 indicators across all pages. CITE BUCHANAN suggest a criteria of 2/5 screeners or 40\%, and therefore, we used 4 items as the \textasciitilde40\% cut off for inclusion in the data. The final sample size for the undergraduate population was \emph{n} = 508. We additionally screened for multivariate outliers using Mahalanobis distance across items and found \emph{n} = 43 possible outliers, but they are included in the analyses described below.
+
+\subsubsection{Mechanical Turk Data}\label{mechanical-turk-data}
+
+The Mechanical Turk data were screened in the same manner as the undergraduate sample. The original sample size was \emph{n} = 240 participants. \emph{N} = 23 participants were excluded for missing more than 5\% of their data, and \emph{n} = 36 participants had 3 or less data points estimated using the \emph{mice} library. The same low quality data screening was performed, and \emph{n} = 20 participants were excluded for having 40\% or more low quality indicators. Last, \emph{n} = 10 participants were flagged as potential outliers but were not included in analyses presented below.
 
 \begin{verbatim}
 ## [1] 352
@@ -466,689 +611,124 @@ use current best practices for scale development and analysis.
 ## [1] 326
 \end{verbatim}
 
+The data was then randomly split into \emph{n} = 352 participants for the exploratory factor analysis, and \emph{n} = 353 for the confirmatory factor analysis. The EFA data included \emph{n} undergraduate = 254 participants, and \emph{n} Mechanical Turk = 98 participants. The CFA data included \emph{n} undergraduate = 254 participants, and \emph{n} Mechanical Turk = 99 participants.
+
 \subsection{EFA}\label{efa}
 
 \subsubsection{Number of Factors}\label{number-of-factors}
 
-also do five
-
-\includegraphics{manuscript_files/figure-latex/unnamed-chunk-1-1.pdf}
-
-\begin{verbatim}
-## Parallel analysis suggests that the number of factors =  7  and the number of components =  NA
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 5
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 7
-\end{verbatim}
+To determine the number of factors that best fit the data, we used suggested theory (5 factors), a scree plot, and a parallel analysis using the \emph{psych} library {[}CITE PSYCH{]}. Parallel analysis suggested 7 factors, while a visual inspection of the scree plot indicated 2 to 3 factors. We analyzed a 2-factor, 3-factor, and 5-factor model for simple structure and fit indices.
 
 \subsubsection{Simple Structure}\label{simple-structure}
 
-\begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF, nfactors = 2, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML1   ML2    h2   u2 com
-## Q2_1   0.57  0.15 0.436 0.56 1.1
-## Q2_2   0.77 -0.05 0.552 0.45 1.0
-## Q2_3   0.76 -0.08 0.528 0.47 1.0
-## Q2_4   0.70  0.05 0.523 0.48 1.0
-## Q2_5   0.73 -0.10 0.466 0.53 1.0
-## Q2_6   0.72  0.06 0.561 0.44 1.0
-## Q2_7   0.47  0.07 0.259 0.74 1.0
-## Q2_8   0.65 -0.03 0.408 0.59 1.0
-## Q2_9   0.63  0.01 0.405 0.60 1.0
-## Q2_10  0.58 -0.05 0.308 0.69 1.0
-## Q2_11  0.18  0.64 0.546 0.45 1.2
-## Q2_12 -0.05  0.92 0.805 0.19 1.0
-## Q2_13  0.11  0.18 0.066 0.93 1.6
-## Q2_14  0.66  0.06 0.480 0.52 1.0
-## Q2_15  0.68 -0.08 0.421 0.58 1.0
-## Q2_16  0.79 -0.08 0.571 0.43 1.0
-## Q2_17 -0.01  0.92 0.836 0.16 1.0
-## Q2_18  0.14  0.75 0.686 0.31 1.1
-## Q2_19  0.46  0.12 0.286 0.71 1.1
-## Q2_20  0.64 -0.11 0.354 0.65 1.1
-## Q4_1   0.71 -0.06 0.468 0.53 1.0
-## Q4_2   0.60 -0.05 0.328 0.67 1.0
-## Q4_3   0.60 -0.06 0.335 0.66 1.0
-## Q4_4   0.52  0.13 0.351 0.65 1.1
-## Q4_5   0.67 -0.06 0.410 0.59 1.0
-## Q4_6   0.52  0.19 0.411 0.59 1.3
-## Q4_7   0.31 -0.13 0.073 0.93 1.3
-## Q4_8   0.34  0.07 0.148 0.85 1.1
-## Q4_9   0.65  0.15 0.533 0.47 1.1
-## Q4_10  0.68  0.03 0.481 0.52 1.0
-## Q4_11  0.09  0.14 0.042 0.96 1.7
-## Q4_12  0.40 -0.04 0.146 0.85 1.0
-## Q4_13  0.23  0.38 0.286 0.71 1.7
-## Q4_14  0.17  0.46 0.317 0.68 1.3
-## Q4_15  0.63  0.04 0.421 0.58 1.0
-## Q4_16  0.55  0.01 0.312 0.69 1.0
-## Q4_17  0.12  0.51 0.336 0.66 1.1
-## Q4_18  0.10  0.19 0.064 0.94 1.5
-## Q4_19 -0.07  0.95 0.834 0.17 1.0
-## Q5_1   0.07  0.78 0.670 0.33 1.0
-## Q5_2   0.02  0.85 0.740 0.26 1.0
-## Q5_3   0.09  0.50 0.305 0.70 1.1
-## Q5_4   0.51  0.25 0.446 0.55 1.5
-## Q5_5   0.14  0.00 0.021 0.98 1.0
-## Q5_6   0.44  0.16 0.290 0.71 1.3
-## Q5_7   0.59 -0.01 0.338 0.66 1.0
-## Q5_8   0.68  0.04 0.491 0.51 1.0
-## Q5_9   0.75 -0.03 0.547 0.45 1.0
-## Q5_10 -0.06  0.85 0.669 0.33 1.0
-## Q5_11 -0.02  0.15 0.020 0.98 1.0
-## Q5_12  0.05  0.30 0.107 0.89 1.1
-## Q5_13  0.74  0.04 0.574 0.43 1.0
-## Q5_14  0.31 -0.04 0.085 0.91 1.0
-## Q5_15  0.57  0.09 0.387 0.61 1.1
-## Q5_17  0.49  0.15 0.334 0.67 1.2
-## Q5_18  0.35  0.20 0.232 0.77 1.6
-## Q5_19  0.52  0.25 0.466 0.53 1.4
-## Q5_20  0.19 -0.06 0.029 0.97 1.2
-## 
-##                         ML1  ML2
-## SS loadings           14.91 7.63
-## Proportion Var         0.26 0.13
-## Cumulative Var         0.26 0.39
-## Proportion Explained   0.66 0.34
-## Cumulative Proportion  0.66 1.00
-## 
-##  With factor correlations of 
-##      ML1  ML2
-## ML1 1.00 0.49
-## ML2 0.49 1.00
-## 
-## Mean item complexity =  1.1
-## Test of the hypothesis that 2 factors are sufficient.
-## 
-## df null model =  1653  with the objective function =  38.9 with Chi Square =  12870.73
-## df of  the model are 1538  and the objective function was  12.63 
-## 
-## The root mean square of the residuals (RMSR) is  0.07 
-## The df corrected root mean square of the residuals is  0.07 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  5082.08  with prob <  0 
-## The total n.obs was  352  with Likelihood Chi Square =  4161.82  with prob <  4.3e-240 
-## 
-## Tucker Lewis Index of factoring reliability =  0.747
-## RMSEA index =  0.07  and the 90 % confidence intervals are  0.067 0.072
-## BIC =  -4856.44
-## Fit based upon off diagonal values = 0.96
-## Measures of factor score adequacy             
-##                                                    ML1  ML2
-## Correlation of (regression) scores with factors   0.98 0.98
-## Multiple R square of scores with factors          0.96 0.96
-## Minimum correlation of possible factor scores     0.93 0.93
-\end{verbatim}
+The 58 items were first tested with a 2-factor fit, and 7 items were excluded for not loading on any factor or loading on multiple factors with a loading greater than .30. After removing these items, all items loaded cleanly on the two factors. The loading table for this analysis can be found at XX. This same procedure was repeated for the 3-factor fit, and 10 items were removed from the first round of analysis, and 1 item was removed from the second round of analysis, resulting in a final set of 47 items. The loading table and items can be found at XX. Last, the 5-factor model showed 15 poor items on the first round of analysis, and 10 poor items on the second round of analysis, resulting in a final set of 33 items for the final model. The items and loadings can be found at XX.
+
+We then compared items across all factor models to reduce scale length. Items were selected for the final model if they: 1) theoretically made sense with the other items on that factor, 2) loaded on the theorized 5-factor model (i.e., items were included in the 2-factor model if they also had been included in the 5-factor model), and 3) were not face-value redundant with other items on that factor. We tested these items and found that the 2-factor and 3-factor models continued to show simple structure, but the 5-factor model required the removal of 2 more items due to cross loadings across factors. To select the best model, we examined the fit indices for each factor structure. The 5-factor model showed the best fit (RMSEA = .038, RMSR = .024, TLI = .968, CFI = .982), followed by the 3-factor model (RMSEA = .049, RMSR = .028, TLI = .962, CFI = .977), and then the 2-factor model (RMSEA = .062, RMSR = .031, TLI = .963, CFI = .977). The final factor loadings for the 5-factor scale are shown in Table \ref{tab:table-five-factor}, and the other loadings can be found at XX (2-factor) and XX (3-factor).
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:table-five-factor}}
+
+\begin{tabular}{llllll}
+\toprule
+Spiritual & Social & Personal & Biological & Physical & Item\\
+\midrule
+0.93 & -0.04 & 0.00 & 0.02 & -0.01 & I believe in an afterlife.\\
+0.91 & 0.03 & 0.00 & -0.02 & 0.00 & My spirit or soul will live on after I physically die.\\
+0.83 & -0.01 & -0.04 & -0.01 & 0.07 & I believe in an immaterial soul or spirit.\\
+0.82 & 0.01 & 0.04 & 0.04 & 0.00 & Death is not the end.\\
+0.51 & 0.15 & 0.07 & -0.03 & -0.12 & The ideologies I believe in such as my religion, philosophies or politics will live on.\\
+0.01 & 0.79 & 0.08 & -0.08 & -0.07 & I have taken part in activities or events which will impact the future.\\
+-0.05 & 0.76 & 0.00 & 0.03 & 0.15 & I have contributed to the world in a unique way.\\
+0.02 & 0.73 & -0.06 & 0.12 & -0.05 & I have contributed to things which will be meaningful.\\
+0.06 & 0.65 & 0.04 & -0.06 & 0.16 & My life has influenced the world.\\
+0.12 & 0.59 & 0.08 & 0.10 & -0.17 & I feel I have taken part in something bigger than myself.\\
+0.13 & 0.35 & 0.07 & 0.22 & 0.13 & I believe I will be remembered for a long time after I die.\\
+0.00 & -0.02 & 1.02 & -0.02 & 0.03 & Parts of my personality have rubbed off on other people.\\
+0.03 & 0.08 & 0.69 & 0.11 & -0.02 & Through my interactions with them, others have picked up parts of my personality.\\
+-0.06 & 0.29 & 0.35 & 0.17 & -0.11 & I have imparted knowledge and skills on to others.\\
+0.03 & -0.03 & -0.04 & 0.76 & 0.04 & My offspring carry parts of me with them.\\
+0.02 & 0.02 & 0.08 & 0.73 & 0.00 & I am comforted by the fact that my genes can/will be carried on in the future.\\
+0.08 & 0.11 & 0.14 & 0.44 & -0.10 & I am comforted by knowing my loved ones will live on after me.\\
+-0.05 & 0.18 & -0.05 & 0.35 & 0.20 & I have children or students which take after me.\\
+-0.01 & 0.01 & -0.01 & 0.05 & 0.75 & I believe will not die.\\
+-0.01 & -0.01 & 0.10 & 0.01 & 0.60 & I have a hard time believing I will physically die.\\
+0.13 & 0.03 & -0.02 & -0.01 & 0.62 & I don't entirely believe I will die.\\
+0.07 & 0.04 & 0.07 & -0.02 & 0.47 & I believe I will be reincarnated.\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+EXPLAIN ITEM LABELS HERE
+
+\subsection{CFA}\label{cfa}
+
+Using the multigroup CFA procedure described above, we examined the 5-factor model for overall fit and fit across groups. Table \ref{tab:cfa-model-fit} portrays the results of the assessment of all models. The model showed acceptable fit overall with lower than desired values on the TLI, and lower values on the CFI and TLI for each individual group. Model fit appeared acceptable to investigate multi-group structure when examining the configural model with good values for the residual fit statistics, and poorer values for the goodness of fit statistics. We examined for potential areas of misfit using modification indices but did not find any suggested correlated error terms (i.e., two similar items that have related residuals) or cross-loadings that fit within theoretical structure. Therefore, we did not make any modifications.
+
+Using the \(\Delta\)CFI \(\le\) .01 rule for degradation in fit, we found that the loadings (\emph{scalar}) showed invariance across groups, while a large degradation in fit was found between the loadings and intercepts (\emph{metric}). We individually removed the equality constraint between groups for each item, and found one item that was different between groups: \emph{I have children or students which take after me.} The intercept for the undergraduate sample on this item was: 2.26, \emph{SE} = 0.08, while the Mechanical Turk sample showed a higher average item score: 3.45, \emph{SE} = 0.12. Figure \ref{fig:visualize-diffs} demonstrates a visualization of those differences with higher intercepts for the Mechanical Turk group. The overall distribution for the biological factor is also displayed in this figure.
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:cfa-model-fit}}
+
+\begin{tabular}{lcccccc}
+\toprule
+Model & Chi-Square & df & CFI & TLI & RMSEA & SRMR\\
+\midrule
+Overall & 503.453 & 76 & 0.901 & 0.885 & 0.066 & 0.065\\
+Group Undergraduate & 433.000 & 76 & 0.876 & 0.856 & 0.068 & 0.070\\
+Group Mechanical Turk & 331.121 & 76 & 0.899 & 0.883 & 0.082 & 0.094\\
+Configural & 764.120 & 152 & 0.885 & 0.867 & 0.072 & 0.077\\
+Loadings & 790.521 & 135 & 0.882 & 0.869 & 0.072 & 0.082\\
+Intercepts (Original) & 895.284 & 118 & 0.855 & 0.845 & 0.078 & 0.086\\
+Intercepts (Partial) & 830.685 & 119 & 0.875 & 0.866 & 0.072 & 0.085\\
+Residuals & 914.583 & 97 & 0.855 & 0.852 & 0.076 & 0.085\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{manuscript_files/figure-latex/visualize-diffs-1.pdf}}
+\caption{\label{fig:visualize-diffs}The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution.}
+\end{figure}
 
 \begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF %>% select(efa_loadings %>% filter(keep == "yes") %>% 
-##     pull(question)), nfactors = 2, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML1   ML2    h2   u2 com
-## Q2_1   0.57  0.15 0.435 0.56 1.1
-## Q2_2   0.77 -0.06 0.551 0.45 1.0
-## Q2_3   0.76 -0.08 0.529 0.47 1.0
-## Q2_4   0.69  0.06 0.525 0.47 1.0
-## Q2_5   0.73 -0.10 0.467 0.53 1.0
-## Q2_6   0.72  0.06 0.561 0.44 1.0
-## Q2_7   0.47  0.07 0.260 0.74 1.0
-## Q2_8   0.65 -0.02 0.408 0.59 1.0
-## Q2_9   0.63  0.01 0.406 0.59 1.0
-## Q2_10  0.58 -0.05 0.306 0.69 1.0
-## Q2_11  0.18  0.64 0.545 0.45 1.2
-## Q2_12 -0.05  0.92 0.805 0.20 1.0
-## Q2_14  0.66  0.05 0.477 0.52 1.0
-## Q2_15  0.68 -0.08 0.422 0.58 1.0
-## Q2_16  0.79 -0.08 0.572 0.43 1.0
-## Q2_17 -0.01  0.92 0.837 0.16 1.0
-## Q2_18  0.14  0.75 0.686 0.31 1.1
-## Q2_19  0.46  0.13 0.287 0.71 1.1
-## Q2_20  0.64 -0.10 0.353 0.65 1.0
-## Q4_1   0.71 -0.06 0.469 0.53 1.0
-## Q4_2   0.60 -0.06 0.329 0.67 1.0
-## Q4_3   0.60 -0.05 0.335 0.67 1.0
-## Q4_4   0.52  0.13 0.349 0.65 1.1
-## Q4_5   0.67 -0.06 0.410 0.59 1.0
-## Q4_6   0.52  0.20 0.413 0.59 1.3
-## Q4_7   0.31 -0.13 0.072 0.93 1.4
-## Q4_8   0.34  0.07 0.146 0.85 1.1
-## Q4_9   0.65  0.14 0.533 0.47 1.1
-## Q4_10  0.68  0.02 0.481 0.52 1.0
-## Q4_12  0.40 -0.04 0.145 0.86 1.0
-## Q4_13  0.23  0.38 0.285 0.72 1.7
-## Q4_14  0.16  0.47 0.321 0.68 1.2
-## Q4_15  0.63  0.04 0.423 0.58 1.0
-## Q4_16  0.55  0.01 0.309 0.69 1.0
-## Q4_17  0.12  0.51 0.329 0.67 1.1
-## Q4_19 -0.07  0.95 0.835 0.16 1.0
-## Q5_1   0.07  0.78 0.672 0.33 1.0
-## Q5_2   0.02  0.85 0.742 0.26 1.0
-## Q5_3   0.08  0.51 0.306 0.69 1.1
-## Q5_4   0.51  0.25 0.446 0.55 1.5
-## Q5_6   0.44  0.16 0.288 0.71 1.2
-## Q5_7   0.59 -0.02 0.337 0.66 1.0
-## Q5_8   0.68  0.04 0.489 0.51 1.0
-## Q5_9   0.75 -0.02 0.549 0.45 1.0
-## Q5_10 -0.06  0.85 0.666 0.33 1.0
-## Q5_13  0.74  0.04 0.574 0.43 1.0
-## Q5_14  0.31 -0.04 0.085 0.91 1.0
-## Q5_15  0.57  0.09 0.388 0.61 1.1
-## Q5_17  0.49  0.15 0.334 0.67 1.2
-## Q5_18  0.35  0.20 0.230 0.77 1.6
-## Q5_19  0.52  0.25 0.466 0.53 1.4
-## 
-##                         ML1  ML2
-## SS loadings           14.80 7.39
-## Proportion Var         0.29 0.14
-## Cumulative Var         0.29 0.44
-## Proportion Explained   0.67 0.33
-## Cumulative Proportion  0.67 1.00
-## 
-##  With factor correlations of 
-##      ML1  ML2
-## ML1 1.00 0.49
-## ML2 0.49 1.00
-## 
-## Mean item complexity =  1.1
-## Test of the hypothesis that 2 factors are sufficient.
-## 
-## df null model =  1275  with the objective function =  35.47 with Chi Square =  11817.61
-## df of  the model are 1174  and the objective function was  9.54 
-## 
-## The root mean square of the residuals (RMSR) is  0.06 
-## The df corrected root mean square of the residuals is  0.06 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  2962.25  with prob <  4.6e-155 
-## The total n.obs was  352  with Likelihood Chi Square =  3164.31  with prob <  3.7e-182 
-## 
-## Tucker Lewis Index of factoring reliability =  0.794
-## RMSEA index =  0.069  and the 90 % confidence intervals are  0.067 0.072
-## BIC =  -3719.59
-## Fit based upon off diagonal values = 0.98
-## Measures of factor score adequacy             
-##                                                    ML1  ML2
-## Correlation of (regression) scores with factors   0.98 0.98
-## Multiple R square of scores with factors          0.96 0.96
-## Minimum correlation of possible factor scores     0.93 0.93
+## # A tibble: 37 x 47
+##    free.parameter npar       fmin       chisq      df      pvalue baseline.chisq
+##    <chr>          <lvn.vctr> <lvn.vctr> <lvn.vctr> <lvn.v> <lvn.> <lvn.vctr>    
+##  1 Q2_13 ~~ Q2_13 97         1.382986   976.3883   453     0      3650.446      
+##  2 Q5_12 ~~ Q5_12 97         1.382640   976.1440   453     0      3650.446      
+##  3 Q4_11 ~~ Q4_11 97         1.381266   975.1736   453     0      3650.446      
+##  4 Q4_18 ~~ Q4_18 97         1.382443   976.0046   453     0      3650.446      
+##  5 Q4_8 ~~ Q4_8   97         1.378295   973.0765   453     0      3650.446      
+##  6 Q2_19 ~~ Q2_19 97         1.378511   973.2288   453     0      3650.446      
+##  7 Q5_17 ~~ Q5_17 97         1.377931   972.8194   453     0      3650.446      
+##  8 Q5_18 ~~ Q5_18 97         1.366113   964.4759   453     0      3650.446      
+##  9 Q2_20 ~~ Q2_20 97         1.383588   976.8129   453     0      3650.446      
+## 10 Q2_9 ~~ Q2_9   97         1.383783   976.9511   453     0      3650.446      
+## # i 27 more rows
+## # i 40 more variables: baseline.df <lvn.vctr>, baseline.pvalue <lvn.vctr>,
+## #   cfi <lvn.vctr>, tli <lvn.vctr>, nnfi <lvn.vctr>, rfi <lvn.vctr>,
+## #   nfi <lvn.vctr>, pnfi <lvn.vctr>, ifi <lvn.vctr>, rni <lvn.vctr>,
+## #   logl <lvn.vctr>, unrestricted.logl <lvn.vctr>, aic <lvn.vctr>,
+## #   bic <lvn.vctr>, ntotal <lvn.vctr>, bic2 <lvn.vctr>, rmsea <lvn.vctr>,
+## #   rmsea.ci.lower <lvn.vctr>, rmsea.ci.upper <lvn.vctr>, ...
 \end{verbatim}
-
-\begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF, nfactors = 3, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML1   ML2   ML3    h2   u2 com
-## Q2_1   0.47  0.17  0.20 0.445 0.56 1.6
-## Q2_2   0.63 -0.03  0.28 0.572 0.43 1.4
-## Q2_3   0.72 -0.05  0.08 0.528 0.47 1.0
-## Q2_4   0.71  0.09 -0.04 0.548 0.45 1.0
-## Q2_5   0.74 -0.07 -0.04 0.495 0.51 1.0
-## Q2_6   0.64  0.09  0.16 0.560 0.44 1.2
-## Q2_7   0.59  0.10 -0.26 0.371 0.63 1.4
-## Q2_8   0.74  0.01 -0.18 0.500 0.50 1.1
-## Q2_9   0.72  0.04 -0.18 0.492 0.51 1.1
-## Q2_10  0.39 -0.04  0.40 0.395 0.61 2.0
-## Q2_11  0.14  0.64  0.06 0.546 0.45 1.1
-## Q2_12 -0.06  0.92  0.02 0.804 0.20 1.0
-## Q2_13 -0.06  0.18  0.37 0.179 0.82 1.5
-## Q2_14  0.45  0.07  0.45 0.588 0.41 2.0
-## Q2_15  0.62 -0.05  0.11 0.418 0.58 1.1
-## Q2_16  0.75 -0.04  0.07 0.573 0.43 1.0
-## Q2_17  0.00  0.92 -0.02 0.837 0.16 1.0
-## Q2_18  0.13  0.76  0.02 0.686 0.31 1.1
-## Q2_19  0.53  0.15 -0.15 0.338 0.66 1.3
-## Q2_20  0.71 -0.07 -0.14 0.420 0.58 1.1
-## Q4_1   0.75 -0.02 -0.09 0.517 0.48 1.0
-## Q4_2   0.60 -0.03  0.00 0.340 0.66 1.0
-## Q4_3   0.64 -0.03 -0.07 0.367 0.63 1.0
-## Q4_4   0.40  0.15  0.23 0.371 0.63 1.9
-## Q4_5   0.54 -0.04  0.25 0.425 0.57 1.4
-## Q4_6   0.58  0.22 -0.13 0.459 0.54 1.4
-## Q4_7   0.07 -0.13  0.51 0.270 0.73 1.2
-## Q4_8   0.19  0.08  0.32 0.208 0.79 1.8
-## Q4_9   0.54  0.17  0.21 0.539 0.46 1.5
-## Q4_10  0.52  0.05  0.33 0.522 0.48 1.7
-## Q4_11 -0.12  0.13  0.45 0.212 0.79 1.3
-## Q4_12  0.42 -0.01 -0.06 0.161 0.84 1.0
-## Q4_13  0.20  0.39  0.07 0.287 0.71 1.6
-## Q4_14  0.23  0.48 -0.14 0.346 0.65 1.6
-## Q4_15  0.66  0.07 -0.07 0.451 0.55 1.0
-## Q4_16  0.30  0.01  0.54 0.497 0.50 1.6
-## Q4_17  0.00  0.51  0.25 0.381 0.62 1.4
-## Q4_18 -0.17  0.18  0.55 0.326 0.67 1.4
-## Q4_19 -0.05  0.95 -0.06 0.837 0.16 1.0
-## Q5_1   0.07  0.78  0.00 0.670 0.33 1.0
-## Q5_2   0.04  0.85 -0.04 0.744 0.26 1.0
-## Q5_3   0.09  0.51  0.00 0.305 0.69 1.1
-## Q5_4   0.50  0.28  0.00 0.453 0.55 1.6
-## Q5_5   0.13  0.01  0.03 0.021 0.98 1.1
-## Q5_6   0.33  0.17  0.24 0.313 0.69 2.4
-## Q5_7   0.46  0.01  0.25 0.356 0.64 1.5
-## Q5_8   0.49  0.06  0.41 0.568 0.43 2.0
-## Q5_9   0.70  0.01  0.08 0.544 0.46 1.0
-## Q5_10 -0.09  0.84  0.05 0.671 0.33 1.0
-## Q5_11 -0.09  0.15  0.15 0.042 0.96 2.7
-## Q5_12 -0.17  0.29  0.46 0.294 0.71 2.0
-## Q5_13  0.61  0.07  0.25 0.583 0.42 1.4
-## Q5_14  0.21 -0.03  0.21 0.107 0.89 2.0
-## Q5_15  0.62  0.12 -0.10 0.431 0.57 1.1
-## Q5_17  0.46  0.17  0.04 0.335 0.66 1.3
-## Q5_18  0.29  0.21  0.12 0.233 0.77 2.2
-## Q5_19  0.44  0.27  0.17 0.468 0.53 2.0
-## Q5_20  0.20 -0.06 -0.02 0.032 0.97 1.2
-## 
-##                         ML1  ML2  ML3
-## SS loadings           13.39 7.95 3.65
-## Proportion Var         0.23 0.14 0.06
-## Cumulative Var         0.23 0.37 0.43
-## Proportion Explained   0.54 0.32 0.15
-## Cumulative Proportion  0.54 0.85 1.00
-## 
-##  With factor correlations of 
-##      ML1  ML2  ML3
-## ML1 1.00 0.45 0.32
-## ML2 0.45 1.00 0.23
-## ML3 0.32 0.23 1.00
-## 
-## Mean item complexity =  1.4
-## Test of the hypothesis that 3 factors are sufficient.
-## 
-## df null model =  1653  with the objective function =  38.9 with Chi Square =  12870.73
-## df of  the model are 1482  and the objective function was  10.58 
-## 
-## The root mean square of the residuals (RMSR) is  0.05 
-## The df corrected root mean square of the residuals is  0.05 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  3147.43  with prob <  7.2e-122 
-## The total n.obs was  352  with Likelihood Chi Square =  3478.38  with prob <  1.2e-161 
-## 
-## Tucker Lewis Index of factoring reliability =  0.8
-## RMSEA index =  0.062  and the 90 % confidence intervals are  0.059 0.065
-## BIC =  -5211.52
-## Fit based upon off diagonal values = 0.98
-## Measures of factor score adequacy             
-##                                                    ML1  ML2  ML3
-## Correlation of (regression) scores with factors   0.98 0.98 0.92
-## Multiple R square of scores with factors          0.96 0.96 0.84
-## Minimum correlation of possible factor scores     0.92 0.93 0.68
-\end{verbatim}
-
-\begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF %>% select(efa_loadings %>% filter(keep == "yes") %>% 
-##     pull(question)), nfactors = 3, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML2   ML1   ML3   h2   u2 com
-## Q2_1   0.53  0.13  0.18 0.45 0.55 1.4
-## Q2_2   0.70 -0.06  0.18 0.54 0.46 1.1
-## Q2_3   0.75 -0.05 -0.02 0.53 0.47 1.0
-## Q2_4   0.71  0.10 -0.11 0.56 0.44 1.1
-## Q2_5   0.75 -0.06 -0.11 0.50 0.50 1.1
-## Q2_6   0.69  0.06  0.09 0.55 0.45 1.0
-## Q2_7   0.53  0.11 -0.18 0.33 0.67 1.3
-## Q2_8   0.69  0.01 -0.12 0.46 0.54 1.1
-## Q2_9   0.68  0.03 -0.11 0.46 0.54 1.1
-## Q2_11  0.16  0.62  0.09 0.55 0.45 1.2
-## Q2_12 -0.05  0.92  0.00 0.81 0.19 1.0
-## Q2_13  0.02  0.10  0.42 0.21 0.79 1.1
-## Q2_15  0.66 -0.05  0.00 0.41 0.59 1.0
-## Q2_16  0.78 -0.04 -0.05 0.57 0.43 1.0
-## Q2_17  0.00  0.92 -0.01 0.84 0.16 1.0
-## Q2_18  0.14  0.74  0.05 0.69 0.31 1.1
-## Q2_19  0.50  0.14 -0.09 0.32 0.68 1.2
-## Q2_20  0.67 -0.07 -0.11 0.40 0.60 1.1
-## Q4_1   0.73 -0.03 -0.07 0.50 0.50 1.0
-## Q4_2   0.61 -0.05  0.01 0.35 0.65 1.0
-## Q4_3   0.63 -0.03 -0.08 0.37 0.63 1.0
-## Q4_4   0.46  0.11  0.20 0.36 0.64 1.5
-## Q4_5   0.61 -0.09  0.22 0.42 0.58 1.3
-## Q4_6   0.56  0.23 -0.12 0.45 0.55 1.4
-## Q4_7   0.19 -0.20  0.43 0.21 0.79 1.8
-## Q4_8   0.27  0.01  0.34 0.23 0.77 1.9
-## Q4_9   0.60  0.13  0.18 0.54 0.46 1.3
-## Q4_11 -0.01  0.04  0.50 0.26 0.74 1.0
-## Q4_12  0.41 -0.03 -0.02 0.16 0.84 1.0
-## Q4_13  0.22  0.35  0.14 0.30 0.70 2.1
-## Q4_14  0.20  0.49 -0.11 0.34 0.66 1.5
-## Q4_15  0.65  0.08 -0.09 0.45 0.55 1.1
-## Q4_17  0.06  0.44  0.34 0.42 0.58 1.9
-## Q4_18 -0.05  0.05  0.68 0.48 0.52 1.0
-## Q4_19 -0.06  0.96 -0.05 0.84 0.16 1.0
-## Q5_1   0.08  0.78  0.00 0.67 0.33 1.0
-## Q5_2   0.03  0.85 -0.02 0.74 0.26 1.0
-## Q5_3   0.08  0.51  0.00 0.31 0.69 1.1
-## Q5_4   0.51  0.25  0.05 0.45 0.55 1.5
-## Q5_6   0.39  0.13  0.22 0.31 0.69 1.8
-## Q5_7   0.53 -0.04  0.23 0.36 0.64 1.4
-## Q5_9   0.74 -0.01  0.03 0.55 0.45 1.0
-## Q5_10 -0.07  0.82  0.09 0.67 0.33 1.0
-## Q5_12 -0.06  0.18  0.57 0.39 0.61 1.2
-## Q5_13  0.68  0.01  0.25 0.60 0.40 1.3
-## Q5_15  0.60  0.10 -0.02 0.42 0.58 1.1
-## Q5_17  0.48  0.13  0.09 0.34 0.66 1.2
-## Q5_19  0.49  0.24  0.12 0.46 0.54 1.6
-## 
-##                         ML2  ML1  ML3
-## SS loadings           12.36 7.36 2.42
-## Proportion Var         0.26 0.15 0.05
-## Cumulative Var         0.26 0.41 0.46
-## Proportion Explained   0.56 0.33 0.11
-## Cumulative Proportion  0.56 0.89 1.00
-## 
-##  With factor correlations of 
-##      ML2  ML1  ML3
-## ML2 1.00 0.46 0.20
-## ML1 0.46 1.00 0.28
-## ML3 0.20 0.28 1.00
-## 
-## Mean item complexity =  1.2
-## Test of the hypothesis that 3 factors are sufficient.
-## 
-## df null model =  1128  with the objective function =  31.98 with Chi Square =  10685.83
-## df of  the model are 987  and the objective function was  7.17 
-## 
-## The root mean square of the residuals (RMSR) is  0.05 
-## The df corrected root mean square of the residuals is  0.05 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  1731.72  with prob <  1.4e-43 
-## The total n.obs was  352  with Likelihood Chi Square =  2381.61  with prob <  1.1e-116 
-## 
-## Tucker Lewis Index of factoring reliability =  0.832
-## RMSEA index =  0.063  and the 90 % confidence intervals are  0.06 0.067
-## BIC =  -3405.79
-## Fit based upon off diagonal values = 0.98
-## Measures of factor score adequacy             
-##                                                    ML2  ML1  ML3
-## Correlation of (regression) scores with factors   0.98 0.98 0.89
-## Multiple R square of scores with factors          0.96 0.96 0.79
-## Minimum correlation of possible factor scores     0.92 0.93 0.58
-\end{verbatim}
-
-\begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF, nfactors = 5, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML2   ML5   ML1   ML3   ML4   h2   u2 com
-## Q2_1   0.13  0.40  0.13  0.27 -0.05 0.48 0.52 2.3
-## Q2_2  -0.01  0.20  0.49  0.25  0.04 0.57 0.43 1.9
-## Q2_3   0.04  0.02  0.81 -0.06  0.00 0.67 0.33 1.0
-## Q2_4   0.14  0.24  0.52 -0.09  0.10 0.58 0.42 1.7
-## Q2_5  -0.03  0.33  0.45 -0.04  0.05 0.48 0.52 1.9
-## Q2_6   0.09  0.32  0.34  0.18  0.11 0.56 0.44 2.9
-## Q2_7   0.11  0.48  0.13 -0.18  0.05 0.36 0.64 1.6
-## Q2_8  -0.04  0.77  0.05 -0.08  0.01 0.59 0.41 1.0
-## Q2_9  -0.02  0.79  0.02 -0.07 -0.04 0.61 0.39 1.0
-## Q2_10 -0.03  0.03  0.39  0.36  0.06 0.39 0.61 2.1
-## Q2_11  0.64  0.06  0.10  0.06  0.01 0.55 0.45 1.1
-## Q2_12  0.92 -0.07  0.04  0.01 -0.06 0.81 0.19 1.0
-## Q2_13  0.11  0.05 -0.07  0.41 -0.13 0.22 0.78 1.4
-## Q2_14  0.08  0.01  0.49  0.39  0.06 0.59 0.41 2.0
-## Q2_15  0.04 -0.05  0.79 -0.04 -0.04 0.57 0.43 1.0
-## Q2_16  0.05  0.04  0.82 -0.08  0.01 0.72 0.28 1.0
-## Q2_17  0.92  0.00  0.03 -0.03 -0.07 0.84 0.16 1.0
-## Q2_18  0.77  0.01  0.11  0.01  0.05 0.69 0.31 1.1
-## Q2_19  0.11  0.61 -0.06 -0.02  0.04 0.39 0.61 1.1
-## Q2_20 -0.09  0.59  0.13 -0.06  0.15 0.45 0.55 1.3
-## Q4_1  -0.03  0.57  0.25 -0.03  0.01 0.53 0.47 1.4
-## Q4_2  -0.01  0.33  0.30  0.03  0.02 0.33 0.67 2.0
-## Q4_3   0.00  0.35  0.29 -0.03  0.09 0.35 0.65 2.1
-## Q4_4   0.15  0.17  0.26  0.24  0.05 0.37 0.63 3.4
-## Q4_5  -0.05  0.28  0.32  0.27  0.02 0.43 0.57 3.0
-## Q4_6   0.23  0.41  0.21 -0.07 -0.02 0.45 0.55 2.2
-## Q4_7  -0.16 -0.09  0.12  0.53  0.16 0.31 0.69 1.6
-## Q4_8   0.00  0.29 -0.07  0.41 -0.02 0.27 0.73 1.9
-## Q4_9   0.15  0.34  0.26  0.24  0.00 0.54 0.46 3.2
-## Q4_10  0.07  0.09  0.51  0.27 -0.04 0.53 0.47 1.7
-## Q4_11  0.05  0.04 -0.07  0.50 -0.26 0.31 0.69 1.6
-## Q4_12 -0.01  0.27  0.13 -0.01  0.13 0.16 0.84 2.0
-## Q4_13  0.36  0.19  0.00  0.12  0.08 0.30 0.70 1.9
-## Q4_14  0.49  0.13  0.07 -0.12  0.12 0.35 0.65 1.4
-## Q4_15  0.10  0.33  0.38 -0.06  0.00 0.45 0.55 2.2
-## Q4_16  0.02 -0.07  0.40  0.49  0.07 0.50 0.50 2.0
-## Q4_17  0.49 -0.02  0.01  0.26  0.10 0.39 0.61 1.6
-## Q4_18  0.10 -0.04 -0.16  0.63  0.06 0.40 0.60 1.2
-## Q4_19  0.94  0.03 -0.07 -0.04 -0.04 0.84 0.16 1.0
-## Q5_1   0.79  0.00  0.05  0.00  0.07 0.68 0.32 1.0
-## Q5_2   0.85  0.03 -0.01 -0.03  0.07 0.75 0.25 1.0
-## Q5_3   0.52  0.01 -0.04  0.02  0.40 0.47 0.53 1.9
-## Q5_4   0.24  0.46  0.05  0.09  0.12 0.49 0.51 1.8
-## Q5_5   0.01  0.04 -0.11  0.08  0.65 0.42 0.58 1.1
-## Q5_6   0.15  0.17  0.16  0.27  0.08 0.32 0.68 3.4
-## Q5_7  -0.01  0.23  0.27  0.26  0.05 0.36 0.64 3.0
-## Q5_8   0.07  0.10  0.45  0.37  0.01 0.57 0.43 2.1
-## Q5_9   0.06  0.21  0.56  0.04  0.02 0.57 0.43 1.3
-## Q5_10  0.82  0.00 -0.07  0.06 -0.06 0.67 0.33 1.0
-## Q5_11  0.10  0.09 -0.02  0.18 -0.54 0.33 0.67 1.4
-## Q5_12  0.22 -0.06 -0.09  0.50 -0.05 0.32 0.68 1.5
-## Q5_13  0.05  0.36  0.30  0.29  0.00 0.59 0.41 2.9
-## Q5_14 -0.03  0.04  0.21  0.20 -0.05 0.11 0.89 2.2
-## Q5_15  0.05  0.76 -0.07  0.04 -0.03 0.56 0.44 1.0
-## Q5_17  0.10  0.60 -0.09  0.19 -0.05 0.44 0.56 1.3
-## Q5_18  0.14  0.44 -0.14  0.25  0.04 0.32 0.68 2.1
-## Q5_19  0.30  0.11  0.34  0.15  0.10 0.48 0.52 2.8
-## Q5_20 -0.02 -0.02 -0.01 -0.01  0.79 0.61 0.39 1.0
-## 
-##                        ML2  ML5  ML1  ML3  ML4
-## SS loadings           7.83 7.27 7.06 3.91 1.94
-## Proportion Var        0.14 0.13 0.12 0.07 0.03
-## Cumulative Var        0.14 0.26 0.38 0.45 0.48
-## Proportion Explained  0.28 0.26 0.25 0.14 0.07
-## Cumulative Proportion 0.28 0.54 0.79 0.93 1.00
-## 
-##  With factor correlations of 
-##      ML2  ML5  ML1  ML3  ML4
-## ML2 1.00 0.43 0.33 0.31 0.10
-## ML5 0.43 1.00 0.62 0.25 0.17
-## ML1 0.33 0.62 1.00 0.30 0.20
-## ML3 0.31 0.25 0.30 1.00 0.06
-## ML4 0.10 0.17 0.20 0.06 1.00
-## 
-## Mean item complexity =  1.7
-## Test of the hypothesis that 5 factors are sufficient.
-## 
-## df null model =  1653  with the objective function =  38.9 with Chi Square =  12870.73
-## df of  the model are 1373  and the objective function was  8.33 
-## 
-## The root mean square of the residuals (RMSR) is  0.04 
-## The df corrected root mean square of the residuals is  0.04 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  1829.65  with prob <  1.3e-15 
-## The total n.obs was  352  with Likelihood Chi Square =  2727.58  with prob <  4.9e-92 
-## 
-## Tucker Lewis Index of factoring reliability =  0.853
-## RMSEA index =  0.053  and the 90 % confidence intervals are  0.05 0.056
-## BIC =  -5323.18
-## Fit based upon off diagonal values = 0.99
-## Measures of factor score adequacy             
-##                                                    ML2  ML5  ML1  ML3  ML4
-## Correlation of (regression) scores with factors   0.98 0.96 0.96 0.92 0.89
-## Multiple R square of scores with factors          0.97 0.92 0.93 0.84 0.79
-## Minimum correlation of possible factor scores     0.93 0.84 0.85 0.69 0.57
-\end{verbatim}
-
-\begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF %>% select(efa_loadings %>% filter(keep == 1) %>% 
-##     pull(question)), nfactors = 5, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML1   ML2   ML3   ML5   ML4    h2   u2 com
-## Q2_1   0.16  0.16  0.15  0.35  0.15 0.450 0.55 2.8
-## Q2_2  -0.02  0.50  0.08  0.24  0.17 0.545 0.45 1.8
-## Q2_3   0.01  0.84  0.02 -0.04 -0.01 0.699 0.30 1.0
-## Q2_4   0.15  0.54  0.13  0.16 -0.14 0.583 0.42 1.6
-## Q2_7   0.12  0.17  0.27  0.19 -0.14 0.324 0.68 3.8
-## Q2_8  -0.03  0.03  0.94 -0.08  0.03 0.846 0.15 1.0
-## Q2_9   0.01  0.01  0.85  0.01  0.01 0.747 0.25 1.0
-## Q2_11  0.63  0.13  0.05 -0.01  0.08 0.555 0.45 1.1
-## Q2_12  0.92  0.00 -0.06  0.00  0.00 0.809 0.19 1.0
-## Q2_13  0.08 -0.04  0.12 -0.04  0.47 0.252 0.75 1.2
-## Q2_15  0.00  0.83  0.03 -0.15  0.02 0.635 0.37 1.1
-## Q2_16  0.03  0.84  0.07 -0.07 -0.05 0.742 0.26 1.0
-## Q2_17  0.93  0.00  0.02 -0.05  0.00 0.844 0.16 1.0
-## Q2_18  0.76  0.14  0.00  0.00  0.05 0.695 0.31 1.1
-## Q2_19  0.15 -0.04  0.25  0.47 -0.11 0.437 0.56 1.9
-## Q2_20 -0.06  0.18  0.43  0.25 -0.08 0.447 0.55 2.1
-## Q4_1  -0.01  0.27  0.45  0.16 -0.01 0.522 0.48 1.9
-## Q4_2  -0.02  0.33  0.14  0.25  0.03 0.341 0.66 2.3
-## Q4_3   0.00  0.31  0.11  0.32 -0.05 0.353 0.65 2.3
-## Q4_5  -0.06  0.38  0.06  0.33  0.19 0.454 0.55 2.6
-## Q4_6   0.25  0.24  0.15  0.27 -0.10 0.445 0.56 3.9
-## Q4_7  -0.19  0.17 -0.20  0.30  0.37 0.260 0.74 3.6
-## Q4_8   0.00  0.01  0.06  0.37  0.28 0.281 0.72 1.9
-## Q4_9   0.16  0.31  0.15  0.28  0.15 0.532 0.47 3.6
-## Q4_10  0.05  0.50  0.04  0.16  0.20 0.500 0.50 1.6
-## Q4_11  0.00 -0.04  0.11 -0.06  0.58 0.331 0.67 1.1
-## Q4_13  0.36  0.08  0.04  0.17  0.10 0.300 0.70 1.8
-## Q4_14  0.50  0.09  0.06  0.08 -0.12 0.341 0.66 1.3
-## Q4_17  0.44  0.10  0.05 -0.08  0.35 0.438 0.56 2.1
-## Q4_18  0.01 -0.04 -0.02  0.04  0.74 0.549 0.45 1.0
-## Q4_19  0.95 -0.10  0.02  0.01 -0.03 0.838 0.16 1.0
-## Q5_1   0.79  0.05 -0.05  0.08 -0.02 0.672 0.33 1.0
-## Q5_2   0.85 -0.01  0.03  0.01 -0.01 0.742 0.26 1.0
-## Q5_4   0.26  0.13  0.23  0.29  0.02 0.476 0.52 3.3
-## Q5_5  -0.02  0.04  0.03  0.11  0.05 0.027 0.97 2.2
-## Q5_9   0.05  0.59  0.01  0.24 -0.02 0.576 0.42 1.3
-## Q5_10  0.82 -0.06 -0.01 -0.02  0.08 0.674 0.33 1.0
-## Q5_12  0.16 -0.01  0.00 -0.06  0.61 0.434 0.57 1.2
-## Q5_15  0.09 -0.01  0.55  0.26  0.02 0.544 0.46 1.5
-## Q5_17  0.14 -0.05  0.25  0.47  0.04 0.452 0.55 1.8
-## Q5_18  0.17 -0.09  0.11  0.47  0.10 0.357 0.64 1.6
-## Q5_19  0.30  0.37 -0.08  0.28  0.02 0.483 0.52 3.0
-## Q5_20 -0.05  0.14 -0.03  0.14 -0.05 0.041 0.96 2.6
-## 
-##                        ML1  ML2  ML3  ML5  ML4
-## SS loadings           7.26 5.24 3.67 3.14 2.26
-## Proportion Var        0.17 0.12 0.09 0.07 0.05
-## Cumulative Var        0.17 0.29 0.38 0.45 0.50
-## Proportion Explained  0.34 0.24 0.17 0.15 0.10
-## Cumulative Proportion 0.34 0.58 0.75 0.90 1.00
-## 
-##  With factor correlations of 
-##      ML1  ML2  ML3  ML5  ML4
-## ML1 1.00 0.36 0.35 0.34 0.29
-## ML2 0.36 1.00 0.56 0.44 0.15
-## ML3 0.35 0.56 1.00 0.44 0.08
-## ML5 0.34 0.44 0.44 1.00 0.18
-## ML4 0.29 0.15 0.08 0.18 1.00
-## 
-## Mean item complexity =  1.8
-## Test of the hypothesis that 5 factors are sufficient.
-## 
-## df null model =  903  with the objective function =  27.79 with Chi Square =  9333.35
-## df of  the model are 698  and the objective function was  4.52 
-## 
-## The root mean square of the residuals (RMSR) is  0.04 
-## The df corrected root mean square of the residuals is  0.05 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  1021.68  with prob <  1.3e-14 
-## The total n.obs was  352  with Likelihood Chi Square =  1504.09  with prob <  3.9e-61 
-## 
-## Tucker Lewis Index of factoring reliability =  0.875
-## RMSEA index =  0.057  and the 90 % confidence intervals are  0.053 0.061
-## BIC =  -2588.72
-## Fit based upon off diagonal values = 0.99
-## Measures of factor score adequacy             
-##                                                    ML1  ML2  ML3  ML5  ML4
-## Correlation of (regression) scores with factors   0.98 0.96 0.96 0.89 0.89
-## Multiple R square of scores with factors          0.96 0.92 0.92 0.80 0.79
-## Minimum correlation of possible factor scores     0.93 0.84 0.84 0.59 0.58
-\end{verbatim}
-
-\begin{verbatim}
-## Factor Analysis using method =  ml
-## Call: fa(r = efaDF %>% select(efa_loadings_2 %>% filter(keep == 1) %>% 
-##     pull(question)), nfactors = 5, rotate = "oblimin", fm = "ml")
-## Standardized loadings (pattern matrix) based upon correlation matrix
-##         ML1   ML3   ML2   ML5   ML4   h2   u2 com
-## Q2_1   0.12  0.23  0.12  0.31  0.15 0.44 0.56 3.1
-## Q2_2  -0.03  0.56  0.07  0.17  0.16 0.53 0.47 1.4
-## Q2_3   0.00  0.86 -0.01 -0.04 -0.01 0.70 0.30 1.0
-## Q2_4   0.14  0.56  0.11  0.15 -0.15 0.58 0.42 1.5
-## Q2_8   0.00 -0.01  0.95 -0.06  0.02 0.85 0.15 1.0
-## Q2_9   0.02 -0.01  0.84  0.04  0.00 0.74 0.26 1.0
-## Q2_11  0.65  0.13  0.08 -0.06  0.07 0.55 0.45 1.2
-## Q2_12  0.92  0.00 -0.07  0.02  0.00 0.82 0.18 1.0
-## Q2_13  0.06 -0.03  0.10 -0.01  0.48 0.26 0.74 1.1
-## Q2_15 -0.01  0.82  0.00 -0.10  0.02 0.61 0.39 1.0
-## Q2_16  0.02  0.84  0.05 -0.05 -0.04 0.74 0.26 1.0
-## Q2_17  0.92 -0.01  0.03 -0.04  0.00 0.84 0.16 1.0
-## Q2_18  0.76  0.15  0.02 -0.05  0.06 0.69 0.31 1.1
-## Q2_19  0.10  0.03  0.20  0.46 -0.09 0.40 0.60 1.6
-## Q2_20 -0.06  0.20  0.43  0.18 -0.09 0.43 0.57 2.0
-## Q4_1   0.00  0.29  0.45  0.09  0.01 0.51 0.49 1.8
-## Q4_2  -0.01  0.37  0.16  0.11  0.05 0.30 0.70 1.6
-## Q4_8  -0.04  0.08 -0.01  0.42  0.21 0.27 0.73 1.6
-## Q4_9   0.13  0.35  0.12  0.26  0.13 0.52 0.48 2.8
-## Q4_10  0.06  0.54  0.06  0.06  0.19 0.48 0.52 1.3
-## Q4_11 -0.02 -0.03  0.08 -0.01  0.60 0.35 0.65 1.0
-## Q4_13  0.34  0.11  0.01  0.18  0.07 0.29 0.71 1.9
-## Q4_14  0.53  0.09  0.11 -0.03 -0.12 0.34 0.66 1.3
-## Q4_18 -0.02  0.00 -0.04  0.04  0.75 0.57 0.43 1.0
-## Q4_19  0.94 -0.10  0.02  0.02 -0.02 0.84 0.16 1.0
-## Q5_1   0.78  0.07 -0.06  0.10 -0.02 0.68 0.32 1.1
-## Q5_2   0.85 -0.01  0.03  0.02 -0.01 0.74 0.26 1.0
-## Q5_9   0.02  0.65 -0.03  0.23 -0.02 0.57 0.43 1.3
-## Q5_10  0.82 -0.06 -0.01  0.00  0.07 0.67 0.33 1.0
-## Q5_12  0.13  0.01 -0.02 -0.03  0.63 0.45 0.55 1.1
-## Q5_15  0.07  0.02  0.50  0.29 -0.01 0.54 0.46 1.7
-## Q5_17  0.03  0.01  0.10  0.70  0.01 0.60 0.40 1.0
-## Q5_18  0.07 -0.02 -0.04  0.67  0.05 0.48 0.52 1.0
-## 
-##                        ML1  ML3  ML2  ML5  ML4
-## SS loadings           6.42 4.68 3.00 2.41 1.88
-## Proportion Var        0.19 0.14 0.09 0.07 0.06
-## Cumulative Var        0.19 0.34 0.43 0.50 0.56
-## Proportion Explained  0.35 0.25 0.16 0.13 0.10
-## Cumulative Proportion 0.35 0.60 0.77 0.90 1.00
-## 
-##  With factor correlations of 
-##      ML1  ML3  ML2  ML5  ML4
-## ML1 1.00 0.37 0.33 0.43 0.30
-## ML3 0.37 1.00 0.59 0.42 0.13
-## ML2 0.33 0.59 1.00 0.50 0.08
-## ML5 0.43 0.42 0.50 1.00 0.22
-## ML4 0.30 0.13 0.08 0.22 1.00
-## 
-## Mean item complexity =  1.3
-## Test of the hypothesis that 5 factors are sufficient.
-## 
-## df null model =  528  with the objective function =  21.69 with Chi Square =  7357.73
-## df of  the model are 373  and the objective function was  2.17 
-## 
-## The root mean square of the residuals (RMSR) is  0.03 
-## The df corrected root mean square of the residuals is  0.03 
-## 
-## The harmonic n.obs is  352 with the empirical chi square  300.78  with prob <  1 
-## The total n.obs was  352  with Likelihood Chi Square =  727.35  with prob <  4.3e-25 
-## 
-## Tucker Lewis Index of factoring reliability =  0.926
-## RMSEA index =  0.052  and the 90 % confidence intervals are  0.046 0.058
-## BIC =  -1459.79
-## Fit based upon off diagonal values = 0.99
-## Measures of factor score adequacy             
-##                                                    ML1  ML3  ML2  ML5  ML4
-## Correlation of (regression) scores with factors   0.98 0.96 0.96 0.90 0.88
-## Multiple R square of scores with factors          0.96 0.92 0.92 0.81 0.77
-## Minimum correlation of possible factor scores     0.93 0.84 0.83 0.61 0.55
-\end{verbatim}
-
-\begin{itemize}
-\tightlist
-\item
-  take the final version of each ``best model''
-\item
-  get down to 5 items each or whatever is left (best loading and
-  theoretical)
-\item
-  look at the fit indices to tell which may be best
-\end{itemize}
 
 \section{Discussion}\label{discussion}
 
@@ -1158,8 +738,29 @@ also do five
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-bentler1990}
+Bentler, P. M. (1990). Comparative fit indexes in structural models. \emph{Psychological Bulletin}, \emph{107}(2), 238--246. \url{https://doi.org/10.1037/0033-2909.107.2.238}
+
+\bibitem[\citeproctext]{ref-bentler1995}
+Bentler, P. M. (1995). \emph{EQS structural equations program manual}. Encino, CA.
+
+\bibitem[\citeproctext]{ref-brown2015}
+Brown, T. A. (2015). \emph{Confirmatory factor analysis for applied research} (Second edition). New York ; London: The Guilford Press.
+
+\bibitem[\citeproctext]{ref-buchanan2024}
+Buchanan, E. M. (2024). Visualizemi: Visualization, Effect Size, and Replication of Measurement Invariance for Registered Reports. \emph{Assessment}, 10731911241280763. \url{https://doi.org/10.1177/10731911241280763}
+
 \bibitem[\citeproctext]{ref-burke2010}
 Burke, B. L., Martens, A., \& Faucher, E. H. (2010). Two Decades of Terror Management Theory: A Meta-Analysis of Mortality Salience Research. \emph{Personality and Social Psychology Review}, \emph{14}(2), 155--195. \url{https://doi.org/10.1177/1088868309352321}
+
+\bibitem[\citeproctext]{ref-byrne1989}
+Byrne, B. M., Shavelson, R. J., \& Muthén, B. (1989). Testing for the equivalence of factor covariance and mean structures: The issue of partial measurement invariance. \emph{Psychological Bulletin}, \emph{105}(3), 456--466. \url{https://doi.org/10.1037/0033-2909.105.3.456}
+
+\bibitem[\citeproctext]{ref-cheung1999}
+Cheung, G. W., \& Rensvold, R. B. (1999). Testing Factorial Invariance across Groups: A Reconceptualization and Proposed New Method. \emph{Journal of Management}, \emph{25}(1), 1--27. \url{https://doi.org/10.1177/014920639902500101}
+
+\bibitem[\citeproctext]{ref-cheung2002}
+Cheung, G. W., \& Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for testing measurement invariance. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{9}(2), 233--255. \url{https://doi.org/10.1207/S15328007SEM0902_5}
 
 \bibitem[\citeproctext]{ref-drolet1990}
 Drolet, J.-L. (1990). Transcending death during early adulthood: Symbolic immortality, death anxiety, and purpose in life. \emph{Journal of Clinical Psychology}, \emph{46}(2), 148--160.
@@ -1176,6 +777,15 @@ Greenberg, J., Pyszczynski, T., \& Solomon, S. (1986). \emph{The Causes and Cons
 \bibitem[\citeproctext]{ref-greenberg1990}
 Greenberg, J., Solomon, S., Veeder, M., Pyszczynski, T., Rosenblatt, A., Kirkland, S., \& Lyon, D. (1990). Evidence for Terror Management Theory II: The Effects of Mortality Salience on Reactions to Those Who Threaten or Bolster the Cultural Worldview. \emph{Journal of Personality and Social Psychology}, \emph{58}(2), 308--318.
 
+\bibitem[\citeproctext]{ref-hu1999}
+Hu, L., \& Bentler, P. M. (1999). Cutoff criteria for fit indexes in covariance structure analysis: Conventional criteria versus new alternatives. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{6}(1), 1--55. \url{https://doi.org/10.1080/10705519909540118}
+
+\bibitem[\citeproctext]{ref-juxf6reskog1996}
+Jöreskog, K. G., \& Sörbom, D. (1996). \emph{LISREL 8: User's Reference Guide}. Scientific Software International.
+
+\bibitem[\citeproctext]{ref-kline2016}
+Kline, R. B. (2016). \emph{Principles and practice of structural equation modeling} (Fourth edition). New York: The Guilford Press.
+
 \bibitem[\citeproctext]{ref-kotre1984}
 Kotre, J. (1984). \emph{Outliving the self: How we live on in future generations}. New York: W. W. Norton \& Company, Inc.
 
@@ -1187,6 +797,27 @@ Mathews, R. C., \& Mister, R. D. (1987). Measuring an Individual's Investment in
 
 \bibitem[\citeproctext]{ref-mcadams1992}
 McAdams, D. P., \& St. Aubin, E. de. (1992). A theory of generativity and its assessment through self-report, behavioral acts, and narrative themes in autobiography. \emph{Journal of Personality and Social Psychology}, \emph{62}(6), 1003--1015.
+
+\bibitem[\citeproctext]{ref-nye2019}
+Nye, C. D., Bradburn, J., Olenick, J., Bialko, C., \& Drasgow, F. (2019). How Big Are My Effects? Examining the Magnitude of Effect Sizes in Studies of Measurement Equivalence. \emph{Organizational Research Methods}, \emph{22}(3), 678--709. \url{https://doi.org/10.1177/1094428118761122}
+
+\bibitem[\citeproctext]{ref-nye2011}
+Nye, C. D., \& Drasgow, F. (2011). Effect size indices for analyses of measurement equivalence: Understanding the practical importance of differences between groups. \emph{Journal of Applied Psychology}, \emph{96}(5), 966--980. \url{https://doi.org/10.1037/a0022955}
+
+\bibitem[\citeproctext]{ref-preacher2003}
+Preacher, K. J., \& MacCallum, R. C. (2003). Repairing tom swift's electric factor analysis machine. \emph{Understanding Statistics}, \emph{2}(1), 13--43. \url{https://doi.org/10.1207/S15328031US0201_02}
+
+\bibitem[\citeproctext]{ref-revelle2020}
+Revelle, W. (2020). \emph{Psych: Procedures for psychological, psychometric, and personality research}. Retrieved from \url{https://CRAN.R-project.org/package=psych}
+
+\bibitem[\citeproctext]{ref-rosseel2012}
+Rosseel, Y. (2012). Lavaan: An r package for structural equation modeling. \emph{Journal of Statistical Software}, \emph{48}(1), 1--36. \url{https://doi.org/10.18637/jss.v048.i02}
+
+\bibitem[\citeproctext]{ref-steiger2016}
+Steiger, J. H. (2016). Notes on the Steiger{\textendash}Lind (1980) Handout. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{23}(6), 777--781. \url{https://doi.org/10.1080/10705511.2016.1217487}
+
+\bibitem[\citeproctext]{ref-tucker1973}
+Tucker, L. R., \& Lewis, C. (1973). A reliability coefficient for maximum likelihood factor analysis. \emph{Psychometrika}, \emph{38}(1), 1--10. \url{https://doi.org/10.1007/BF02291170}
 
 \bibitem[\citeproctext]{ref-zuckerman1979}
 Zuckerman, M., \& Neeb, M. (1979). Sensation seeking and psychopathology. \emph{Psychiatry Research}, \emph{1}(3), 255--264. \url{https://doi.org/10.1016/0165-1781(79)90007-6}

@@ -1,0 +1,7 @@
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{manuscript_files/figure-latex/visualize-diffs-1.pdf}}
+\caption{\label{fig:visualize-diffs}The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution.}
+\end{figure*}

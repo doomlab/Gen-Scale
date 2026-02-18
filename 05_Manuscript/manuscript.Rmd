@@ -293,6 +293,8 @@ library(mice)
 library(psych)
 library(visualizemi)
 library(lavaan)
+library(ggplot2)
+library(cowplot)
 
 ## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
 ## args: rt: vector of response time/page time for each participant
@@ -496,6 +498,9 @@ mturk_good <- import("../03_Data/mturk_data_goodqual.csv")
 mturk_noout <- import("../03_Data/mturk_data_noout.csv")
 
 questions <- import("../03_Data/questions.xlsx")
+
+no_missing_sona <- 452
+no_missing_turk <- 181
 ```
 
 # Method
@@ -660,12 +665,9 @@ partially invariant parameter estimates.
 
 ### Undergraduate Data
 
-Data were screened for accuracy, missing data, outliers, and multivariate parametric assumptions. 
+Data were screened for accuracy, missing data, outliers, and multivariate parametric assumptions. The undergraduate data included *n* = `r nrow(sona)` participants. We first screened each participant for missing data and excluded *n* =  `r nrow(sona) - nrow(sona_replaced)` participants for missing more than 5% of their data [TABACHNICK]. `r nrow(sona_replaced) - no_missing_sona` participants included less than 5% missing data (i.e., 3 items or less), and these data points amounted to less than 2% of data missing per question. These items were replaced with a random imputation from the *mice* library [CITE MICE]. 
 
-`r nrow(sona)`
-`r nrow(sona_replaced)`
-`r nrow(sona_good)`
-`r nrow(sona_noout)`
+The data were then screen for attentiveness and accuracy using the framework from CITE BUCHANAN to find low quality responses. The survey items were split into three pages, and each page was screened separately using click counts, an attention check item (i.e., please answer strongly agree for this item), and number of characters on a page for reading speed. The total number of indicators for low quality data was summed for each participant across pages (e.g., 3 indicators by 3 pages = 9 total possible items), and *n* = `r nrow(sona_replaced)- nrow(sona_good)` participants showed at least 4 indicators across all pages. CITE BUCHANAN suggest a criteria of 2/5 screeners or 40%, and therefore, we used 4 items as the ~40% cut off for inclusion in the data. The final sample size for the undergraduate population was *n* = `r nrow(sona_good)`. We additionally screened for multivariate outliers using Mahalanobis distance across items and found *n* = `r nrow(sona_good) - nrow(sona_noout)` possible outliers, but they are included in the analyses described below. 
 
 ```{r screen-sona-accuracy-out, eval = F}
 # Accuracy ----
@@ -843,10 +845,7 @@ hist(standardized, breaks=15)
 
 ### Mechanical Turk Data
 
-`r nrow(mturk)`
-`r nrow(mturk_replaced)`
-`r nrow(mturk_good)`
-`r nrow(mturk_noout)`
+The Mechanical Turk data were screened in the same manner as the undergraduate sample. The original sample size was *n* = `r nrow(mturk)` participants. *N* = `r nrow(mturk) -  nrow(mturk_replaced)` participants were excluded for missing more than 5% of their data, and *n* = `r nrow(mturk_replaced) - no_missing_turk` participants had 3 or less data points estimated using the *mice* library. The same low quality data screening was performed, and *n* = `r nrow(mturk_replaced) - nrow(mturk_good)` participants were excluded for having 40% or more low quality indicators. Last, *n* =  `r nrow(mturk_good) - nrow(mturk_noout)` participants were flagged as potential outliers but were not included in analyses presented below. 
 
 ```{r screen-mturk-accuracy-out, eval = F}
 # Accuracy ----
@@ -1039,7 +1038,7 @@ random_split <- c(
 
 efaDF <- combo %>% 
   filter(ResponseId %in% random_split) %>% 
-  select(Q2_1:Q5_20)  %>% 
+  select(Q2_1:Q5_20, where) %>% 
   select(-Q2_21, -Q4_20, -Q5_16)
 cfaDF <- combo %>% 
   filter(!(ResponseId %in% random_split)) %>% 
@@ -1061,17 +1060,24 @@ cfaDF_noout <- combo_noout %>%
 nrow(efaDF_noout)
 nrow(cfaDF_noout)
 
-write.csv(efaDF, "../03_Data/efaDF.csv", row.names = F)
-write.csv(cfaDF, "../03_Data/cfaDF.csv", row.names = F)
+# write.csv(efaDF, "../03_Data/efaDF.csv", row.names = F)
+# write.csv(cfaDF, "../03_Data/cfaDF.csv", row.names = F)
+```
+
+The data was then randomly split into *n* = `r nrow(efaDF)` participants for the exploratory factor analysis, and *n* = `r nrow(cfaDF)` for the confirmatory factor analysis. The EFA data included *n* undergraduate = `r nrow(efaDF %>% filter(where == "Undergraduate"))` participants, and *n* Mechanical Turk = `r nrow(efaDF %>% filter(where != "Undergraduate"))` participants. The CFA data included *n* undergraduate = `r nrow(cfaDF %>% filter(where == "Undergraduate"))` participants, and *n* Mechanical Turk = `r nrow(cfaDF %>% filter(where != "Undergraduate"))` participants. 
+
+```{r efa-drop-where}
+efaDF <- efaDF %>% 
+  select(-where)
 ```
 
 ## EFA
 
 ### Number of Factors
 
-```{r number-factors}
-#efaDF <- read.csv("../03_Data/efaDF.csv")
+To determine the number of factors that best fit the data, we used suggested theory (5 factors), a scree plot, and a parallel analysis using the *psych* library [CITE PSYCH]. Parallel analysis suggested 7 factors, while a visual inspection of the scree plot indicated 2 to 3 factors. We analyzed a 2-factor, 3-factor, and 5-factor model for simple structure and fit indices.
 
+```{r number-factors, echo = F, include = F}
 number_items <- fa.parallel(efaDF, #data frame
                             fm="ml", #math
                             fa="fa") #only efa
@@ -1081,7 +1087,7 @@ sum(number_items$fa.values > .7)
 
 ### Simple Structure
 
-```{r two-factor}
+```{r two-factor, message = F}
 item_text <- read.csv("../03_Data/item_text.csv")
 
 EFA_fit <- fa(efaDF, #data
@@ -1089,7 +1095,7 @@ EFA_fit <- fa(efaDF, #data
               rotate = "oblimin", #rotation
               fm = "ml") #math
 
-EFA_fit
+# EFA_fit
 
 # remember you gotta fix this because of the order of operations 
 efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
@@ -1102,6 +1108,8 @@ efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>%
   )) %>% 
   mutate(question = rownames(.))
 
+two_factor_1 <- table(efa_loadings$keep)
+
 EFA_fit_2 <- fa(efaDF %>% 
                   select(efa_loadings %>% 
                            filter(keep == "yes") %>% 
@@ -1109,8 +1117,6 @@ EFA_fit_2 <- fa(efaDF %>%
               nfactors = 2, #number of factors
               rotate = "oblimin", #rotation
               fm = "ml") #math
-
-EFA_fit_2
 
 efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>% 
   mutate(keep = ifelse(
@@ -1123,18 +1129,18 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
   mutate(question = rownames(.)) %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
-  arrange(desc(ML1)) %>% 
-  export(., "results/2_factor.xlsx", row.names = F)
+  arrange(desc(ML1)) 
+
+# %>% export(., "results/2_factor.xlsx", row.names = F)
+
+two_factor_2 <- table(efa_loadings_2$keep)
 ```
 
 ```{r three-factor}
-
 EFA_fit <- fa(efaDF, #data
               nfactors = 3, #number of factors
               rotate = "oblimin", #rotation
               fm = "ml") #math
-
-EFA_fit
 
 efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
   mutate(keep = ifelse(
@@ -1154,6 +1160,8 @@ efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>%
           )
   )
 
+three_factor_1 <- table(efa_loadings$keep)
+
 EFA_fit_2 <- fa(efaDF %>% 
                   select(efa_loadings %>% 
                            filter(keep == "yes") %>% 
@@ -1161,8 +1169,6 @@ EFA_fit_2 <- fa(efaDF %>%
               nfactors = 3, #number of factors
               rotate = "oblimin", #rotation
               fm = "ml") #math
-
-EFA_fit_2
 
 efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>% 
   mutate(keep = ifelse(
@@ -1183,8 +1189,42 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
   ) %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
-  arrange(desc(ML1)) %>% 
-  export(., "results/3_factor.xlsx", row.names = F)
+  arrange(desc(ML1)) 
+  # %>% export(., "results/3_factor.xlsx", row.names = F)
+
+three_factor_2 <- table(efa_loadings_2$keep)
+
+EFA_fit_3 <- fa(efaDF %>% 
+                  select(efa_loadings_2 %>% 
+                           filter(keep == "yes") %>% 
+                           pull(question)), #data
+              nfactors = 3, #number of factors
+              rotate = "oblimin", #rotation
+              fm = "ml") #math
+
+efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>% 
+  mutate(keep = ifelse(
+    ML1 >= .30, "yes", ifelse(
+      ML2 >= .30, "yes", ifelse(
+        ML3 >= .30, "yes", "no"
+        )
+      )
+    )
+  ) %>% 
+  mutate(question = rownames(.)) %>% 
+  mutate(
+    keep = ifelse(
+          (ML1 >= .30 & ML2 >= .30) | 
+            (ML1 >= .30 & ML3 >= .30) |
+            (ML3 >= .30 & ML2 >= .30), "no", keep
+          )
+  ) %>% 
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>% 
+  arrange(desc(ML1)) 
+  # %>% export(., "results/3_factor.xlsx", row.names = F)
+
+three_factor_3 <- table(efa_loadings_3$keep)
 ```
 
 ```{r five-factor}
@@ -1193,13 +1233,13 @@ EFA_fit <- fa(efaDF, #data
               rotate = "oblimin", #rotation
               fm = "ml") #math
 
-EFA_fit
-
 efa_loadings <- as.data.frame(unclass(EFA_fit$loadings)) %>% 
   mutate(question = rownames(.)) %>% 
   rowwise() %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
   ungroup() 
+
+five_factor_1 <- table(efa_loadings$keep)
 
 EFA_fit_2 <- fa(efaDF %>% 
                   select(efa_loadings %>% 
@@ -1209,13 +1249,13 @@ EFA_fit_2 <- fa(efaDF %>%
               rotate = "oblimin", #rotation
               fm = "ml") #math
 
-EFA_fit_2
-
 efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>% 
   mutate(question = rownames(.)) %>% 
   rowwise() %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
   ungroup() 
+
+five_factor_2 <- table(efa_loadings_2$keep)
 
 EFA_fit_3 <- fa(efaDF %>% 
                   select(efa_loadings_2 %>% 
@@ -1225,7 +1265,6 @@ EFA_fit_3 <- fa(efaDF %>%
               rotate = "oblimin", #rotation
               fm = "ml") #math
 
-EFA_fit_3
 
 efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>% 
   mutate(question = rownames(.)) %>% 
@@ -1234,9 +1273,13 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
   ungroup() %>% 
   left_join(questions,
             by = c("question" = "Question_Number")) %>% 
-  arrange(desc(ML1)) %>% 
-  export(., "results/5_factor.xlsx", row.names = F)
+  arrange(desc(ML1)) 
+  # %>% export(., "results/5_factor.xlsx", row.names = F)
+
+five_factor_3 <- table(efa_loadings_3$keep)
 ```
+
+The `r ncol(efaDF)` items were first tested with a 2-factor fit, and `r two_factor_1["no"]` items were excluded for not loading on any factor or loading on multiple factors with a loading greater than .30. After removing these items, all items loaded cleanly on the two factors. The loading table for this analysis can be found at XX. This same procedure was repeated for the 3-factor fit, and `r three_factor_1["no"]` items were removed from the first round of analysis, and `r three_factor_2["no"]` item was removed from the second round of analysis, resulting in a final set of `r three_factor_3["yes"]` items. The loading table and items can be found at XX. Last, the 5-factor model showed `r five_factor_1["0"] + five_factor_1["2"]` poor items on the first round of analysis, and `r five_factor_2["0"] + five_factor_2["2"]` poor items on the second round of analysis, resulting in a final set of `r five_factor_3` items for the final model. The items and loadings can be found at XX. 
 
 ```{r comparison-models}
 efa_results <- import("results/final_questions.xlsx")
@@ -1248,6 +1291,16 @@ EFA_2factor <- fa(efaDF %>%
                   rotate = "oblimin", #rotation
                   fm = "ml") #math
 
+efa_loadings_two <- as.data.frame(unclass(EFA_2factor$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() %>% 
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>% 
+  arrange(desc(ML1)) 
+  # %>% export(., "results/2_factor_reduced.xlsx", row.names = F)
+
 EFA_3factor <- fa(efaDF %>% 
                     select(efa_results %>% 
                            filter(!is.na(factor3)) %>% 
@@ -1255,6 +1308,16 @@ EFA_3factor <- fa(efaDF %>%
                   nfactors = 3,
                   rotate = "oblimin", #rotation
                   fm = "ml") #math
+
+efa_loadings_three <- as.data.frame(unclass(EFA_3factor$loadings)) %>% 
+  mutate(question = rownames(.)) %>% 
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>% 
+  ungroup() %>% 
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>% 
+  arrange(desc(ML1)) 
+  # %>% export(., "results/3_factor_reduced.xlsx", row.names = F)
 
 EFA_5factor <- fa(efaDF %>% 
                     select(efa_results %>% 
@@ -1264,58 +1327,69 @@ EFA_5factor <- fa(efaDF %>%
                   rotate = "oblimin", #rotation
                   fm = "ml") #math
 
-EFA_2factor
-EFA_3factor
-EFA_5factor
-
-new_5_columns <- as.data.frame(unclass(EFA_5factor$loadings)) %>% 
+efa_loadings_five <- as.data.frame(unclass(EFA_5factor$loadings)) %>% 
   mutate(question = rownames(.)) %>% 
   rowwise() %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
   ungroup() %>% 
-  arrange(desc(keep)) %>% 
-  filter(keep == 1) %>% 
-  pull(question)
+  arrange(desc(keep)) 
+
+five_loadings_1 <- table(efa_loadings_five$keep)
 
 EFA_5factor <- fa(efaDF %>% 
-                    select(all_of(new_5_columns)),
+                    select(all_of(efa_loadings_five %>% 
+                                    filter(keep == 1) %>%
+                                    pull(question))),
                   nfactors = 5,
                   rotate = "oblimin", #rotation
                   fm = "ml") #math
 
-EFA_5factor
-
-new_5_columns <- as.data.frame(unclass(EFA_5factor$loadings)) %>% 
+efa_loadings_five_2 <- as.data.frame(unclass(EFA_5factor$loadings)) %>% 
   mutate(question = rownames(.)) %>% 
   rowwise() %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
   ungroup() %>% 
-  arrange(desc(keep)) %>% 
-  filter(keep == 1) %>% 
-  pull(question)
+  arrange(desc(keep)) 
+
+five_loadings_2 <- table(efa_loadings_five_2$keep)
 
 EFA_5factor <- fa(efaDF %>% 
-                    select(all_of(new_5_columns)),
+                    select(all_of(efa_loadings_five_2 %>% 
+                                    filter(keep == 1) %>%
+                                    pull(question))),
                   nfactors = 5,
                   rotate = "oblimin", #rotation
                   fm = "ml") #math
 
-EFA_5factor
-
-# as.data.frame(unclass(EFA_5factor$loadings)) %>% 
-#   mutate(question = rownames(.)) %>% 
-#   rowwise() %>%
-#   mutate(keep = sum(c_across(-question) >= .30)) %>% 
-#   ungroup() %>% 
-#   left_join(questions,
-#             by = c("question" = "Question_Number")) %>% 
-#   arrange(desc(ML1)) %>% 
-#   export(., "results/5_factor_reduced.xlsx", row.names = F)
+efa_loadings_five_3 <- as.data.frame(unclass(EFA_5factor$loadings)) %>%
+  mutate(question = rownames(.)) %>%
+  rowwise() %>%
+  mutate(keep = sum(c_across(-question) >= .30)) %>%
+  ungroup() %>%
+  left_join(questions,
+            by = c("question" = "Question_Number")) %>%
+  arrange(desc(ML1)) 
+  # %>% export(., "results/5_factor_reduced.xlsx", row.names = F)
 ```
 
-```{r}
-# test if q2_1 changing to a different place changes results 
+We then compared items across all factor models to reduce scale length. Items were selected for the final model if they: 1) theoretically made sense with the other items on that factor, 2) loaded on the theorized 5-factor model (i.e., items were included in the 2-factor model if they also had been included in the 5-factor model), and 3) were not face-value redundant with other items on that factor. We tested these items and found that the 2-factor and 3-factor models continued to show simple structure, but the 5-factor model required the removal of `r five_loadings_1["2"] + five_loadings_2["2"]` more items due to cross loadings across factors. To select the best model, we examined the fit indices for each factor structure. The 5-factor model showed the best fit (RMSEA = `r apa_num(EFA_5factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR = `r apa_num(EFA_5factor$rms, gt1 = F, digits = 3)`, TLI = `r apa_num(EFA_5factor$TLI, gt1 = F, digits = 3)`, CFI = `r apa_num(EFA_5factor$CFI, gt1 = F, digits = 3)`), followed by the 3-factor model (RMSEA = `r apa_num(EFA_3factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR = `r apa_num(EFA_3factor$rms, gt1 = F, digits = 3)`, TLI = `r apa_num(EFA_3factor$TLI, gt1 = F, digits = 3)`, CFI = `r apa_num(EFA_3factor$CFI, gt1 = F, digits = 3)`), and then the 2-factor model (RMSEA = `r apa_num(EFA_2factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR = `r apa_num(EFA_2factor$rms, gt1 = F, digits = 3)`, TLI = `r apa_num(EFA_2factor$TLI, gt1 = F, digits = 3)`, CFI = `r apa_num(EFA_2factor$CFI, gt1 = F, digits = 3)`). The final factor loadings for the 5-factor scale are shown in Table \@ref(tab:table-five-factor), and the other loadings can be found at XX (2-factor) and XX (3-factor).
+
+```{r table-five-factor, results = 'asis'}
 five_reduced <- import('results/5_factor_reduced.xlsx')
+apa_table(five_reduced %>% 
+            select(-keep, -question) %>% 
+            mutate(row_num = 1:nrow(.)) %>% 
+            arrange(desc(row_num)) %>% 
+            select(-Factor, -row_num), 
+          col.names = c("Spiritual", "Social", "Personal", "Biological", "Physical", "Item"), 
+          size = "smaller")
+```
+
+EXPLAIN ITEM LABELS HERE 
+
+## CFA
+
+```{r cfa-five-factor}
 five.model <- ""
 
 for (factor in unique(five_reduced$Factor)){
@@ -1339,33 +1413,33 @@ model.results <- mgcfa(
   meanstructure = TRUE
 )
 
-summary(model.results$model_overall, 
-        standardized = T,
-        fit.measures = T, 
-        rsquare = T)
-
-summary(model.results$group_models$model.Undergraduate, 
-        standardized = T,
-        fit.measures = T, 
-        rsquare = T)
-
-modificationindices(model.results$group_models$model.Undergraduate,
-                    sort. = T)
-
-summary(model.results$group_models$`model.Mechanical Turk`, 
-        standardized = T,
-        fit.measures = T, 
-        rsquare = T)
-
-modificationindices(model.results$group_models$`model.Mechanical Turk`, 
-                    sort. = T)
-
-summary(model.results$model_configural, 
-        standardized = T,
-        fit.measures = T, 
-        rsquare = T)
-
-model.results$model_fit
+# summary(model.results$model_overall, 
+#         standardized = T,
+#         fit.measures = T, 
+#         rsquare = T)
+# 
+# summary(model.results$group_models$model.Undergraduate, 
+#         standardized = T,
+#         fit.measures = T, 
+#         rsquare = T)
+# 
+# modificationindices(model.results$group_models$model.Undergraduate,
+#                     sort. = T)
+# 
+# summary(model.results$group_models$`model.Mechanical Turk`, 
+#         standardized = T,
+#         fit.measures = T, 
+#         rsquare = T)
+# 
+# modificationindices(model.results$group_models$`model.Mechanical Turk`, 
+#                     sort. = T)
+# 
+# summary(model.results$model_configural, 
+#         standardized = T,
+#         fit.measures = T, 
+#         rsquare = T)
+# 
+# model.results$model_fit
 
 model.partial <- partial_mi(
   saved_model = model.results$invariance_models$model.intercepts,
@@ -1375,12 +1449,81 @@ model.partial <- partial_mi(
   group.equal = c("loadings", "intercepts"),
   partial_step = "intercepts")
 
-model.partial$fit_table
+model.results.partial <- mgcfa(
+  model = five.model,
+  data = cfaDF,
+  group = "where", 
+  group.equal = c("loadings", "intercepts", "residuals"),
+  meanstructure = TRUE,
+  group.partial = "Q4_8 ~1"
+)
+
+intercepts_diff <- model.results.partial$model_coef %>% 
+  filter(term == "Q4_8 ~1 ") %>% 
+  filter(model == "intercepts")
 ```
 
-```{r}
-# distribution of each latent variable as a plot 
+Using the multigroup CFA procedure described above, we examined the 5-factor model for overall fit and fit across groups. Table \@ref(tab:cfa-model-fit) portrays the results of the assessment of all models. The model showed acceptable fit overall with lower than desired values on the TLI, and lower values on the CFI and TLI for each individual group. Model fit appeared acceptable to investigate multi-group structure when examining the configural model with good values for the residual fit statistics, and poorer values for the goodness of fit statistics. We examined for potential areas of misfit using modification indices but did not find any suggested correlated error terms (i.e., two similar items that have related residuals) or cross-loadings that fit within theoretical structure. Therefore, we did not make any modifications. 
 
+### Partial Scalar Invariance
+
+Using the $\Delta$CFI $\le$ .01 rule for degradation in fit, we found that the loadings (*metric*) showed invariance across groups, while a large degradation in fit was found between the loadings and intercepts (*scalar*). We individually removed the equality constraint between groups for each item, and found one item that was different between groups: *I have children or students which take after me.* The intercept for the undergraduate sample on this item was: `r intercepts_diff %>% filter(group == 1) %>% pull(estimate) %>% apa_num()`, *SE* = `r intercepts_diff %>% filter(group == 1) %>% pull(std.error) %>% apa_num()`, while the Mechanical Turk sample showed a higher average item score: `r intercepts_diff %>% filter(group == 2) %>% pull(estimate) %>% apa_num()`, *SE* = `r intercepts_diff %>% filter(group == 2) %>% pull(std.error) %>% apa_num()`. Figure \@ref(fig:visualize-diffs) demonstrates a visualization of those differences with higher intercepts for the Mechanical Turk group. The overall distribution for the biological factor is also displayed in this figure. 
+
+```{r partial-partial-test}
+# figure out how to update this 
+# so that it will take the group.partial correctly 
+model.partial.partial <- partial_mi(
+  saved_model = model.results.partial$invariance_models$model.residuals,
+  data = cfaDF,
+  model = five.model,
+  group = "where",
+  group.equal = c("loadings", "intercepts", "residuals"),
+  partial_step = "residuals", 
+  group.partial = "Q4_8 ~1")
+
+model.results.partial2 <- mgcfa(
+  model = five.model,
+  data = cfaDF,
+  group = "where", 
+  group.equal = c("loadings", "intercepts", "residuals"),
+  meanstructure = TRUE,
+  group.partial = c("Q4_8 ~1", "Q4_19 ~~ Q4_19", "Q2_17 ~~ Q2_17")
+)
+
+variance_diff <- model.results.partial2$model_coef %>% 
+  filter(term == "Q4_19 ~~ Q4_19" | term == "Q2_17 ~~ Q2_17") %>% 
+  filter(model == "residuals")
+```
+
+```{r cfa-model-fit, results = 'asis'}
+combined_table <- bind_rows(
+  model.results$model_fit %>% 
+    filter(model != "residuals"), 
+  model.results.partial$model_fit,
+  model.results.partial2$model_fit) %>% 
+  unique() %>% 
+  select(model, chisq, npar, cfi, tli, rmsea, srmr) %>% 
+  mutate(model = make.unique(model)) %>% 
+  mutate(model = ifelse(
+    model == "intercepts", "Intercepts (original)", ifelse(
+       model == "intercepts.1", "Intercepts (Partial)", model
+  ))) %>% 
+  mutate(model = ifelse(
+    model == "residuals", "Residuals (Partial Intercepts)", ifelse(
+       model == "residuals.1", "Residuals (Partial Intercepts + Residuals)", model
+  )))
+  mutate(npar = as.character(npar), 
+                   model = tools::toTitleCase(model))
+
+apa_table(combined_table,
+          digits = 3, 
+          col.names = c("Model", "Chi-Square", "df", "CFI", "TLI", "RMSEA", "SRMR"),
+          align = c("l", rep("c", 6))
+          )
+```
+
+```{r visualize-diffs, fig.cap = "The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution."}
+# distribution of each latent variable as a plot 
 saved_mi_plots <- plot_mi(data_coef = model.results.partial$model_coef,
                           # which model do you want to plot from model column
                           model_step = "intercepts", 
@@ -1402,48 +1545,56 @@ saved_mi_plots <- plot_mi(data_coef = model.results.partial$model_coef,
                           plot_groups = NULL)
 
 saved_mi_plots$complete
+```
+### Partial Strict Invariance
 
-saved_mi_plots <- plot_mi(data_coef = model.results.partial$model_coef,
+Following the partial intercepts model, we found non-invariance when all residuals were constrained to equal. The same steps were applied and 2 non-invariant items were discovered that would allow the model to be partially invariant. First, *I believe in an afterlife* showed larger residuals for the undergraduate population `r variance_diff %>% filter(group == 1) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 1) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(std.error) %>% apa_num()`), while the Mechanical Turk population showed a much smaller amount of variance `r variance_diff %>% filter(group == 2) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 2) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(std.error) %>% apa_num()`). The second item was a similar item, *My spirit or soul will live on after I physically die*, where the undergraduate population showed a much larger variance `r variance_diff %>% filter(group == 1) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 1) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(std.error) %>% apa_num()`) than the Mechanical Turk population `r variance_diff %>% filter(group == 2) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 2) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(std.error) %>% apa_num()`). Figure \@ref(fig:fig-4-residuals) demonstrates the differences in variance and overall latent variable means for these items on the spiritual factor.  
+
+```{r fig-4-residuals, fig.cap = "In the left panel, the large difference in residuals can be found for the spiritual items, as loadings and intercepts are set to be equal. The placement of residuals on the plot is unrelated to the x- or y-axis and simply shows the magnitude of the difference. Both items showed nearly identical plots, and therefore we only plotted the afterlife question. The right panel shows the latent mean distribution for the entire spiritual set of items."}
+saved_mi_plots <- plot_mi(data_coef = model.results.partial2$model_coef,
                           # which model do you want to plot from model column
-                          model_step = "intercepts", 
+                          model_step = "residuals", 
                           # name of observed item
-                          item_name = "Q2_4", 
+                          item_name = "Q4_19", 
                           # LV limits to graph
-                          x_limits = c(-1,1), 
+                          x_limits = c(-2,2), 
                           # Y min and max in data
-                          y_limits = c(min(cfaDF$Q2_4),
-                                       max(cfaDF$Q2_4)), 
+                          y_limits = c(min(cfaDF$Q4_19),
+                                       max(cfaDF$Q4_19)), 
                           # what ci do you want
                           conf.level = .95, 
                           # what model results do you want
-                          model_results = model.results.partial$invariance_models$model.intercepts, 
+                          model_results = model.results.partial2$invariance_models$model.residuals,
                           # which latent is the observed variable on
                           # important for cross-loaded variables
-                          lv_name = "social", 
+                          lv_name = "spirit", 
                           # if you have more than two groups, which two do you want
                           plot_groups = NULL)
 
-model.results.partial <- mgcfa(
-  model = five.model,
-  data = cfaDF,
-  group = "where", 
-  group.equal = c("loadings", "intercepts", "residuals"),
-  meanstructure = TRUE,
-  group.partial = "Q4_8 ~1"
-)
+saved_mi_plots2 <- plot_mi(data_coef = model.results.partial2$model_coef,
+                          # which model do you want to plot from model column
+                          model_step = "residuals", 
+                          # name of observed item
+                          item_name = "Q2_17", 
+                          # LV limits to graph
+                          x_limits = c(-2,2), 
+                          # Y min and max in data
+                          y_limits = c(min(cfaDF$Q2_17),
+                                       max(cfaDF$Q2_17)), 
+                          # what ci do you want
+                          conf.level = .95, 
+                          # what model results do you want
+                          model_results = model.results.partial2$invariance_models$model.residuals,
+                          # which latent is the observed variable on
+                          # important for cross-loaded variables
+                          lv_name = "spirit", 
+                          # if you have more than two groups, which two do you want
+                          plot_groups = NULL)
 
-# figure out how to update this 
-# so that it will take the group.partial correctly 
-model.partial.partial <- partial_mi(
-  saved_model = model.results.partial$invariance_models$model.residuals,
-  data = cfaDF,
-  model = five.model,
-  group = "where",
-  group.equal = c("loadings", "intercepts", "residuals"),
-  partial_step = "residuals")
-
-model.partial.partial$fit_table
+saved_mi_plots2$complete 
 ```
+
+### Model Replication and Effect Sizes
 
 ```{r boot-model, eval = F}
 saved_boot_model <- bootstrap_model(
@@ -1474,7 +1625,7 @@ saved_boot_partial <- bootstrap_partial(
   # the model you want to test 
   # use the model before your invariant one 
   # similar set up to partial_mi
-  saved_model = model.results$invariance_models$model.loadings,
+  saved_model = model.results.partial2$invariance_models$model.loadings,
   # the dataframe
   data = cfaDF,
   # the original model syntax
@@ -1495,7 +1646,34 @@ saved_boot_partial <- bootstrap_partial(
   # which parameters you want to hold constrained
   group.equal = c("loadings", "intercepts")
   )
-saveRDS(saved_boot_partial, "../03_Data/saved_boot_partial.rds")
+saveRDS(saved_boot_partial, "../03_Data/saved_boot_partial_intercepts.rds")
+
+saved_boot_partial2 <- bootstrap_partial(
+  # the model you want to test 
+  # use the model before your invariant one 
+  # similar set up to partial_mi
+  saved_model = model.results.partial2$invariance_models$model.intercepts,
+  # the dataframe
+  data = cfaDF,
+  # the original model syntax
+  model = five.model,
+  # the grouping variable column
+  group = "where",
+  # run more, but this package vignette needs to knit fast
+  nboot = 1000,
+  # what index are you using for invariance?
+  # match this to lavaan's name under fitmeasures()
+  invariance_index = "cfi",
+  # what rule are you using?
+  invariance_rule = .01,
+  # what are we comparing against? 
+  invariance_compare = unname(fitmeasures(model.results$invariance_models$model.intercepts, "cfi")),
+  # which step you want to estimate effect size for
+  partial_step = c("residuals"), 
+  # which parameters you want to hold constrained
+  group.equal = c("loadings", "intercepts", "residuals")
+  )
+saveRDS(saved_boot_partial2, "../03_Data/saved_boot_partial_residuals.rds")
 ```
 
 # Discussion

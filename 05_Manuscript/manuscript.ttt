@@ -1,0 +1,70 @@
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:table-five-factor}}
+
+\begin{tabular}{llllll}
+\toprule
+Spiritual & Social & Personal & Biological & Physical & Item\\
+\midrule
+0.93 & -0.04 & 0.00 & 0.02 & -0.01 & I believe in an afterlife.\\
+0.91 & 0.03 & 0.00 & -0.02 & 0.00 & My spirit or soul will live on after I physically die.\\
+0.83 & -0.01 & -0.04 & -0.01 & 0.07 & I believe in an immaterial soul or spirit.\\
+0.82 & 0.01 & 0.04 & 0.04 & 0.00 & Death is not the end.\\
+0.51 & 0.15 & 0.07 & -0.03 & -0.12 & The ideologies I believe in such as my religion, philosophies or politics will live on.\\
+0.01 & 0.79 & 0.08 & -0.08 & -0.07 & I have taken part in activities or events which will impact the future.\\
+-0.05 & 0.76 & 0.00 & 0.03 & 0.15 & I have contributed to the world in a unique way.\\
+0.02 & 0.73 & -0.06 & 0.12 & -0.05 & I have contributed to things which will be meaningful.\\
+0.06 & 0.65 & 0.04 & -0.06 & 0.16 & My life has influenced the world.\\
+0.12 & 0.59 & 0.08 & 0.10 & -0.17 & I feel I have taken part in something bigger than myself.\\
+0.13 & 0.35 & 0.07 & 0.22 & 0.13 & I believe I will be remembered for a long time after I die.\\
+0.00 & -0.02 & 1.02 & -0.02 & 0.03 & Parts of my personality have rubbed off on other people.\\
+0.03 & 0.08 & 0.69 & 0.11 & -0.02 & Through my interactions with them, others have picked up parts of my personality.\\
+-0.06 & 0.29 & 0.35 & 0.17 & -0.11 & I have imparted knowledge and skills on to others.\\
+0.03 & -0.03 & -0.04 & 0.76 & 0.04 & My offspring carry parts of me with them.\\
+0.02 & 0.02 & 0.08 & 0.73 & 0.00 & I am comforted by the fact that my genes can/will be carried on in the future.\\
+0.08 & 0.11 & 0.14 & 0.44 & -0.10 & I am comforted by knowing my loved ones will live on after me.\\
+-0.05 & 0.18 & -0.05 & 0.35 & 0.20 & I have children or students which take after me.\\
+-0.01 & 0.01 & -0.01 & 0.05 & 0.75 & I believe will not die.\\
+-0.01 & -0.01 & 0.10 & 0.01 & 0.60 & I have a hard time believing I will physically die.\\
+0.13 & 0.03 & -0.02 & -0.01 & 0.62 & I don't entirely believe I will die.\\
+0.07 & 0.04 & 0.07 & -0.02 & 0.47 & I believe I will be reincarnated.\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table*}
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:cfa-model-fit}}
+
+\begin{tabular}{lcccccc}
+\toprule
+Model & Chi-Square & df & CFI & TLI & RMSEA & SRMR\\
+\midrule
+Overall & 503.453 & 76 & 0.901 & 0.885 & 0.066 & 0.065\\
+Group Undergraduate & 433.000 & 76 & 0.876 & 0.856 & 0.068 & 0.070\\
+Group Mechanical Turk & 331.121 & 76 & 0.899 & 0.883 & 0.082 & 0.094\\
+Configural & 764.120 & 152 & 0.885 & 0.867 & 0.072 & 0.077\\
+Loadings & 790.521 & 135 & 0.882 & 0.869 & 0.072 & 0.082\\
+Intercepts (Original) & 895.284 & 118 & 0.855 & 0.845 & 0.078 & 0.086\\
+Intercepts (Partial) & 830.685 & 119 & 0.875 & 0.866 & 0.072 & 0.085\\
+Residuals & 914.583 & 97 & 0.855 & 0.852 & 0.076 & 0.085\\
+\bottomrule
+\end{tabular}
+
+\end{threeparttable}
+\end{center}
+
+\end{table*}
