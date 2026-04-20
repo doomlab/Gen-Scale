@@ -1,10 +1,12 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-%
 \documentclass[
+  english,
   man]{apa6}
+\usepackage{xcolor}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -35,26 +37,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\usepackage{graphicx}
-\makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
-% Set default figure placement to htbp
-\def\fps@figure{htbp}
-\makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
 \makeatletter
 \ifx\paragraph\undefined\else
@@ -77,6 +59,21 @@
   \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
   \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
 \NewDocumentCommand\citeproctext{}{}
@@ -112,17 +109,16 @@
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \ifLuaTeX
-\usepackage[bidi=basic]{babel}
+\usepackage[bidi=basic,shorthands=off]{babel}
 \else
-\usepackage[bidi=default]{babel}
+\usepackage[bidi=default,shorthands=off]{babel}
 \fi
-\babelprovide[main,import]{english}
-% get rid of language-specific shorthands (see #6817):
-\let\LanguageShortHands\languageshorthands
-\def\languageshorthands#1{}
 \ifLuaTeX
-  \usepackage[english]{selnolig} % disable illegal ligatures
+  \usepackage{selnolig} % disable illegal ligatures
 \fi
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 % Manuscript styling
 \usepackage{upgreek}
 \captionsetup{font=singlespacing,justification=justified}
@@ -254,12 +250,12 @@ Erikson (1950) proposed that during mid-life one becomes
 acutely aware of their oncoming death and is motivated to care for
 things which will outlast themselves. He called this act of caring
 generativity. In \emph{The Denial of Death}, philosopher Ernest Becker
-(\textbf{becker1973?}) posits that humans undertake immortality projects to curb
+(1973) posits that humans undertake immortality projects to curb
 their sense of vulnerability to death. Similarly, psychiatrist Robert
-Jay Lifton (\textbf{lifton1979?}), a mentee of Erikson, described the awareness
+Jay Lifton (1979), a mentee of Erikson, described the awareness
 of death as being ever present and motivating us to create symbols,
 thereby allowing us to imagine ourselves as symbolically immortalized.
-Existential psychiatrist Irvin Yalom (\textbf{yalom2008?}) notes that many of
+Existential psychiatrist Irvin Yalom (2008) notes that many of
 his clients experiencing anxiety about their death take comfort in
 ``rippling,'' the idea that one's lasting effects on the world will ripple
 out and influence the world after they have died.
@@ -277,7 +273,7 @@ such as through search for meaning, sense of immortality, care,
 generativity, and rippling.
 
 One of these bodies of thought, called symbolic immortality, was
-originally theorized by Lifton (\textbf{lifton1979?}), who thought that
+originally theorized by Lifton (1979), who thought that
 awareness of death drives a fundamental human desire for a sense of
 continuity lasting beyond the lifespan. Essentially, humans are
 meaning-seeking creatures, and throughout our lives, this search for
@@ -292,9 +288,9 @@ death-in-life (imagery associated with separation, disintegration, and
 stasis). In Lifton's own words, ``Death does indeed bring about
 biological and psychic annihilation. But life includes symbolic
 perceptions of connections that precede and outlast that annihilation''
-(\textbf{lifton1979?}).
+(1979, p. 18).
 
-Lifton (\textbf{lifton1979?}) proposed five modes of experience or ways of
+Lifton (1979) proposed five modes of experience or ways of
 achieving symbolic immortality: The biological (or biosocial) mode in
 which one lives on through their genetic and sociocultural progeny, the
 creative mode in which one's accomplishments and contribution outlast
@@ -456,7 +452,7 @@ information was collected in the study.
 
 \subsection{Material and Procedure}\label{material-and-procedure}
 
-58 items were developed using previous scale
+55 items were developed using previous scale
 development on generativity (Drolet, 1990), along with theoretical factor
 alignment to XXCITEXX. These items aligned with areas of biological,
 physical, social, spiritual, and personal immortality. The survey was
@@ -467,12 +463,11 @@ were randomized across participants, and the items within each block
 were also randomized. In each block, one attention check item was shown
 (e.g., ``Answer this question as somewhat agree.''). At the end of the
 study, participants were directed back to either SONA for undergraduate
-course credit or Mechanical Turk for monetary
-compensation{[}\^{}Unfortunately, the exact amount we paid participants is
-lost to time. Given our ethics application, we believe it was 1-2 USD,
-and the survey was completed in \emph{M} =
-6.34 (\emph{SD} =
-4.85 minutes.{]}.
+course credit or Mechanical Turk for monetary compensation\footnote{\^{}Unfortunately, the exact amount we paid participants is lost to
+  time. Given our ethics application, we believe it was 1-2 USD, and
+  the survey was completed in \emph{M} =
+  6.34 (\emph{SD} =
+  4.85 minutes.}.
 
 \subsection{Data analysis}\label{data-analysis}
 
@@ -485,13 +480,12 @@ factor analysis (EFA) with maximum likelihood estimation and an oblique
 the \emph{psych} package (Revelle, 2020). We used scree plots, parallel
 analysis, and theory to determine the number of factors and compared
 models based on fit indices to select the best model. We use the
-following fit indices: Root Mean Squared Error of Approximation {[}RMSEA;
-Steiger (2016){]}, Root Mean Squared Residual {[}RMSR; Jöreskog and Sörbom (1996){]},
-Comparative Fit Index {[}CFI; Bentler (1990){]}, and the Tucker-Lewis Index
-{[}TLI; Tucker and Lewis (1973){]}. Values close to one are expected for goodness of fit
-statistics {[}CFI, TLI; Bentler (1990); Hu and Bentler (1999){]}, while lower values close
-to zero are considered better models for residual statistics {[}RMSEA,
-RMSR; Steiger (2016){]}.
+following fit indices: Root Mean Squared Error of Approximation (RMSEA, Steiger, 2016), Root Mean Squared Residual (RMSR, Jöreskog \& Sörbom, 1996),
+Comparative Fit Index (CFI, Bentler, 1990), and the Tucker-Lewis Index
+(TLI, Tucker \& Lewis, 1973). Values close to one are expected for goodness of fit
+statistics (CFI, TLI, Bentler, 1990; Hu \& Bentler, 1999), while lower values close
+to zero are considered better models for residual statistics (RMSEA,
+RMSR, Steiger, 2016).
 
 We then analyzed the best model from the exploratory stage using
 confirmatory factor analysis (CFA) and multigroup CFA (Brown, 2015; Kline, 2016) on the second confirmatory dataset. The models were analyzed
@@ -587,92 +581,218 @@ partially invariant parameter estimates.
 
 \subsubsection{Undergraduate Data}\label{undergraduate-data}
 
-Data were screened for accuracy, missing data, outliers, and multivariate parametric assumptions. The undergraduate data included \emph{n} = 564 participants. We first screened each participant for missing data and excluded \emph{n} = 7 participants for missing more than 5\% of their data {[}TABACHNICK{]}. 105 participants included less than 5\% missing data (i.e., 3 items or less), and these data points amounted to less than 2\% of data missing per question. These items were replaced with a random imputation from the \emph{mice} library {[}CITE MICE{]}.
+Data were screened for accuracy, missing data, outliers, and
+multivariate parametric assumptions. The undergraduate data included \emph{n}
+= 564 participants. We first screened each participant for
+missing data and excluded \emph{n} = 7
+participants for missing more than 5\% of their data (Tabachnick \& Fidell, 2013).
+105 participants included less
+than 5\% missing data (i.e., 3 items or less), and these data points
+amounted to less than 2\% of data missing per question. These items were
+replaced with a random imputation from the \emph{mice} library (Buuren \& Groothuis-Oudshoorn, 2011).
 
-The data were then screen for attentiveness and accuracy using the framework from CITE BUCHANAN to find low quality responses. The survey items were split into three pages, and each page was screened separately using click counts, an attention check item (i.e., please answer strongly agree for this item), and number of characters on a page for reading speed. The total number of indicators for low quality data was summed for each participant across pages (e.g., 3 indicators by 3 pages = 9 total possible items), and \emph{n} = 49 participants showed at least 4 indicators across all pages. CITE BUCHANAN suggest a criteria of 2/5 screeners or 40\%, and therefore, we used 4 items as the \textasciitilde40\% cut off for inclusion in the data. The final sample size for the undergraduate population was \emph{n} = 508. We additionally screened for multivariate outliers using Mahalanobis distance across items and found \emph{n} = 43 possible outliers, but they are included in the analyses described below.
+The data were then screen for attentiveness and accuracy using the
+framework from Buchanan and Scofield (2018) to find low quality responses. The survey
+items were split into three pages, and each page was screened separately
+using click counts, an attention check item (i.e., please answer
+strongly agree for this item), and number of characters on a page for
+reading speed. The total number of indicators for low quality data was
+summed for each participant across pages (e.g., 3 indicators by 3 pages
+= 9 total possible items), and \emph{n} =
+49 participants showed at least 4
+indicators across all pages. Buchanan and Scofield (2018) suggest a criteria of 2/5
+screeners or 40\%, and therefore, we used 4 items as the \textasciitilde40\% cut off
+for inclusion in the data. The final sample size for the undergraduate
+population was \emph{n} = 508. We additionally screened for
+multivariate outliers using Mahalanobis distance across items and found
+\emph{n} = 43 possible outliers, but they
+are included in the analyses described below.
 
 \subsubsection{Mechanical Turk Data}\label{mechanical-turk-data}
 
-The Mechanical Turk data were screened in the same manner as the undergraduate sample. The original sample size was \emph{n} = 240 participants. \emph{N} = 23 participants were excluded for missing more than 5\% of their data, and \emph{n} = 36 participants had 3 or less data points estimated using the \emph{mice} library. The same low quality data screening was performed, and \emph{n} = 20 participants were excluded for having 40\% or more low quality indicators. Last, \emph{n} = 10 participants were flagged as potential outliers but were not included in analyses presented below.
+The Mechanical Turk data were screened in the same manner as the
+undergraduate sample. The original sample size was \emph{n} = 240
+participants. \emph{N} = 23 participants
+were excluded for missing more than 5\% of their data, and \emph{n} =
+36 participants had 3 or less
+data points estimated using the \emph{mice} library. The same low quality
+data screening was performed, and \emph{n} =
+20 participants were excluded
+for having 40\% or more low quality indicators. Last, \emph{n} =
+10 participants were flagged as
+potential outliers but were not included in analyses presented below.
 
-\begin{verbatim}
-## [1] 352
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 353
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 326
-\end{verbatim}
-
-\begin{verbatim}
-## [1] 326
-\end{verbatim}
-
-The data was then randomly split into \emph{n} = 352 participants for the exploratory factor analysis, and \emph{n} = 353 for the confirmatory factor analysis. The EFA data included \emph{n} undergraduate = 254 participants, and \emph{n} Mechanical Turk = 98 participants. The CFA data included \emph{n} undergraduate = 254 participants, and \emph{n} Mechanical Turk = 99 participants.
+The data was then randomly split into \emph{n} = 352 participants
+for the exploratory factor analysis, and \emph{n} = 353 for the
+confirmatory factor analysis. The EFA data included \emph{n} undergraduate =
+254 participants, and
+\emph{n} Mechanical Turk =
+98 participants. The
+CFA data included \emph{n} undergraduate =
+254 participants, and
+\emph{n} Mechanical Turk =
+99 participants.
 
 \subsection{EFA}\label{efa}
 
 \subsubsection{Number of Factors}\label{number-of-factors}
 
-To determine the number of factors that best fit the data, we used suggested theory (5 factors), a scree plot, and a parallel analysis using the \emph{psych} library {[}CITE PSYCH{]}. Parallel analysis suggested 7 factors, while a visual inspection of the scree plot indicated 2 to 3 factors. We analyzed a 2-factor, 3-factor, and 5-factor model for simple structure and fit indices.
+To determine the number of factors that best fit the data, we used
+suggested theory (5 factors), a scree plot, and a parallel analysis
+using the \emph{psych} library (Revelle, 2017). Parallel analysis suggested 7
+factors, while a visual inspection of the scree plot indicated 2 to 3
+factors. We analyzed a 2-factor, 3-factor, and 5-factor model for simple
+structure and fit indices.
 
 \subsubsection{Simple Structure}\label{simple-structure}
 
-The 58 items were first tested with a 2-factor fit, and 7 items were excluded for not loading on any factor or loading on multiple factors with a loading greater than .30. After removing these items, all items loaded cleanly on the two factors. The loading table for this analysis can be found at XX. This same procedure was repeated for the 3-factor fit, and 10 items were removed from the first round of analysis, and 1 item was removed from the second round of analysis, resulting in a final set of 47 items. The loading table and items can be found at XX. Last, the 5-factor model showed 15 poor items on the first round of analysis, and 10 poor items on the second round of analysis, resulting in a final set of 33 items for the final model. The items and loadings can be found at XX.
+The 58 items were first tested with a 2-factor fit, and
+7 items were excluded for not loading on any factor
+or loading on multiple factors with a loading greater than .30. After
+removing these items, all items loaded cleanly on the two factors. The
+loading table for this analysis can be found on our GitHub repository (links provided in the appendix). This same procedure
+was repeated for the 3-factor fit, and 10 items
+were removed from the first round of analysis, and
+1 item was removed from the second round of
+analysis, resulting in a final set of 47 items.
+The loading table and items can be found in the online supplemental materials. Last, the 5-factor model
+showed 15 poor items on the
+first round of analysis, and 10
+poor items on the second round of analysis, resulting in a final set of
+33 items for the final model. The items and loadings can
+be found in the online supplemental materials.
 
-We then compared items across all factor models to reduce scale length. Items were selected for the final model if they: 1) theoretically made sense with the other items on that factor, 2) loaded on the theorized 5-factor model (i.e., items were included in the 2-factor model if they also had been included in the 5-factor model), and 3) were not face-value redundant with other items on that factor. We tested these items and found that the 2-factor and 3-factor models continued to show simple structure, but the 5-factor model required the removal of 2 more items due to cross loadings across factors. To select the best model, we examined the fit indices for each factor structure. The 5-factor model showed the best fit (RMSEA = .038, RMSR = .024, TLI = .968, CFI = .982), followed by the 3-factor model (RMSEA = .049, RMSR = .028, TLI = .962, CFI = .977), and then the 2-factor model (RMSEA = .062, RMSR = .031, TLI = .963, CFI = .977). The final factor loadings for the 5-factor scale are shown in Table \ref{tab:table-five-factor}, and the other loadings can be found at XX (2-factor) and XX (3-factor).
+We then compared items across all factor models to reduce scale length.
+Items were selected for the final model if they: 1) theoretically made
+sense with the other items on that factor, 2) loaded on the theorized
+5-factor model (i.e., items were included in the 2-factor model if they
+also had been included in the 5-factor model), and 3) were not
+face-value redundant with other items on that factor. We tested these
+items and found that the 2-factor and 3-factor models continued to show
+simple structure, but the 5-factor model required the removal of
+2 more items due to cross
+loadings across factors. To select the best model, we examined the fit
+indices for each factor structure. The 5-factor model showed the best
+fit (RMSEA = .038,
+RMSR = .024, TLI =
+.968, CFI =
+.982), followed by the
+3-factor model (RMSEA =
+.049, RMSR =
+.028, TLI =
+.962, CFI =
+.977), and then the
+2-factor model (RMSEA =
+.062, RMSR =
+.031, TLI =
+.963, CFI =
+.977). The final factor
+loadings for the 5-factor scale are shown in Table
+\ref{tab:table-five-factor}, and the other loadings can be found in the online supplemental materials.
 
-\begin{table}[tbp]
+\begin{verbatim}
+## Warning: There was 1 warning in `mutate()`.
+## i In argument: `ML1 = apa_num(ML1, digits = 3, gt1 = F)`.
+## Caused by warning in `apa_num.numeric()`:
+## ! You specified gt1 = FALSE, but passed absolute value(s) that exceed 1.
+\end{verbatim}
 
-\begin{center}
-\begin{threeparttable}
-
-\caption{\label{tab:table-five-factor}}
-
-\begin{tabular}{llllll}
+\begin{table}[!h]
+\centering
+\caption{\label{tab:table-five-factor}EFA Loadings for the 5-Factor Model}
+\centering
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{lllll>{\raggedright\arraybackslash}p{8cm}}
 \toprule
 Spiritual & Social & Personal & Biological & Physical & Item\\
 \midrule
-0.93 & -0.04 & 0.00 & 0.02 & -0.01 & I believe in an afterlife.\\
-0.91 & 0.03 & 0.00 & -0.02 & 0.00 & My spirit or soul will live on after I physically die.\\
-0.83 & -0.01 & -0.04 & -0.01 & 0.07 & I believe in an immaterial soul or spirit.\\
-0.82 & 0.01 & 0.04 & 0.04 & 0.00 & Death is not the end.\\
-0.51 & 0.15 & 0.07 & -0.03 & -0.12 & The ideologies I believe in such as my religion, philosophies or politics will live on.\\
-0.01 & 0.79 & 0.08 & -0.08 & -0.07 & I have taken part in activities or events which will impact the future.\\
--0.05 & 0.76 & 0.00 & 0.03 & 0.15 & I have contributed to the world in a unique way.\\
-0.02 & 0.73 & -0.06 & 0.12 & -0.05 & I have contributed to things which will be meaningful.\\
-0.06 & 0.65 & 0.04 & -0.06 & 0.16 & My life has influenced the world.\\
-0.12 & 0.59 & 0.08 & 0.10 & -0.17 & I feel I have taken part in something bigger than myself.\\
-0.13 & 0.35 & 0.07 & 0.22 & 0.13 & I believe I will be remembered for a long time after I die.\\
-0.00 & -0.02 & 1.02 & -0.02 & 0.03 & Parts of my personality have rubbed off on other people.\\
-0.03 & 0.08 & 0.69 & 0.11 & -0.02 & Through my interactions with them, others have picked up parts of my personality.\\
--0.06 & 0.29 & 0.35 & 0.17 & -0.11 & I have imparted knowledge and skills on to others.\\
-0.03 & -0.03 & -0.04 & 0.76 & 0.04 & My offspring carry parts of me with them.\\
-0.02 & 0.02 & 0.08 & 0.73 & 0.00 & I am comforted by the fact that my genes can/will be carried on in the future.\\
-0.08 & 0.11 & 0.14 & 0.44 & -0.10 & I am comforted by knowing my loved ones will live on after me.\\
--0.05 & 0.18 & -0.05 & 0.35 & 0.20 & I have children or students which take after me.\\
--0.01 & 0.01 & -0.01 & 0.05 & 0.75 & I believe will not die.\\
--0.01 & -0.01 & 0.10 & 0.01 & 0.60 & I have a hard time believing I will physically die.\\
-0.13 & 0.03 & -0.02 & -0.01 & 0.62 & I don't entirely believe I will die.\\
-0.07 & 0.04 & 0.07 & -0.02 & 0.47 & I believe I will be reincarnated.\\
+.928 & -.045 & -.003 & .017 & -.007 & I believe in an afterlife.\\
+.907 & .032 & .000 & -.017 & .000 & My spirit.or soul will live on.after I
+physically \vphantom{1} die.\\
+.828 & -.011 & -.042 & -.005 & .068 & I believe in an immaterial soul or
+spirit.\\
+.816 & .011 & .041 & .037 & .004 & Death is not the end.\\
+.509 & .146 & .066 & -.032 & -.123 & The ideologies I believe in such as my
+religion, philosophies or politics will
+live on.\\
+\addlinespace
+.009 & .790 & .080 & -.081 & -.068 & I have taken part in activities or
+events which will impact the future.\\
+-.053 & .758 & -.004 & .028 & .146 & I have contributed to the world in a
+unique way.\\
+.023 & .733 & -.061 & .122 & -.048 & I have contributed to things which will
+be meaningful.\\
+.063 & .645 & .037 & -.056 & .162 & My life has influenced the world.\\
+.123 & .592 & .083 & .101 & -.170 & I feel I have taken part in something
+bigger than myself.\\
+\addlinespace
+.131 & .347 & .067 & .216 & .132 & I believe I will be remembered for a
+long time after I die.\\
+.001 & -.024 & 1.020 & -.024 & .027 & Parts of my personality.have rubbed off
+on other people.\\
+.028 & .083 & .692 & .115 & -.019 & Through my interactions with them.
+others have picked up parts of my
+personality.\\
+-.065 & .290 & .347 & .170 & -.106 & I have imparted knowledge and skills on
+to others.\\
+.028 & -.035 & -.042 & .759 & .044 & My offspring carry parts of me with
+them.\\
+\addlinespace
+.017 & .018 & .081 & .731 & .001 & I am comforted by the fact that my genes
+can/will be carried on in the future.\\
+.081 & .109 & .139 & .444 & -.095 & I am comforted by knowing my loved ones
+will live on after me.\\
+-.053 & .183 & -.046 & .348 & .203 & I have children or students which take
+after me.\\
+-.012 & .013 & -.011 & .053 & .749 & I believe will not die.\\
+-.011 & -.010 & .102 & .005 & .601 & I have a hard time believing I will
+physically die.\\
+\addlinespace
+.129 & .031 & -.020 & -.006 & .618 & I don't entirely believe I will die.\\
+.068 & .044 & .072 & -.018 & .470 & I believe I will be reincarnated.\\
 \bottomrule
-\end{tabular}
-
-\end{threeparttable}
-\end{center}
-
+\end{tabular}}
 \end{table}
 
 EXPLAIN ITEM LABELS HERE
 
 \subsection{CFA}\label{cfa}
 
-Using the multigroup CFA procedure described above, we examined the 5-factor model for overall fit and fit across groups. Table \ref{tab:cfa-model-fit} portrays the results of the assessment of all models. The model showed acceptable fit overall with lower than desired values on the TLI, and lower values on the CFI and TLI for each individual group. Model fit appeared acceptable to investigate multi-group structure when examining the configural model with good values for the residual fit statistics, and poorer values for the goodness of fit statistics. We examined for potential areas of misfit using modification indices but did not find any suggested correlated error terms (i.e., two similar items that have related residuals) or cross-loadings that fit within theoretical structure. Therefore, we did not make any modifications.
+Using the multigroup CFA procedure described above, we examined the
+5-factor model for overall fit and fit across groups. Table
+\ref{tab:cfa-model-fit} portrays the results of the assessment of all
+models. The model showed acceptable fit overall with lower than desired
+values on the TLI, and lower values on the CFI and TLI for each
+individual group. Model fit appeared acceptable to investigate
+multi-group structure when examining the configural model with good
+values for the residual fit statistics, and poorer values for the
+goodness of fit statistics. We examined for potential areas of misfit
+using modification indices but did not find any suggested correlated
+error terms (i.e., two similar items that have related residuals) or
+cross-loadings that fit within theoretical structure. Therefore, we did
+not make any modifications.
 
-Using the \(\Delta\)CFI \(\le\) .01 rule for degradation in fit, we found that the loadings (\emph{scalar}) showed invariance across groups, while a large degradation in fit was found between the loadings and intercepts (\emph{metric}). We individually removed the equality constraint between groups for each item, and found one item that was different between groups: \emph{I have children or students which take after me.} The intercept for the undergraduate sample on this item was: 2.26, \emph{SE} = 0.08, while the Mechanical Turk sample showed a higher average item score: 3.45, \emph{SE} = 0.12. Figure \ref{fig:visualize-diffs} demonstrates a visualization of those differences with higher intercepts for the Mechanical Turk group. The overall distribution for the biological factor is also displayed in this figure.
+\subsubsection{Partial Scalar Invariance}\label{partial-scalar-invariance}
+
+Using the \(\Delta\)CFI \(\le\) .01 rule for degradation in fit, we found
+that the loadings (\emph{metric}) showed invariance across groups, while a
+large degradation in fit was found between the loadings and intercepts
+(\emph{scalar}). We individually removed the equality constraint between
+groups for each item, and found one item that was different between
+groups: \emph{I have children or students which take after me.} The intercept
+for the undergraduate sample on this item was:
+2.26,
+\emph{SE} =
+0.08,
+while the Mechanical Turk sample showed a higher average item score:
+3.45,
+\emph{SE} =
+0.12.
+Figure \ref{fig:visualize-diffs} demonstrates a visualization of those
+differences with higher intercepts for the Mechanical Turk group. The
+overall distribution for the biological factor is also displayed in this
+figure.
 
 \begin{table}[tbp]
 
@@ -692,7 +812,8 @@ Configural & 764.120 & 152 & 0.885 & 0.867 & 0.072 & 0.077\\
 Loadings & 790.521 & 135 & 0.882 & 0.869 & 0.072 & 0.082\\
 Intercepts (Original) & 895.284 & 118 & 0.855 & 0.845 & 0.078 & 0.086\\
 Intercepts (Partial) & 830.685 & 119 & 0.875 & 0.866 & 0.072 & 0.085\\
-Residuals & 914.583 & 97 & 0.855 & 0.852 & 0.076 & 0.085\\
+Residuals (Partial Intercepts) & 914.583 & 97 & 0.855 & 0.852 & 0.076 & 0.085\\
+Residuals (Partial Intercepts + Residuals) & 873.223 & 99 & 0.868 & 0.864 & 0.073 & 0.085\\
 \bottomrule
 \end{tabular}
 
@@ -703,32 +824,109 @@ Residuals & 914.583 & 97 & 0.855 & 0.852 & 0.076 & 0.085\\
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio]{manuscript_files/figure-latex/visualize-diffs-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:visualize-diffs}The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution.}]{manuscript_files/figure-latex/visualize-diffs-1.pdf}}
 \caption{\label{fig:visualize-diffs}The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution.}
 \end{figure}
 
-\begin{verbatim}
-## # A tibble: 37 x 47
-##    free.parameter npar       fmin       chisq      df      pvalue baseline.chisq
-##    <chr>          <lvn.vctr> <lvn.vctr> <lvn.vctr> <lvn.v> <lvn.> <lvn.vctr>    
-##  1 Q2_13 ~~ Q2_13 97         1.382986   976.3883   453     0      3650.446      
-##  2 Q5_12 ~~ Q5_12 97         1.382640   976.1440   453     0      3650.446      
-##  3 Q4_11 ~~ Q4_11 97         1.381266   975.1736   453     0      3650.446      
-##  4 Q4_18 ~~ Q4_18 97         1.382443   976.0046   453     0      3650.446      
-##  5 Q4_8 ~~ Q4_8   97         1.378295   973.0765   453     0      3650.446      
-##  6 Q2_19 ~~ Q2_19 97         1.378511   973.2288   453     0      3650.446      
-##  7 Q5_17 ~~ Q5_17 97         1.377931   972.8194   453     0      3650.446      
-##  8 Q5_18 ~~ Q5_18 97         1.366113   964.4759   453     0      3650.446      
-##  9 Q2_20 ~~ Q2_20 97         1.383588   976.8129   453     0      3650.446      
-## 10 Q2_9 ~~ Q2_9   97         1.383783   976.9511   453     0      3650.446      
-## # i 27 more rows
-## # i 40 more variables: baseline.df <lvn.vctr>, baseline.pvalue <lvn.vctr>,
-## #   cfi <lvn.vctr>, tli <lvn.vctr>, nnfi <lvn.vctr>, rfi <lvn.vctr>,
-## #   nfi <lvn.vctr>, pnfi <lvn.vctr>, ifi <lvn.vctr>, rni <lvn.vctr>,
-## #   logl <lvn.vctr>, unrestricted.logl <lvn.vctr>, aic <lvn.vctr>,
-## #   bic <lvn.vctr>, ntotal <lvn.vctr>, bic2 <lvn.vctr>, rmsea <lvn.vctr>,
-## #   rmsea.ci.lower <lvn.vctr>, rmsea.ci.upper <lvn.vctr>, ...
-\end{verbatim}
+\subsubsection{Partial Strict Invariance}\label{partial-strict-invariance}
+
+Following the partial intercepts model, we found non-invariance when all
+residuals were constrained to equal. The same steps were applied and 2
+non-invariant items were discovered that would allow the model to be
+partially invariant. First, \emph{I believe in an afterlife} showed larger
+residuals for the undergraduate population
+0.36
+(\emph{SE} =
+0.05),
+while the Mechanical Turk population showed a much smaller amount of
+variance
+0.06
+(\emph{SE} =
+0.03).
+The second item was a similar item, \emph{My spirit or soul will live on
+after I physically die}, where the undergraduate population showed a
+much larger variance
+0.55
+(\emph{SE} =
+0.06)
+than the Mechanical Turk population
+0.24
+(\emph{SE} =
+0.05).
+Figure \ref{fig:fig-4-residuals} demonstrates the differences in
+variance and overall latent variable means for these items on the
+spiritual factor.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:fig-4-residuals}In the left panel, the large difference in residuals can be found for the spiritual items, as loadings and intercepts are set to be equal. The placement of residuals on the plot is unrelated to the x- or y-axis and simply shows the magnitude of the difference. Both items showed nearly identical plots, and therefore we only plotted the afterlife question. The right panel shows the latent mean distribution for the entire spiritual set of items.}]{manuscript_files/figure-latex/fig-4-residuals-1.pdf}}
+\caption{\label{fig:fig-4-residuals}In the left panel, the large difference in residuals can be found for the spiritual items, as loadings and intercepts are set to be equal. The placement of residuals on the plot is unrelated to the x- or y-axis and simply shows the magnitude of the difference. Both items showed nearly identical plots, and therefore we only plotted the afterlife question. The right panel shows the latent mean distribution for the entire spiritual set of items.}
+\end{figure}
+
+\subsubsection{Model Replication and Effect Sizes}\label{model-replication-and-effect-sizes}
+
+\(h_{nmi}\) represents the effect size of the model in comparison to a
+randomized groupings model for non-measurement invariance, and effect
+sizes close to zero indicate that there is no difference in the actual
+group labels and the randomized group labels. Thus, we would expect to
+find \emph{invariance} because the group labels show the same patterns of
+data. The \(h_{nmi_p}\) effect size is scaled from -1 to +1 for easier
+interpretation. For metric invariance, we found an effect size of
+\(h_{nmi_p}\) =
+0.31
+indicating that some models may show non-invariance when replicated with
+the same groups. However, the effect size for scalar invariance showed
+twice the effect size, \(h_{nmi_p}\) =
+0.63,
+indicating that it is likely that we would again show differences in
+groups for our non-invariant scalar items.
+
+At this stage, we examined the partial invariance for both the scalar
+and strict models that indicated non-invariant items above. Figure
+\ref{fig:partial-effect-size} portrays the effect sizes (\emph{d}s) for each
+questions when bootstrapped with the current group labels or randomized
+group labels. Figure \ref{fig:partial-scores} indicates the
+distribution of scores for each item in the same order. In these
+figures, we can see potential other items that may produce non-invariant
+results. Question 4\_8 (\emph{I have children or students which take after
+me.}) showed non-invariance in our MGCFA steps; however, multiple items
+show large effect size differences in item-intercepts with higher scores
+for the undergraduate group, even though they were found to be invariant
+in the model analyses. Figures \ref{fig:partial-effect-size-residuals}
+and \ref{fig:partial-residuals} show the same effects for the residual
+variances in our bootstrapped model. Questions 4\_19 (\emph{I believe in an
+afterlife}) and 2\_17 (\emph{My spirit or soul will live on after I physically
+die}) were our previously found non-invariant items. The same patterns
+appear within the residuals with other potential items showing large
+effect size differences. A close inspection of the raw scores for
+figures reveals that the item intercepts and residuals may potentially
+be slightly bimodal. In this scenario, the one sample would show
+invariant results, but many similar samples may show non-invariant
+results depending on the composition of the final sample groups.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-effect-size}Effect size differences (d) between groups for item intercepts when the partially invariant scalar model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}]{manuscript_files/figure-latex/partial-effect-size-1.pdf}}
+\caption{\label{fig:partial-effect-size}Effect size differences (\emph{d}) between groups for item intercepts when the partially invariant scalar model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-scores}Item intercept distributions for items that were bootstrapped with original group labels and were non-invariant ordered by effect size of the item intercept difference.}]{manuscript_files/figure-latex/partial-scores-1.pdf}}
+\caption{\label{fig:partial-scores}Item intercept distributions for items that were bootstrapped with original group labels and were non-invariant ordered by effect size of the item intercept difference.}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-effect-size-residuals}Effect size differences (d) between groups for residuals when the partially invariant residual model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}]{manuscript_files/figure-latex/partial-effect-size-residuals-1.pdf}}
+\caption{\label{fig:partial-effect-size-residuals}Effect size differences (\emph{d}) between groups for residuals when the partially invariant residual model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-residuals}Residual estimation distributions for items that were bootstrapped with original group labels ordered by effect size for non-invariant models.}]{manuscript_files/figure-latex/partial-residuals-1.pdf}}
+\caption{\label{fig:partial-residuals}Residual estimation distributions for items that were bootstrapped with original group labels ordered by effect size for non-invariant models.}
+\end{figure}
 
 \section{Discussion}\label{discussion}
 
@@ -736,8 +934,11 @@ Residuals & 914.583 & 97 & 0.855 & 0.852 & 0.076 & 0.085\\
 
 \section{References}\label{references}
 
-\phantomsection\label{refs}
+\protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-becker1973}
+Becker, E. (1973). \emph{Denial of death}. New York: Free Press.
+
 \bibitem[\citeproctext]{ref-bentler1990}
 Bentler, P. M. (1990). Comparative fit indexes in structural models. \emph{Psychological Bulletin}, \emph{107}(2), 238--246. \url{https://doi.org/10.1037/0033-2909.107.2.238}
 
@@ -748,16 +949,22 @@ Bentler, P. M. (1995). \emph{EQS structural equations program manual}. Encino, C
 Brown, T. A. (2015). \emph{Confirmatory factor analysis for applied research} (Second edition). New York ; London: The Guilford Press.
 
 \bibitem[\citeproctext]{ref-buchanan2024}
-Buchanan, E. M. (2024). Visualizemi: Visualization, Effect Size, and Replication of Measurement Invariance for Registered Reports. \emph{Assessment}, 10731911241280763. \url{https://doi.org/10.1177/10731911241280763}
+Buchanan, E. M. (2024). Visualizemi: Visualization, effect size, and replication of measurement invariance for registered reports. \emph{Assessment}, 10731911241280763. \url{https://doi.org/10.1177/10731911241280763}
+
+\bibitem[\citeproctext]{ref-buchanan2018}
+Buchanan, E. M., \& Scofield, J. E. (2018). Methods to detect low quality data and its implication for psychological research. \emph{Behavior Research Methods}. \url{https://doi.org/10.3758/s13428-018-1035-6}
 
 \bibitem[\citeproctext]{ref-burke2010}
-Burke, B. L., Martens, A., \& Faucher, E. H. (2010). Two Decades of Terror Management Theory: A Meta-Analysis of Mortality Salience Research. \emph{Personality and Social Psychology Review}, \emph{14}(2), 155--195. \url{https://doi.org/10.1177/1088868309352321}
+Burke, B. L., Martens, A., \& Faucher, E. H. (2010). Two decades of terror management theory: A meta-analysis of mortality salience research. \emph{Personality and Social Psychology Review}, \emph{14}(2), 155--195. \url{https://doi.org/10.1177/1088868309352321}
+
+\bibitem[\citeproctext]{ref-mice}
+Buuren, S. van, \& Groothuis-Oudshoorn, K. (2011). \emph{{\textbraceleft}Mice{\textbraceright}: Multivariate imputation by chained equations in r}. \emph{45}, 1--67. \url{https://doi.org/10.18637/jss.v045.i03}
 
 \bibitem[\citeproctext]{ref-byrne1989}
 Byrne, B. M., Shavelson, R. J., \& Muthén, B. (1989). Testing for the equivalence of factor covariance and mean structures: The issue of partial measurement invariance. \emph{Psychological Bulletin}, \emph{105}(3), 456--466. \url{https://doi.org/10.1037/0033-2909.105.3.456}
 
 \bibitem[\citeproctext]{ref-cheung1999}
-Cheung, G. W., \& Rensvold, R. B. (1999). Testing Factorial Invariance across Groups: A Reconceptualization and Proposed New Method. \emph{Journal of Management}, \emph{25}(1), 1--27. \url{https://doi.org/10.1177/014920639902500101}
+Cheung, G. W., \& Rensvold, R. B. (1999). Testing factorial invariance across groups: A reconceptualization and proposed new method. \emph{Journal of Management}, \emph{25}(1), 1--27. \url{https://doi.org/10.1177/014920639902500101}
 
 \bibitem[\citeproctext]{ref-cheung2002}
 Cheung, G. W., \& Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for testing measurement invariance. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{9}(2), 233--255. \url{https://doi.org/10.1207/S15328007SEM0902_5}
@@ -772,16 +979,16 @@ Erikson, Erik H. (1950). \emph{Childhood and society}. New York: Norton.
 Erikson, E. H. (1963). \emph{Childhood and society} (2nd ed.). New York: Norton.
 
 \bibitem[\citeproctext]{ref-greenberg1986}
-Greenberg, J., Pyszczynski, T., \& Solomon, S. (1986). \emph{The Causes and Consequences of a Need for Self-Esteem: A Terror Management Theory}. New York: Springer-Verlag.
+Greenberg, J., Pyszczynski, T., \& Solomon, S. (1986). \emph{The causes and consequences of a need for self-esteem: A terror management theory}. New York: Springer-Verlag.
 
 \bibitem[\citeproctext]{ref-greenberg1990}
-Greenberg, J., Solomon, S., Veeder, M., Pyszczynski, T., Rosenblatt, A., Kirkland, S., \& Lyon, D. (1990). Evidence for Terror Management Theory II: The Effects of Mortality Salience on Reactions to Those Who Threaten or Bolster the Cultural Worldview. \emph{Journal of Personality and Social Psychology}, \emph{58}(2), 308--318.
+Greenberg, J., Solomon, S., Veeder, M., Pyszczynski, T., Rosenblatt, A., Kirkland, S., \& Lyon, D. (1990). Evidence for terror management theory II: The effects of mortality salience on reactions to those who threaten or bolster the cultural worldview. \emph{Journal of Personality and Social Psychology}, \emph{58}(2), 308--318.
 
 \bibitem[\citeproctext]{ref-hu1999}
 Hu, L., \& Bentler, P. M. (1999). Cutoff criteria for fit indexes in covariance structure analysis: Conventional criteria versus new alternatives. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{6}(1), 1--55. \url{https://doi.org/10.1080/10705519909540118}
 
 \bibitem[\citeproctext]{ref-juxf6reskog1996}
-Jöreskog, K. G., \& Sörbom, D. (1996). \emph{LISREL 8: User's Reference Guide}. Scientific Software International.
+Jöreskog, K. G., \& Sörbom, D. (1996). \emph{LISREL 8: User's reference guide}. Scientific Software International.
 
 \bibitem[\citeproctext]{ref-kline2016}
 Kline, R. B. (2016). \emph{Principles and practice of structural equation modeling} (Fourth edition). New York: The Guilford Press.
@@ -789,23 +996,29 @@ Kline, R. B. (2016). \emph{Principles and practice of structural equation modeli
 \bibitem[\citeproctext]{ref-kotre1984}
 Kotre, J. (1984). \emph{Outliving the self: How we live on in future generations}. New York: W. W. Norton \& Company, Inc.
 
+\bibitem[\citeproctext]{ref-lifton1979}
+Lifton, R. J. (1979). \emph{The broken connection: On death and the continuity of life}. New York: Simon \& Schuster.
+
 \bibitem[\citeproctext]{ref-mathews1988}
-Mathews, R. C., \& Kling, K. J. (1988). Self-Transcendence, Time Perspective, and Prosocial Behavior. \emph{Journal of Voluntary Action Research}, \emph{17}(2), 4--24. \url{https://doi.org/10.1177/089976408801700202}
+Mathews, R. C., \& Kling, K. J. (1988). Self-transcendence, time perspective, and prosocial behavior. \emph{Journal of Voluntary Action Research}, \emph{17}(2), 4--24. \url{https://doi.org/10.1177/089976408801700202}
 
 \bibitem[\citeproctext]{ref-mathews1987}
-Mathews, R. C., \& Mister, R. D. (1987). Measuring an Individual's Investment in the Future: Symbolic Immortality, Sensation Seeking, and Psychic Numbness. \emph{OMEGA - Journal of Death and Dying}, \emph{18}(3), 161--173. \url{https://doi.org/10.2190/NL7H-YY22-DN6Q-5XEB}
+Mathews, R. C., \& Mister, R. D. (1987). Measuring an individual's investment in the future: Symbolic immortality, sensation seeking, and psychic numbness. \emph{OMEGA - Journal of Death and Dying}, \emph{18}(3), 161--173. \url{https://doi.org/10.2190/NL7H-YY22-DN6Q-5XEB}
 
 \bibitem[\citeproctext]{ref-mcadams1992}
 McAdams, D. P., \& St. Aubin, E. de. (1992). A theory of generativity and its assessment through self-report, behavioral acts, and narrative themes in autobiography. \emph{Journal of Personality and Social Psychology}, \emph{62}(6), 1003--1015.
 
 \bibitem[\citeproctext]{ref-nye2019}
-Nye, C. D., Bradburn, J., Olenick, J., Bialko, C., \& Drasgow, F. (2019). How Big Are My Effects? Examining the Magnitude of Effect Sizes in Studies of Measurement Equivalence. \emph{Organizational Research Methods}, \emph{22}(3), 678--709. \url{https://doi.org/10.1177/1094428118761122}
+Nye, C. D., Bradburn, J., Olenick, J., Bialko, C., \& Drasgow, F. (2019). How big are my effects? Examining the magnitude of effect sizes in studies of measurement equivalence. \emph{Organizational Research Methods}, \emph{22}(3), 678--709. \url{https://doi.org/10.1177/1094428118761122}
 
 \bibitem[\citeproctext]{ref-nye2011}
 Nye, C. D., \& Drasgow, F. (2011). Effect size indices for analyses of measurement equivalence: Understanding the practical importance of differences between groups. \emph{Journal of Applied Psychology}, \emph{96}(5), 966--980. \url{https://doi.org/10.1037/a0022955}
 
 \bibitem[\citeproctext]{ref-preacher2003}
 Preacher, K. J., \& MacCallum, R. C. (2003). Repairing tom swift's electric factor analysis machine. \emph{Understanding Statistics}, \emph{2}(1), 13--43. \url{https://doi.org/10.1207/S15328031US0201_02}
+
+\bibitem[\citeproctext]{ref-revelle2017}
+Revelle, W. (2017). \emph{Psych: Procedures for psychological, psychometric, and personality research}. Evanston.
 
 \bibitem[\citeproctext]{ref-revelle2020}
 Revelle, W. (2020). \emph{Psych: Procedures for psychological, psychometric, and personality research}. Retrieved from \url{https://CRAN.R-project.org/package=psych}
@@ -814,15 +1027,62 @@ Revelle, W. (2020). \emph{Psych: Procedures for psychological, psychometric, and
 Rosseel, Y. (2012). Lavaan: An r package for structural equation modeling. \emph{Journal of Statistical Software}, \emph{48}(1), 1--36. \url{https://doi.org/10.18637/jss.v048.i02}
 
 \bibitem[\citeproctext]{ref-steiger2016}
-Steiger, J. H. (2016). Notes on the Steiger{\textendash}Lind (1980) Handout. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{23}(6), 777--781. \url{https://doi.org/10.1080/10705511.2016.1217487}
+Steiger, J. H. (2016). Notes on the steiger{\textendash}lind (1980) handout. \emph{Structural Equation Modeling: A Multidisciplinary Journal}, \emph{23}(6), 777--781. \url{https://doi.org/10.1080/10705511.2016.1217487}
+
+\bibitem[\citeproctext]{ref-tabachnick2013}
+Tabachnick, B., \& Fidell, L. (2013). \emph{Using multivariate statistics, 6th edition} (6th ed.). Pearson.
 
 \bibitem[\citeproctext]{ref-tucker1973}
 Tucker, L. R., \& Lewis, C. (1973). A reliability coefficient for maximum likelihood factor analysis. \emph{Psychometrika}, \emph{38}(1), 1--10. \url{https://doi.org/10.1007/BF02291170}
+
+\bibitem[\citeproctext]{ref-yalom2008}
+Yalom, I. D. (2008). \emph{Staring at the sun: Overcoming the terror of death}. San Francisco: Jossey-Bass.
 
 \bibitem[\citeproctext]{ref-zuckerman1979}
 Zuckerman, M., \& Neeb, M. (1979). Sensation seeking and psychopathology. \emph{Psychiatry Research}, \emph{1}(3), 255--264. \url{https://doi.org/10.1016/0165-1781(79)90007-6}
 
 \end{CSLReferences}
+
+\section{Appendix}\label{appendix}
+
+All materials, code, and the reproducible manuscript can be found at: \url{https://github.com/doomlab/gen-scale}.
+
+\begin{itemize}
+\tightlist
+\item
+  EFA Model Loadings: Loadings for models before they were combined and examined together.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Two-Factor: \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/2_factor.xlsx}
+  \item
+    Three-Factor: \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/3_factor.xlsx}
+  \item
+    Five-Factor: \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/5_factor.xlsx}
+  \end{itemize}
+\item
+  EFA Model Loadings Reduced: Loadings for models when items were compared across models and then re-analyzed.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Two-Factor: \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/2_factor_reduced.xlsx}
+  \item
+    Three-Factor: \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/3_factor_reduced.xlsx}
+  \item
+    Five-Factor: \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/5_factor_reduced.xlsx}
+  \end{itemize}
+\item
+  Final Questions: Final question set for those who want to use the scale.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \url{https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/5_factor_reduced.xlsx}
+  \end{itemize}
+\item
+\end{itemize}
 
 
 \end{document}

@@ -1,38 +1,36 @@
 ---
-title             : "The title"
-shorttitle        : "Title"
+title             : "The Symbolic Immortality Modes Survey (SIMS): Scale Development and Psychometric Evaluation"
+shorttitle        : "SIMS Creation"
 author: 
-  - name          : "First Author"
+  - name          : "Ari L. Cunningham"
     affiliation   : "1"
-    corresponding : yes    # Define only one corresponding author
-    address       : "Postal address"
-    email         : "my@email.com"
+    address       : "901 S. National Ave, Springfield, MO, 65897"
+    email         : "AriCunningham@MissouriState.edu"
     role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
       - "Conceptualization"
+      - "Data Curation"
+      - "Analysis"
       - "Writing - Original Draft Preparation"
       - "Writing - Review & Editing"
-  - name          : "Ernst-August Doelle"
-    affiliation   : "1,2"
+  - name          : "Erin M. Buchanan"
+    corresponding : yes
+    affiliation   : "2"
     role:
+      - "Conceptualization"
+      - "Data Curation"
+      - "Investigation"
+      - "Analysis"
+      - "Writing - Original Draft Preparation"
       - "Writing - Review & Editing"
+      - "Visualization"
       - "Supervision"
 affiliation:
   - id            : "1"
-    institution   : "Wilhelm-Wundt-University"
+    institution   : "Missouri State University"
   - id            : "2"
-    institution   : "Konstanz Business School"
+    institution   : "Harrisburg University of Science and Technology"
 authornote: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-  Enter author note here.
-abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  One or two sentences to put the results into a more **general context**.
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
-  
+  Symbolic immortality which is the sense that non-physical aspects of oneself will persist beyond biological death, has been theorized as a fundamental human motivation, yet existing measures suffer from poor face validity, outdated psychometric methods, and limited generalizability. The present study developed and validated a new Symbolic Immortality Scale grounded in Lifton's (1979) five-mode framework. Items were administered to undergraduate students (n = 508) and Amazon Mechanical Turk workers (n = 167). Exploratory factor analysis supported a five-factor structure, which was subsequently confirmed in an independent holdout sample. Multigroup confirmatory factor analysis revealed partial measurement invariance, indicating that while factor loadings were equivalent, certain item intercepts and residuals differed between populations particularly for spiritual and biological items. Effect size analyses using a novel bootstrapping approach quantified the practical magnitude of these group differences. Implications for the use of symbolic immortality as a construct in research on death anxiety, generativity, and meaning-making are discussed.
   
   <!-- https://tinyurl.com/ybremelq -->
 keywords          : "keywords"
@@ -295,6 +293,8 @@ library(visualizemi)
 library(lavaan)
 library(ggplot2)
 library(cowplot)
+library(ggridges)
+library(stringr)
 
 ## args: dat: Dataframe of scale values, with each row being a participant and each column being a scale question
 ## args: rt: vector of response time/page time for each participant
@@ -497,7 +497,7 @@ mturk_page3 <- import("../03_Data/mturk_page3_sad.csv")
 mturk_good <- import("../03_Data/mturk_data_goodqual.csv")
 mturk_noout <- import("../03_Data/mturk_data_noout.csv")
 
-questions <- import("../03_Data/questions.xlsx")
+questions <- item_text <- read.csv("../03_Data/item_text.csv")
 
 no_missing_sona <- 452
 no_missing_turk <- 181
@@ -543,12 +543,13 @@ were randomized across participants, and the items within each block
 were also randomized. In each block, one attention check item was shown
 (e.g., "Answer this question as somewhat agree."). At the end of the
 study, participants were directed back to either SONA for undergraduate
-course credit or Mechanical Turk for monetary
-compensation[\^Unfortunately, the exact amount we paid participants is
-lost to time. Given our ethics application, we believe it was 1-2 USD,
-and the survey was completed in *M* =
-`r apa_num(mean(mturk_good[, "Duration (in seconds)"])/60)` (*SD* =
-`r apa_num(sd(mturk_good[, "Duration (in seconds)"])/60)` minutes.].
+course credit or Mechanical Turk for monetary compensation[^1].
+
+[^1]: \^Unfortunately, the exact amount we paid participants is lost to
+    time. Given our ethics application, we believe it was 1-2 USD, and
+    the survey was completed in *M* =
+    `r apa_num(mean(mturk_good[, "Duration (in seconds)"])/60)` (*SD* =
+    `r apa_num(sd(mturk_good[, "Duration (in seconds)"])/60)` minutes.
 
 ## Data analysis
 
@@ -561,13 +562,13 @@ factor analysis (EFA) with maximum likelihood estimation and an oblique
 the *psych* package [@revelle2020]. We used scree plots, parallel
 analysis, and theory to determine the number of factors and compared
 models based on fit indices to select the best model. We use the
-following fit indices: Root Mean Squared Error of Approximation [RMSEA;
-@steiger2016], Root Mean Squared Residual [RMSR; @jöreskog1996],
-Comparative Fit Index [CFI; @bentler1990], and the Tucker-Lewis Index
-[TLI; @tucker1973]. Values close to one are expected for goodness of fit
-statistics [CFI, TLI; @bentler1990; @hu1999], while lower values close
+following fit indices: Root Mean Squared Error of Approximation [RMSEA,
+@steiger2016], Root Mean Squared Residual [RMSR, @jöreskog1996],
+Comparative Fit Index [CFI, @bentler1990], and the Tucker-Lewis Index
+[TLI, @tucker1973]. Values close to one are expected for goodness of fit
+statistics [CFI, TLI, @bentler1990; @hu1999], while lower values close
 to zero are considered better models for residual statistics [RMSEA,
-RMSR; @steiger2016].
+RMSR, @steiger2016].
 
 We then analyzed the best model from the exploratory stage using
 confirmatory factor analysis (CFA) and multigroup CFA [@kline2016;
@@ -665,9 +666,32 @@ partially invariant parameter estimates.
 
 ### Undergraduate Data
 
-Data were screened for accuracy, missing data, outliers, and multivariate parametric assumptions. The undergraduate data included *n* = `r nrow(sona)` participants. We first screened each participant for missing data and excluded *n* =  `r nrow(sona) - nrow(sona_replaced)` participants for missing more than 5% of their data [TABACHNICK]. `r nrow(sona_replaced) - no_missing_sona` participants included less than 5% missing data (i.e., 3 items or less), and these data points amounted to less than 2% of data missing per question. These items were replaced with a random imputation from the *mice* library [CITE MICE]. 
+Data were screened for accuracy, missing data, outliers, and
+multivariate parametric assumptions. The undergraduate data included *n*
+= `r nrow(sona)` participants. We first screened each participant for
+missing data and excluded *n* = `r nrow(sona) - nrow(sona_replaced)`
+participants for missing more than 5% of their data [@tabachnick2013].
+`r nrow(sona_replaced) - no_missing_sona` participants included less
+than 5% missing data (i.e., 3 items or less), and these data points
+amounted to less than 2% of data missing per question. These items were
+replaced with a random imputation from the *mice* library [@mice].
 
-The data were then screen for attentiveness and accuracy using the framework from CITE BUCHANAN to find low quality responses. The survey items were split into three pages, and each page was screened separately using click counts, an attention check item (i.e., please answer strongly agree for this item), and number of characters on a page for reading speed. The total number of indicators for low quality data was summed for each participant across pages (e.g., 3 indicators by 3 pages = 9 total possible items), and *n* = `r nrow(sona_replaced)- nrow(sona_good)` participants showed at least 4 indicators across all pages. CITE BUCHANAN suggest a criteria of 2/5 screeners or 40%, and therefore, we used 4 items as the ~40% cut off for inclusion in the data. The final sample size for the undergraduate population was *n* = `r nrow(sona_good)`. We additionally screened for multivariate outliers using Mahalanobis distance across items and found *n* = `r nrow(sona_good) - nrow(sona_noout)` possible outliers, but they are included in the analyses described below. 
+The data were then screen for attentiveness and accuracy using the
+framework from @buchanan2018 to find low quality responses. The survey
+items were split into three pages, and each page was screened separately
+using click counts, an attention check item (i.e., please answer
+strongly agree for this item), and number of characters on a page for
+reading speed. The total number of indicators for low quality data was
+summed for each participant across pages (e.g., 3 indicators by 3 pages
+= 9 total possible items), and *n* =
+`r nrow(sona_replaced)- nrow(sona_good)` participants showed at least 4
+indicators across all pages. @buchanan2018 suggest a criteria of 2/5
+screeners or 40%, and therefore, we used 4 items as the \~40% cut off
+for inclusion in the data. The final sample size for the undergraduate
+population was *n* = `r nrow(sona_good)`. We additionally screened for
+multivariate outliers using Mahalanobis distance across items and found
+*n* = `r nrow(sona_good) - nrow(sona_noout)` possible outliers, but they
+are included in the analyses described below.
 
 ```{r screen-sona-accuracy-out, eval = F}
 # Accuracy ----
@@ -845,7 +869,17 @@ hist(standardized, breaks=15)
 
 ### Mechanical Turk Data
 
-The Mechanical Turk data were screened in the same manner as the undergraduate sample. The original sample size was *n* = `r nrow(mturk)` participants. *N* = `r nrow(mturk) -  nrow(mturk_replaced)` participants were excluded for missing more than 5% of their data, and *n* = `r nrow(mturk_replaced) - no_missing_turk` participants had 3 or less data points estimated using the *mice* library. The same low quality data screening was performed, and *n* = `r nrow(mturk_replaced) - nrow(mturk_good)` participants were excluded for having 40% or more low quality indicators. Last, *n* =  `r nrow(mturk_good) - nrow(mturk_noout)` participants were flagged as potential outliers but were not included in analyses presented below. 
+The Mechanical Turk data were screened in the same manner as the
+undergraduate sample. The original sample size was *n* = `r nrow(mturk)`
+participants. *N* = `r nrow(mturk) -  nrow(mturk_replaced)` participants
+were excluded for missing more than 5% of their data, and *n* =
+`r nrow(mturk_replaced) - no_missing_turk` participants had 3 or less
+data points estimated using the *mice* library. The same low quality
+data screening was performed, and *n* =
+`r nrow(mturk_replaced) - nrow(mturk_good)` participants were excluded
+for having 40% or more low quality indicators. Last, *n* =
+`r nrow(mturk_good) - nrow(mturk_noout)` participants were flagged as
+potential outliers but were not included in analyses presented below.
 
 ```{r screen-mturk-accuracy-out, eval = F}
 # Accuracy ----
@@ -1021,7 +1055,7 @@ hist(standardized, breaks=15)
 } 
 ```
 
-```{r data-combine-split}
+```{r data-combine-split, echo = F}
 combo <- bind_rows(sona_good %>% 
                      mutate(where = "Undergraduate"), 
                    mturk_good %>% 
@@ -1045,8 +1079,8 @@ cfaDF <- combo %>%
   select(Q2_1:Q5_20, where)  %>% 
   select(-Q2_21, -Q4_20, -Q5_16)
 
-nrow(efaDF)
-nrow(cfaDF)
+# nrow(efaDF)
+# nrow(cfaDF)
 
 efaDF_noout <- combo_noout %>% 
   filter(ResponseId %in% random_split) %>% 
@@ -1057,14 +1091,23 @@ cfaDF_noout <- combo_noout %>%
   select(Q2_1:Q5_20, where)  %>% 
   select(-Q2_21, -Q4_20, -Q5_16)
 
-nrow(efaDF_noout)
-nrow(cfaDF_noout)
+# nrow(efaDF_noout)
+# nrow(cfaDF_noout)
 
 # write.csv(efaDF, "../03_Data/efaDF.csv", row.names = F)
 # write.csv(cfaDF, "../03_Data/cfaDF.csv", row.names = F)
 ```
 
-The data was then randomly split into *n* = `r nrow(efaDF)` participants for the exploratory factor analysis, and *n* = `r nrow(cfaDF)` for the confirmatory factor analysis. The EFA data included *n* undergraduate = `r nrow(efaDF %>% filter(where == "Undergraduate"))` participants, and *n* Mechanical Turk = `r nrow(efaDF %>% filter(where != "Undergraduate"))` participants. The CFA data included *n* undergraduate = `r nrow(cfaDF %>% filter(where == "Undergraduate"))` participants, and *n* Mechanical Turk = `r nrow(cfaDF %>% filter(where != "Undergraduate"))` participants. 
+The data was then randomly split into *n* = `r nrow(efaDF)` participants
+for the exploratory factor analysis, and *n* = `r nrow(cfaDF)` for the
+confirmatory factor analysis. The EFA data included *n* undergraduate =
+`r nrow(efaDF %>% filter(where == "Undergraduate"))` participants, and
+*n* Mechanical Turk =
+`r nrow(efaDF %>% filter(where != "Undergraduate"))` participants. The
+CFA data included *n* undergraduate =
+`r nrow(cfaDF %>% filter(where == "Undergraduate"))` participants, and
+*n* Mechanical Turk =
+`r nrow(cfaDF %>% filter(where != "Undergraduate"))` participants.
 
 ```{r efa-drop-where}
 efaDF <- efaDF %>% 
@@ -1075,7 +1118,12 @@ efaDF <- efaDF %>%
 
 ### Number of Factors
 
-To determine the number of factors that best fit the data, we used suggested theory (5 factors), a scree plot, and a parallel analysis using the *psych* library [CITE PSYCH]. Parallel analysis suggested 7 factors, while a visual inspection of the scree plot indicated 2 to 3 factors. We analyzed a 2-factor, 3-factor, and 5-factor model for simple structure and fit indices.
+To determine the number of factors that best fit the data, we used
+suggested theory (5 factors), a scree plot, and a parallel analysis
+using the *psych* library [@revelle2017]. Parallel analysis suggested 7
+factors, while a visual inspection of the scree plot indicated 2 to 3
+factors. We analyzed a 2-factor, 3-factor, and 5-factor model for simple
+structure and fit indices.
 
 ```{r number-factors, echo = F, include = F}
 number_items <- fa.parallel(efaDF, #data frame
@@ -1088,8 +1136,6 @@ sum(number_items$fa.values > .7)
 ### Simple Structure
 
 ```{r two-factor, message = F}
-item_text <- read.csv("../03_Data/item_text.csv")
-
 EFA_fit <- fa(efaDF, #data
               nfactors = 2, #number of factors
               rotate = "oblimin", #rotation
@@ -1128,7 +1174,7 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
   )) %>% 
   mutate(question = rownames(.)) %>% 
   left_join(questions,
-            by = c("question" = "Question_Number")) %>% 
+            by = c("question" = "ItemNum")) %>% 
   arrange(desc(ML1)) 
 
 # %>% export(., "results/2_factor.xlsx", row.names = F)
@@ -1188,7 +1234,7 @@ efa_loadings_2 <- as.data.frame(unclass(EFA_fit_2$loadings)) %>%
           )
   ) %>% 
   left_join(questions,
-            by = c("question" = "Question_Number")) %>% 
+            by = c("question" = "ItemNum")) %>% 
   arrange(desc(ML1)) 
   # %>% export(., "results/3_factor.xlsx", row.names = F)
 
@@ -1220,7 +1266,7 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
           )
   ) %>% 
   left_join(questions,
-            by = c("question" = "Question_Number")) %>% 
+            by = c("question" = "ItemNum")) %>% 
   arrange(desc(ML1)) 
   # %>% export(., "results/3_factor.xlsx", row.names = F)
 
@@ -1270,16 +1316,29 @@ efa_loadings_3 <- as.data.frame(unclass(EFA_fit_3$loadings)) %>%
   mutate(question = rownames(.)) %>% 
   rowwise() %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
-  ungroup() %>% 
   left_join(questions,
-            by = c("question" = "Question_Number")) %>% 
+            by = c("question" = "ItemNum")) %>% 
   arrange(desc(ML1)) 
   # %>% export(., "results/5_factor.xlsx", row.names = F)
 
 five_factor_3 <- table(efa_loadings_3$keep)
 ```
 
-The `r ncol(efaDF)` items were first tested with a 2-factor fit, and `r two_factor_1["no"]` items were excluded for not loading on any factor or loading on multiple factors with a loading greater than .30. After removing these items, all items loaded cleanly on the two factors. The loading table for this analysis can be found at XX. This same procedure was repeated for the 3-factor fit, and `r three_factor_1["no"]` items were removed from the first round of analysis, and `r three_factor_2["no"]` item was removed from the second round of analysis, resulting in a final set of `r three_factor_3["yes"]` items. The loading table and items can be found at XX. Last, the 5-factor model showed `r five_factor_1["0"] + five_factor_1["2"]` poor items on the first round of analysis, and `r five_factor_2["0"] + five_factor_2["2"]` poor items on the second round of analysis, resulting in a final set of `r five_factor_3` items for the final model. The items and loadings can be found at XX. 
+The `r ncol(efaDF)` items were first tested with a 2-factor fit, and
+`r two_factor_1["no"]` items were excluded for not loading on any factor
+or loading on multiple factors with a loading greater than .30. After
+removing these items, all items loaded cleanly on the two factors. The
+loading table for this analysis can be found on our GitHub repository (links provided in the appendix). This same procedure
+was repeated for the 3-factor fit, and `r three_factor_1["no"]` items
+were removed from the first round of analysis, and
+`r three_factor_2["no"]` item was removed from the second round of
+analysis, resulting in a final set of `r three_factor_3["yes"]` items.
+The loading table and items can be found in the online supplemental materials. Last, the 5-factor model
+showed `r five_factor_1["0"] + five_factor_1["2"]` poor items on the
+first round of analysis, and `r five_factor_2["0"] + five_factor_2["2"]`
+poor items on the second round of analysis, resulting in a final set of
+`r five_factor_3` items for the final model. The items and loadings can
+be found in the online supplemental materials.
 
 ```{r comparison-models}
 efa_results <- import("results/final_questions.xlsx")
@@ -1297,7 +1356,7 @@ efa_loadings_two <- as.data.frame(unclass(EFA_2factor$loadings)) %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
   ungroup() %>% 
   left_join(questions,
-            by = c("question" = "Question_Number")) %>% 
+            by = c("question" = "ItemNum")) %>% 
   arrange(desc(ML1)) 
   # %>% export(., "results/2_factor_reduced.xlsx", row.names = F)
 
@@ -1315,7 +1374,7 @@ efa_loadings_three <- as.data.frame(unclass(EFA_3factor$loadings)) %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>% 
   ungroup() %>% 
   left_join(questions,
-            by = c("question" = "Question_Number")) %>% 
+            by = c("question" = "ItemNum")) %>% 
   arrange(desc(ML1)) 
   # %>% export(., "results/3_factor_reduced.xlsx", row.names = F)
 
@@ -1367,25 +1426,72 @@ efa_loadings_five_3 <- as.data.frame(unclass(EFA_5factor$loadings)) %>%
   mutate(keep = sum(c_across(-question) >= .30)) %>%
   ungroup() %>%
   left_join(questions,
-            by = c("question" = "Question_Number")) %>%
+            by = c("question" = "ItemNum")) %>%
   arrange(desc(ML1)) 
   # %>% export(., "results/5_factor_reduced.xlsx", row.names = F)
 ```
 
-We then compared items across all factor models to reduce scale length. Items were selected for the final model if they: 1) theoretically made sense with the other items on that factor, 2) loaded on the theorized 5-factor model (i.e., items were included in the 2-factor model if they also had been included in the 5-factor model), and 3) were not face-value redundant with other items on that factor. We tested these items and found that the 2-factor and 3-factor models continued to show simple structure, but the 5-factor model required the removal of `r five_loadings_1["2"] + five_loadings_2["2"]` more items due to cross loadings across factors. To select the best model, we examined the fit indices for each factor structure. The 5-factor model showed the best fit (RMSEA = `r apa_num(EFA_5factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR = `r apa_num(EFA_5factor$rms, gt1 = F, digits = 3)`, TLI = `r apa_num(EFA_5factor$TLI, gt1 = F, digits = 3)`, CFI = `r apa_num(EFA_5factor$CFI, gt1 = F, digits = 3)`), followed by the 3-factor model (RMSEA = `r apa_num(EFA_3factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR = `r apa_num(EFA_3factor$rms, gt1 = F, digits = 3)`, TLI = `r apa_num(EFA_3factor$TLI, gt1 = F, digits = 3)`, CFI = `r apa_num(EFA_3factor$CFI, gt1 = F, digits = 3)`), and then the 2-factor model (RMSEA = `r apa_num(EFA_2factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR = `r apa_num(EFA_2factor$rms, gt1 = F, digits = 3)`, TLI = `r apa_num(EFA_2factor$TLI, gt1 = F, digits = 3)`, CFI = `r apa_num(EFA_2factor$CFI, gt1 = F, digits = 3)`). The final factor loadings for the 5-factor scale are shown in Table \@ref(tab:table-five-factor), and the other loadings can be found at XX (2-factor) and XX (3-factor).
+We then compared items across all factor models to reduce scale length.
+Items were selected for the final model if they: 1) theoretically made
+sense with the other items on that factor, 2) loaded on the theorized
+5-factor model (i.e., items were included in the 2-factor model if they
+also had been included in the 5-factor model), and 3) were not
+face-value redundant with other items on that factor. We tested these
+items and found that the 2-factor and 3-factor models continued to show
+simple structure, but the 5-factor model required the removal of
+`r five_loadings_1["2"] + five_loadings_2["2"]` more items due to cross
+loadings across factors. To select the best model, we examined the fit
+indices for each factor structure. The 5-factor model showed the best
+fit (RMSEA = `r apa_num(EFA_5factor$RMSEA[1], gt1 = F, digits = 3)`,
+RMSR = `r apa_num(EFA_5factor$rms, gt1 = F, digits = 3)`, TLI =
+`r apa_num(EFA_5factor$TLI, gt1 = F, digits = 3)`, CFI =
+`r apa_num(EFA_5factor$CFI, gt1 = F, digits = 3)`), followed by the
+3-factor model (RMSEA =
+`r apa_num(EFA_3factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR =
+`r apa_num(EFA_3factor$rms, gt1 = F, digits = 3)`, TLI =
+`r apa_num(EFA_3factor$TLI, gt1 = F, digits = 3)`, CFI =
+`r apa_num(EFA_3factor$CFI, gt1 = F, digits = 3)`), and then the
+2-factor model (RMSEA =
+`r apa_num(EFA_2factor$RMSEA[1], gt1 = F, digits = 3)`, RMSR =
+`r apa_num(EFA_2factor$rms, gt1 = F, digits = 3)`, TLI =
+`r apa_num(EFA_2factor$TLI, gt1 = F, digits = 3)`, CFI =
+`r apa_num(EFA_2factor$CFI, gt1 = F, digits = 3)`). The final factor
+loadings for the 5-factor scale are shown in Table
+\@ref(tab:table-five-factor), and the other loadings can be found in the online supplemental materials.
 
 ```{r table-five-factor, results = 'asis'}
-five_reduced <- import('results/5_factor_reduced.xlsx')
-apa_table(five_reduced %>% 
-            select(-keep, -question) %>% 
-            mutate(row_num = 1:nrow(.)) %>% 
-            arrange(desc(row_num)) %>% 
-            select(-Factor, -row_num), 
-          col.names = c("Spiritual", "Social", "Personal", "Biological", "Physical", "Item"), 
-          size = "smaller")
+five_reduced <- import('results/5_factor_reduced.xlsx') %>% 
+    mutate(Question = stringr::str_wrap(Question, width = 40))  # adjust width to taste
+# apa_table(five_reduced %>% 
+#             select(-keep, -question) %>% 
+#             mutate(row_num = 1:nrow(.)) %>% 
+#             arrange(desc(row_num)) %>% 
+#             select(-Factor, -row_num),
+#           col.names = c("Spiritual", "Social", "Personal", "Biological", "Physical", "Item"),
+#           size = "smallest",
+#           longtable = TRUE,          
+#           # allows page breaks and better width handling
+#           landscape = TRUE)
+
+five_reduced %>% 
+  select(-keep, -question) %>% 
+  mutate(row_num = 1:nrow(.)) %>% 
+  arrange(desc(row_num)) %>% 
+  select(-Factor, -row_num) %>%
+  mutate(ML1 = apa_num(ML1, digits = 3, gt1 = F),
+         ML2 = apa_num(ML2, digits = 3, gt1 = F),
+         ML3 = apa_num(ML3, digits = 3, gt1 = F),
+         ML4 = apa_num(ML4, digits = 3, gt1 = F),
+         ML5 = apa_num(ML5, digits = 3, gt1 = F)) %>% 
+  knitr::kable(format = "latex",
+               booktabs = TRUE,
+               col.names = c("Spiritual", "Social", "Personal", "Biological", "Physical", "Item"),
+               caption = "EFA Loadings for the 5-Factor Model") %>%
+  kableExtra::kable_styling(font_size = 10, latex_options = c("hold_position", "scale_down")) %>%
+  kableExtra::column_spec(6, width = "8cm")  # constrain Item column
 ```
 
-EXPLAIN ITEM LABELS HERE 
+EXPLAIN ITEM LABELS HERE
 
 ## CFA
 
@@ -1463,11 +1569,40 @@ intercepts_diff <- model.results.partial$model_coef %>%
   filter(model == "intercepts")
 ```
 
-Using the multigroup CFA procedure described above, we examined the 5-factor model for overall fit and fit across groups. Table \@ref(tab:cfa-model-fit) portrays the results of the assessment of all models. The model showed acceptable fit overall with lower than desired values on the TLI, and lower values on the CFI and TLI for each individual group. Model fit appeared acceptable to investigate multi-group structure when examining the configural model with good values for the residual fit statistics, and poorer values for the goodness of fit statistics. We examined for potential areas of misfit using modification indices but did not find any suggested correlated error terms (i.e., two similar items that have related residuals) or cross-loadings that fit within theoretical structure. Therefore, we did not make any modifications. 
+Using the multigroup CFA procedure described above, we examined the
+5-factor model for overall fit and fit across groups. Table
+\@ref(tab:cfa-model-fit) portrays the results of the assessment of all
+models. The model showed acceptable fit overall with lower than desired
+values on the TLI, and lower values on the CFI and TLI for each
+individual group. Model fit appeared acceptable to investigate
+multi-group structure when examining the configural model with good
+values for the residual fit statistics, and poorer values for the
+goodness of fit statistics. We examined for potential areas of misfit
+using modification indices but did not find any suggested correlated
+error terms (i.e., two similar items that have related residuals) or
+cross-loadings that fit within theoretical structure. Therefore, we did
+not make any modifications.
 
 ### Partial Scalar Invariance
 
-Using the $\Delta$CFI $\le$ .01 rule for degradation in fit, we found that the loadings (*metric*) showed invariance across groups, while a large degradation in fit was found between the loadings and intercepts (*scalar*). We individually removed the equality constraint between groups for each item, and found one item that was different between groups: *I have children or students which take after me.* The intercept for the undergraduate sample on this item was: `r intercepts_diff %>% filter(group == 1) %>% pull(estimate) %>% apa_num()`, *SE* = `r intercepts_diff %>% filter(group == 1) %>% pull(std.error) %>% apa_num()`, while the Mechanical Turk sample showed a higher average item score: `r intercepts_diff %>% filter(group == 2) %>% pull(estimate) %>% apa_num()`, *SE* = `r intercepts_diff %>% filter(group == 2) %>% pull(std.error) %>% apa_num()`. Figure \@ref(fig:visualize-diffs) demonstrates a visualization of those differences with higher intercepts for the Mechanical Turk group. The overall distribution for the biological factor is also displayed in this figure. 
+Using the $\Delta$CFI $\le$ .01 rule for degradation in fit, we found
+that the loadings (*metric*) showed invariance across groups, while a
+large degradation in fit was found between the loadings and intercepts
+(*scalar*). We individually removed the equality constraint between
+groups for each item, and found one item that was different between
+groups: *I have children or students which take after me.* The intercept
+for the undergraduate sample on this item was:
+`r intercepts_diff %>% filter(group == 1) %>% pull(estimate) %>% apa_num()`,
+*SE* =
+`r intercepts_diff %>% filter(group == 1) %>% pull(std.error) %>% apa_num()`,
+while the Mechanical Turk sample showed a higher average item score:
+`r intercepts_diff %>% filter(group == 2) %>% pull(estimate) %>% apa_num()`,
+*SE* =
+`r intercepts_diff %>% filter(group == 2) %>% pull(std.error) %>% apa_num()`.
+Figure \@ref(fig:visualize-diffs) demonstrates a visualization of those
+differences with higher intercepts for the Mechanical Turk group. The
+overall distribution for the biological factor is also displayed in this
+figure.
 
 ```{r partial-partial-test}
 # figure out how to update this 
@@ -1511,7 +1646,7 @@ combined_table <- bind_rows(
   mutate(model = ifelse(
     model == "residuals", "Residuals (Partial Intercepts)", ifelse(
        model == "residuals.1", "Residuals (Partial Intercepts + Residuals)", model
-  )))
+  ))) %>% 
   mutate(npar = as.character(npar), 
                    model = tools::toTitleCase(model))
 
@@ -1546,9 +1681,35 @@ saved_mi_plots <- plot_mi(data_coef = model.results.partial$model_coef,
 
 saved_mi_plots$complete
 ```
+
 ### Partial Strict Invariance
 
-Following the partial intercepts model, we found non-invariance when all residuals were constrained to equal. The same steps were applied and 2 non-invariant items were discovered that would allow the model to be partially invariant. First, *I believe in an afterlife* showed larger residuals for the undergraduate population `r variance_diff %>% filter(group == 1) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 1) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(std.error) %>% apa_num()`), while the Mechanical Turk population showed a much smaller amount of variance `r variance_diff %>% filter(group == 2) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 2) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(std.error) %>% apa_num()`). The second item was a similar item, *My spirit or soul will live on after I physically die*, where the undergraduate population showed a much larger variance `r variance_diff %>% filter(group == 1) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 1) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(std.error) %>% apa_num()`) than the Mechanical Turk population `r variance_diff %>% filter(group == 2) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(estimate) %>% apa_num()` (*SE* = `r variance_diff %>% filter(group == 2) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(std.error) %>% apa_num()`). Figure \@ref(fig:fig-4-residuals) demonstrates the differences in variance and overall latent variable means for these items on the spiritual factor.  
+Following the partial intercepts model, we found non-invariance when all
+residuals were constrained to equal. The same steps were applied and 2
+non-invariant items were discovered that would allow the model to be
+partially invariant. First, *I believe in an afterlife* showed larger
+residuals for the undergraduate population
+`r variance_diff %>% filter(group == 1) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(estimate) %>% apa_num()`
+(*SE* =
+`r variance_diff %>% filter(group == 1) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(std.error) %>% apa_num()`),
+while the Mechanical Turk population showed a much smaller amount of
+variance
+`r variance_diff %>% filter(group == 2) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(estimate) %>% apa_num()`
+(*SE* =
+`r variance_diff %>% filter(group == 2) %>% filter(term == "Q4_19 ~~ Q4_19") %>% pull(std.error) %>% apa_num()`).
+The second item was a similar item, *My spirit or soul will live on
+after I physically die*, where the undergraduate population showed a
+much larger variance
+`r variance_diff %>% filter(group == 1) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(estimate) %>% apa_num()`
+(*SE* =
+`r variance_diff %>% filter(group == 1) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(std.error) %>% apa_num()`)
+than the Mechanical Turk population
+`r variance_diff %>% filter(group == 2) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(estimate) %>% apa_num()`
+(*SE* =
+`r variance_diff %>% filter(group == 2) %>% filter(term == "Q2_17 ~~ Q2_17") %>% pull(std.error) %>% apa_num()`).
+Figure \@ref(fig:fig-4-residuals) demonstrates the differences in
+variance and overall latent variable means for these items on the
+spiritual factor.
 
 ```{r fig-4-residuals, fig.cap = "In the left panel, the large difference in residuals can be found for the spiritual items, as loadings and intercepts are set to be equal. The placement of residuals on the plot is unrelated to the x- or y-axis and simply shows the magnitude of the difference. Both items showed nearly identical plots, and therefore we only plotted the afterlife question. The right panel shows the latent mean distribution for the entire spiritual set of items."}
 saved_mi_plots <- plot_mi(data_coef = model.results.partial2$model_coef,
@@ -1676,6 +1837,160 @@ saved_boot_partial2 <- bootstrap_partial(
 saveRDS(saved_boot_partial2, "../03_Data/saved_boot_partial_residuals.rds")
 ```
 
+```{r load-model-effect}
+saved_boot_model <- readRDS("../03_Data/saved_boot_model.rds")
+saved_boot_partial <- readRDS("../03_Data/saved_boot_partial_intercepts.rds")
+saved_boot_partial2 <- readRDS("../03_Data/saved_boot_partial_residuals.rds")
+```
+
+$h_{nmi}$ represents the effect size of the model in comparison to a
+randomized groupings model for non-measurement invariance, and effect
+sizes close to zero indicate that there is no difference in the actual
+group labels and the randomized group labels. Thus, we would expect to
+find *invariance* because the group labels show the same patterns of
+data. The $h_{nmi_p}$ effect size is scaled from -1 to +1 for easier
+interpretation. For metric invariance, we found an effect size of
+$h_{nmi_p}$ =
+`r apa_num(saved_boot_model$h_nmi_p[saved_boot_model$model == "loadings"])`
+indicating that some models may show non-invariance when replicated with
+the same groups. However, the effect size for scalar invariance showed
+twice the effect size, $h_{nmi_p}$ =
+`r apa_num(saved_boot_model$h_nmi_p[saved_boot_model$model == "intercepts"])`,
+indicating that it is likely that we would again show differences in
+groups for our non-invariant scalar items.
+
+At this stage, we examined the partial invariance for both the scalar
+and strict models that indicated non-invariant items above. Figure
+\@ref(fig:partial-effect-size) portrays the effect sizes (*d*s) for each
+questions when bootstrapped with the current group labels or randomized
+group labels. Figure \@ref(fig:partial-scores) indicates the
+distribution of scores for each item in the same order. In these
+figures, we can see potential other items that may produce non-invariant
+results. Question 4_8 (*I have children or students which take after
+me.*) showed non-invariance in our MGCFA steps; however, multiple items
+show large effect size differences in item-intercepts with higher scores
+for the undergraduate group, even though they were found to be invariant
+in the model analyses. Figures \@ref(fig:partial-effect-size-residuals)
+and \@ref(fig:partial-residuals) show the same effects for the residual
+variances in our bootstrapped model. Questions 4_19 (*I believe in an
+afterlife*) and 2_17 (*My spirit or soul will live on after I physically
+die*) were our previously found non-invariant items. The same patterns
+appear within the residuals with other potential items showing large
+effect size differences. A close inspection of the raw scores for
+figures reveals that the item intercepts and residuals may potentially
+be slightly bimodal. In this scenario, the one sample would show
+invariant results, but many similar samples may show non-invariant
+results depending on the composition of the final sample groups.
+
+```{r partial-effect-size, fig.cap="Effect size differences (*d*) between groups for item intercepts when the partially invariant scalar model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately. "}
+graph_data <- saved_boot_partial$effect_invariance_plot$data %>% 
+  filter(grepl("^Q", term)) %>% 
+  mutate(term = gsub(" ~1 ", "", term))
+
+term_order <- graph_data %>%
+  filter(type == "Bootstrapped") %>%
+  arrange(abs(d)) %>%
+  pull(term)
+
+graph_data$term <- factor(graph_data$term, levels = term_order)
+
+label_graph <- c(`TRUE` = "Invariant", `FALSE` = "Non-Invariant")
+effect_invariance_plot <- 
+  ggplot(graph_data, aes(term, d, color = type)) + 
+  theme_classic() + 
+  facet_wrap(~invariant, 
+             labeller = as_labeller(label_graph)) + 
+  scale_color_discrete(name = "Type of Estimate") + 
+  geom_point(aes(size = n)) + 
+  geom_errorbar(aes(ymin = d_low, ymax = d_high), width = 0.2) + 
+  xlab("Estimated Item") + 
+  ylab("Group Effect Size") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = "bottom") + 
+  geom_hline(yintercept = 0) + 
+  coord_flip()
+
+effect_invariance_plot
+```
+
+```{r partial-scores, fig.cap="Item intercept distributions for items that were bootstrapped with original group labels and were non-invariant ordered by effect size of the item intercept difference.", fig.height=10}
+graph_data <- saved_boot_partial$density_plot$data %>% 
+  filter(type == "Bootstrapped") %>% 
+  filter(grepl("^Q", term)) %>% 
+  mutate(term = gsub(" ~1 ", "", term)) %>% 
+  mutate(group = factor(group, 
+                        levels = c("Group 1", "Group 2"),
+                        labels = c("Undergraduate", "Mechanical Turk")))
+
+graph_data$term <- factor(graph_data$term, levels = term_order)
+
+density_plot <- ggplot(graph_data, 
+                       aes(x = estimate, y = term, fill = group)) + 
+  geom_density_ridges(alpha = 0.7, scale = 0.9) + 
+  theme_classic() + 
+  xlab("Estimated Item Intercept") + 
+  ylab("Parameter") + 
+  scale_fill_discrete(name = "Group") + 
+  theme(legend.position = "bottom")
+
+density_plot
+```
+
+```{r partial-effect-size-residuals, fig.cap="Effect size differences (*d*) between groups for residuals when the partially invariant residual model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately. "}
+graph_data <- saved_boot_partial2$effect_invariance_plot$data %>% 
+  filter(grepl("^Q", term)) %>% 
+  mutate(term = str_extract(term, "^\\S+"))
+
+term_order <- graph_data %>%
+  filter(type == "Bootstrapped") %>%
+  arrange(abs(d)) %>%
+  pull(term)
+
+graph_data$term <- factor(graph_data$term, levels = term_order)
+
+label_graph <- c(`TRUE` = "Invariant", `FALSE` = "Non-Invariant")
+
+effect_invariance_plot <- 
+  ggplot(graph_data, aes(term, d, color = type)) + 
+  theme_classic() + 
+  facet_wrap(~invariant, 
+             labeller = as_labeller(label_graph)) + 
+  scale_color_discrete(name = "Type of Estimate") + 
+  geom_point(aes(size = n)) + 
+  geom_errorbar(aes(ymin = d_low, ymax = d_high), width = 0.2) + 
+  xlab("Estimated Item") + 
+  ylab("Group Effect Size") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), legend.position = "bottom") + 
+  geom_hline(yintercept = 0) + 
+  coord_flip()
+
+effect_invariance_plot
+```
+
+```{r partial-residuals, fig.cap="Residual estimation distributions for items that were bootstrapped with original group labels ordered by effect size for non-invariant models.", fig.height=10}
+graph_data <- saved_boot_partial2$density_plot$data %>% 
+  filter(type == "Bootstrapped") %>% 
+  filter(grepl("^Q", term)) %>% 
+  mutate(term = str_extract(term, "^\\S+")) %>%  
+  mutate(group = factor(group, 
+                        levels = c("Group 1", "Group 2"),
+                        labels = c("Undergraduate", "Mechanical Turk")))
+
+graph_data$term <- factor(graph_data$term, levels = term_order)
+
+density_plot <- ggplot(graph_data, 
+                       aes(x = estimate, y = term, fill = group)) + 
+  geom_density_ridges(alpha = 0.7, scale = 0.9) + 
+  theme_classic() + 
+  xlab("Estimated Residual") + 
+  ylab("Parameter") + 
+  scale_fill_discrete(name = "Group") + 
+  theme(legend.position = "bottom")
+
+density_plot
+```
+
+## Descriptive Statistics and Scoring
+
 # Discussion
 
 \newpage
@@ -1684,3 +1999,19 @@ saveRDS(saved_boot_partial2, "../03_Data/saved_boot_partial_residuals.rds")
 
 ::: {#refs custom-style="Bibliography"}
 :::
+
+# Appendix
+
+All materials, code, and the reproducible manuscript can be found at: https://github.com/doomlab/gen-scale.
+
+- EFA Model Loadings: Loadings for models before they were combined and examined together. 
+  - Two-Factor: https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/2_factor.xlsx
+  - Three-Factor: https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/3_factor.xlsx
+  - Five-Factor: https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/5_factor.xlsx
+- EFA Model Loadings Reduced: Loadings for models when items were compared across models and then re-analyzed.
+  - Two-Factor: https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/2_factor_reduced.xlsx
+  - Three-Factor: https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/3_factor_reduced.xlsx
+  - Five-Factor: https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/5_factor_reduced.xlsx
+- Final Questions: Final question set for those who want to use the scale.
+  - https://github.com/doomlab/Gen-Scale/raw/refs/heads/master/05_Manuscript/results/5_factor_reduced.xlsx
+  - Scoring should be 

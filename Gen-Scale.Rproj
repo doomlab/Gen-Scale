@@ -12,4 +12,4 @@ Encoding: UTF-8
 RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
-ZoteroLibraries: "Ari-Projects"
+ZoteroLibraries: "My Library","Ari-Projects","BTSling","DOOMLab","Data Quality Research","Measurement Invariance Assessment","RT Processing","Super Smart Excellent Cool","Transparency-Ling"

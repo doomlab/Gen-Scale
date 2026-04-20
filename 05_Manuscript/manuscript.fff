@@ -2,6 +2,41 @@
 \ifnextchar[{\eatarg}{}
 
 \centering
-\pandocbounded{\includegraphics[keepaspectratio]{manuscript_files/figure-latex/visualize-diffs-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:visualize-diffs}The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution.}]{manuscript_files/figure-latex/visualize-diffs-1.pdf}}
 \caption{\label{fig:visualize-diffs}The left panel shows the loadings (slope of the regression lines), intercepts (where each line crosses the y-axis), and residuals (inset bottom right) for the non-invariant biological item. The loadings are set to be equal, but the large difference in item averages can be seen as the separation between lines. The right panel indicates the shape of the distribution of the latent variable (which includes all biological items). The Mechanical Turk group shows a normal distribution around the latent variable mean (set to zero as part of MGCFA procedures), and the undergraduate population shows a negatively skewed distribution.}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:fig-4-residuals}In the left panel, the large difference in residuals can be found for the spiritual items, as loadings and intercepts are set to be equal. The placement of residuals on the plot is unrelated to the x- or y-axis and simply shows the magnitude of the difference. Both items showed nearly identical plots, and therefore we only plotted the afterlife question. The right panel shows the latent mean distribution for the entire spiritual set of items.}]{manuscript_files/figure-latex/fig-4-residuals-1.pdf}}
+\caption{\label{fig:fig-4-residuals}In the left panel, the large difference in residuals can be found for the spiritual items, as loadings and intercepts are set to be equal. The placement of residuals on the plot is unrelated to the x- or y-axis and simply shows the magnitude of the difference. Both items showed nearly identical plots, and therefore we only plotted the afterlife question. The right panel shows the latent mean distribution for the entire spiritual set of items.}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-effect-size}Effect size differences (d) between groups for item intercepts when the partially invariant scalar model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}]{manuscript_files/figure-latex/partial-effect-size-1.pdf}}
+\caption{\label{fig:partial-effect-size}Effect size differences (\emph{d}) between groups for item intercepts when the partially invariant scalar model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-scores}Item intercept distributions for items that were bootstrapped with original group labels and were non-invariant ordered by effect size of the item intercept difference.}]{manuscript_files/figure-latex/partial-scores-1.pdf}}
+\caption{\label{fig:partial-scores}Item intercept distributions for items that were bootstrapped with original group labels and were non-invariant ordered by effect size of the item intercept difference.}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-effect-size-residuals}Effect size differences (d) between groups for residuals when the partially invariant residual model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}]{manuscript_files/figure-latex/partial-effect-size-residuals-1.pdf}}
+\caption{\label{fig:partial-effect-size-residuals}Effect size differences (\emph{d}) between groups for residuals when the partially invariant residual model is bootstrapped or randomized. Question numbers correspond to our online materials and are organized in descending magnitude. Sample size represents the number of bootstraps out of 1000 that were non-invariant and converged appropriately.}
+\end{figure*}
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={\label{fig:partial-residuals}Residual estimation distributions for items that were bootstrapped with original group labels ordered by effect size for non-invariant models.}]{manuscript_files/figure-latex/partial-residuals-1.pdf}}
+\caption{\label{fig:partial-residuals}Residual estimation distributions for items that were bootstrapped with original group labels ordered by effect size for non-invariant models.}
 \end{figure*}
